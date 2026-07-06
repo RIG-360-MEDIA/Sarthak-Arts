@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarthak Arts — Website Preview</title>
+<style>
+  :root{
+    --ground:#F3EAD9; --ground-raised:#EBE0CE; --ground-deep:#E4D6BC;
+    --ink:#2B211A; --ink-muted:#5A4E42; --ink-faint:#8C7C67;
+    --brass:#B8863E;
+    --focus-panel:#201B17; --focus-text:#EBD9BE; --focus-muted:#B8A78E;
+    --line:#D9CBAE;
+    --ruby:#7A2E2E; --sapphire:#2E4A6B; --emerald:#2E5B4F; --topaz:#8C6836;
+    --success:#3B6D11; --success-bg:#E4EDD4;
+    --warning:#8A5A0B; --warning-bg:#F5E4C6;
+    --critical:#A3352B; --critical-bg:#F5DCD8;
+    --serif:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    --sans:-apple-system,'Segoe UI',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  .doc{font-family:var(--sans); color:var(--ink); max-width:900px; margin:0 auto; padding:2rem 1.5rem 5rem; line-height:1.65;}
+  .doc h1,.doc h2,.doc h3,.doc p{margin:0;}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+  .cover{text-align:center; padding:20px 0 40px;}
+  .cover-eyebrow{font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--brass); font-weight:600;}
+  .cover-title{font-family:var(--serif); font-size:32px; margin-top:12px;}
+  .cover-sub{font-size:15px; color:var(--ink-muted); margin-top:14px; max-width:60ch; margin-left:auto; margin-right:auto;}
+
+  .part-divider{margin:52px 0 30px; text-align:center; padding:22px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .part-eyebrow{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--brass); font-weight:700;}
+  .part-title{font-family:var(--serif); font-size:22px; margin-top:8px;}
+  .part-sub{font-size:13.5px; color:var(--ink-muted); margin-top:8px; max-width:56ch; margin-left:auto; margin-right:auto;}
+
+  .page-card{margin:0 0 56px;}
+  .page-num{font-family:var(--serif); font-size:13px; color:var(--brass); font-weight:700;}
+  .page-name{font-family:var(--serif); font-size:24px; margin:4px 0 6px;}
+  .page-tagline{font-size:14px; color:var(--ink-muted); margin-bottom:18px; max-width:60ch;}
+
+  .photo-frame{border-radius:12px; overflow:hidden; border:1px solid var(--line); box-shadow:0 4px 16px rgba(43,33,26,0.10); background:#fff;}
+  .photo-chrome{background:var(--ground-deep); padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--line);}
+  .photo-dot{width:9px; height:9px; border-radius:50%; background:var(--line);}
+  .photo-url{font-size:11.5px; color:var(--ink-faint); margin-left:6px; background:var(--ground); padding:4px 12px; border-radius:5px; flex:1; max-width:340px;}
+  .photo-body{background:var(--ground);}
+
+  .whats-here{margin-top:18px; background:var(--ground-raised); border-radius:10px; padding:18px 22px;}
+  .whats-here-label{font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--brass); font-weight:700; margin-bottom:10px;}
+  .whats-here ul{margin:0; padding-left:20px; font-size:13.5px; color:var(--ink); line-height:1.8;}
+  .whats-here li{margin:2px 0;}
+  .whats-here li strong{font-weight:600;}
+
+  .btn{font-family:var(--sans); font-size:12.5px; font-weight:600; padding:9px 18px; border-radius:5px; border:1px solid var(--ink); background:transparent; color:var(--ink); cursor:default; display:inline-block;}
+  .btn-primary{background:var(--ink); color:var(--ground); border-color:var(--ink);}
+  .btn-brass{background:var(--brass); color:#fff; border-color:var(--brass);}
+  .btn-ghost{border-color:var(--line); color:var(--ink-muted);}
+  .btn-sm{padding:5px 11px; font-size:11.5px;}
+  .pill{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px;}
+  .pill-success{background:var(--success-bg); color:var(--success);}
+  .pill-warning{background:var(--warning-bg); color:var(--warning);}
+  .pill-critical{background:var(--critical-bg); color:var(--critical);}
+  .pill-neutral{background:var(--ground-deep); color:var(--ink-muted);}
+  .tag{font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:var(--ink-faint); font-weight:600;}
+  .num{font-variant-numeric:tabular-nums; font-family:var(--serif);}
+  table.dt{width:100%; border-collapse:collapse; font-size:12.5px;}
+  table.dt th{text-align:left; font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-faint); font-weight:600; padding:9px 12px; border-bottom:1px solid var(--line);}
+  table.dt td{padding:11px 12px; border-bottom:1px solid var(--line); color:var(--ink);}
+  .field-label{font-size:11px; font-weight:600; color:var(--ink-muted); margin-bottom:5px; display:block;}
+  .field-input{width:100%; font-family:var(--sans); font-size:13px; padding:9px 11px; border:1px solid var(--line); border-radius:5px; background:#fff; color:var(--ink);}
+  .sidebar-item{padding:10px 16px; font-size:13px; border-radius:6px; color:var(--focus-muted); display:flex; align-items:center; gap:9px;}
+  .sidebar-item.active{background:rgba(184,134,62,0.16); color:var(--focus-text); font-weight:600;}
+  .metric-card{background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px 16px;}
+  .metric-label{font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.5px;}
+  .metric-value{font-family:var(--serif); font-size:24px; margin-top:6px;}
+  .metric-delta{font-size:11.5px; margin-top:4px; font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="doc">
+  <h2 class="sr-only">A plain-language, page-by-page visual preview of the Sarthak Arts website and seller dashboard, showing what every screen looks like and what it contains.</h2>
+
+  <div class="cover">
+    <div class="cover-eyebrow">Website preview</div>
+    <h1 class="cover-title">A first look at Sarthak Arts</h1>
+    <p class="cover-sub">This is a walkthrough of every page in your website, in order — what a shopper sees, and what you'll see when you run the business. Each page shows a picture of how it will look, followed by a plain-English list of what's on it.</p>
+  </div>
+
+  <div class="part-divider">
+    <div class="part-eyebrow">Part one</div>
+    <div class="part-title">What your customers will see</div>
+    <div class="part-sub">The public website — browsing, learning, and buying, from a shopper's point of view.</div>
+  </div>
+  <div id="customer-pages"></div>
+
+  <div class="part-divider">
+    <div class="part-eyebrow">Part two</div>
+    <div class="part-title">What you'll see when you run the store</div>
+    <div class="part-sub">Your private control panel — nobody else sees these pages. This is where you add products, watch orders come in, manage your consultation bookings, and update your website's text yourself.</div>
+  </div>
+  <div id="admin-pages"></div>
+</div>
+
+<script>
+function mandalaSvg(size, litWedge, dark){
+  const dirs = ['NE','N','NW','W','SW','S','SE','E'];
+  let wedges = '';
+  const cx=size/2, cy=size/2, r=size*0.46;
+  for(let i=0;i<8;i++){
+    const a0 = -90 + i*45, a1 = a0+45;
+    const x0 = cx + r*Math.cos(a0*Math.PI/180), y0 = cy + r*Math.sin(a0*Math.PI/180);
+    const x1 = cx + r*Math.cos(a1*Math.PI/180), y1 = cy + r*Math.sin(a1*Math.PI/180);
+    const isLit = dirs[i]===litWedge;
+    wedges += `<path d="M${cx},${cy} L${x0},${y0} A${r},${r} 0 0,1 ${x1},${y1} Z" fill="${isLit?'#7A2E2E':(dark?'#3A3632':'#EBE0CE')}" opacity="${isLit?0.75:(dark?0.5:0.6)}" stroke="${dark?'#4A443C':'#D9CBAE'}" stroke-width="0.5"/>`;
+  }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${cx}" cy="${cy}" r="${r+6}" fill="none" stroke="#B8863E" stroke-width="0.75"/>${wedges}<circle cx="${cx}" cy="${cy}" r="${size*0.045}" fill="${dark?'#F3EAD9':'#2B211A'}"/></svg>`;
+}
+
+const customerPages = [
+  {label:'The homepage', url:'sarthakarts.com', tagline:'The first thing anyone sees when they visit your website.',
+    points:['A big headline explaining what makes your pieces different — handmade, and built for a specific spot in someone\'s home.','Two buttons: one to start browsing, one for visitors who aren\'t sure where to start, which walks them through a short quiz about their home.','Four short reasons to trust you, shown as simple cards — handmade, direction-specific, honest about materials, and guided placement.','A preview of the eight home "zones" so people can jump straight to the one they care about (money, health, relationships, etc.).'],
+    html:`<div style="font-family:var(--sans);">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 28px; border-bottom:1px solid var(--line);"><div style="font-family:var(--serif); font-size:17px;">Sarthak Arts</div><div style="display:flex; gap:22px; font-size:12.5px; color:var(--ink-muted);"><span>The Collection</span><span>Shop by Direction</span><span>Our Craft</span><span>Book a Consultation</span><span>About</span></div><div style="font-size:12.5px; color:var(--ink-muted);">Cart (0)</div></div>
+      <div style="background:var(--ground-deep); text-align:center; font-size:11px; padding:6px; color:var(--ink-muted);">Handcrafted in copper, brass and silver — nothing cast from a mould twice.</div>
+      <div style="display:flex; gap:36px; align-items:center; padding:44px 28px;">
+        <div style="flex:1;"><div class="tag" style="color:var(--brass);">Dikchakra-mapped instruments</div>
+          <h1 style="font-family:var(--serif); font-size:32px; line-height:1.25; margin:12px 0;">Metal and stone, placed the way your home was meant to hold them.</h1>
+          <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.7; max-width:46ch;">Each piece is cast in copper, brass or silver and set with a single gemstone, sized and positioned according to classical Vastu Shastra.</p>
+          <div style="margin-top:20px; display:flex; gap:12px;"><span class="btn btn-primary">View the collection</span><span class="btn btn-ghost">Take the 2-minute home audit →</span></div>
+        </div>
+        <div style="width:230px; height:230px; background:var(--focus-panel); border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${mandalaSvg(180,'NE',true)}</div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+        ${['Handworked, not moulded','Direction-correct by design','Full material transparency','Guided placement'].map(t=>`<div style="background:var(--ground); padding:20px 18px;"><div style="font-family:var(--serif); font-size:14px; margin-bottom:6px;">${t}</div><div style="font-size:11.5px; color:var(--ink-muted); line-height:1.5;">Every listing states the exact composition.</div></div>`).join('')}
+      </div>
+      <div style="padding:32px 28px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:14px;">Shop by direction</div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">${[['Northeast','var(--sapphire)','Clarity, spiritual grounding'],['North','var(--topaz)','Wealth, career flow'],['Southwest','var(--emerald)','Stability, relationships'],['Southeast','var(--ruby)','Finance, energy, the kitchen']].map(([n,c,g])=>`<div style="border:1px solid var(--line); border-radius:6px; padding:14px; border-top:3px solid ${c};"><div style="font-family:var(--serif); font-size:14px;">${n}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:4px;">${g}</div></div>`).join('')}</div>
+      </div></div>`},
+  {label:'The 2-minute home audit', url:'sarthakarts.com/home-audit', tagline:'For visitors who clicked "not sure where to start" on the homepage — a short quiz instead of having to know Vastu themselves.',
+    points:['A handful of plain questions — which way their front door faces, whether their kitchen is in a certain corner, whether their home is a standard shape or unusual.','No question uses jargon a first-time visitor wouldn\'t understand.','At the end, it recommends specific pieces for their home — or, if their layout is unusual, it suggests booking a consultation instead of guessing.','You can edit or add questions yourself later without needing a developer, the same way you edit any other text on the site.'],
+    html:`<div style="font-family:var(--sans); padding:40px 28px; display:flex; justify-content:center;">
+      <div style="max-width:420px; width:100%;">
+        <div style="display:flex; gap:4px; margin-bottom:20px;">${[1,2,3,4,5].map(i=>`<div style="flex:1; height:3px; border-radius:2px; background:${i<=2?'var(--brass)':'var(--line)'};"></div>`).join('')}</div>
+        <div class="tag" style="color:var(--brass);">Question 2 of 5</div>
+        <h2 style="font-family:var(--serif); font-size:20px; margin:10px 0 20px;">Which direction does your main entrance face?</h2>
+        ${['North','Northeast','East','Southeast','Not sure — let me check my compass'].map((o,i)=>`<div style="border:1px solid ${i===2?'var(--brass)':'var(--line)'}; border-radius:6px; padding:12px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:13px; font-weight:${i===2?'600':'400'};">${o}</span><div style="width:16px; height:16px; border-radius:50%; border:1.5px solid ${i===2?'var(--brass)':'var(--line)'}; ${i===2?'background:var(--brass);':''}"></div></div>`).join('')}
+        <div style="display:flex; justify-content:space-between; margin-top:20px;"><span class="btn btn-ghost btn-sm">Back</span><span class="btn btn-primary btn-sm">Next question</span></div>
+      </div>
+    </div>`},
+  {label:'Shop by direction', url:'sarthakarts.com/direction', tagline:'A visual wheel that lets shoppers browse by which part of their home they want to improve.',
+    points:['A large circular diagram of the eight directions of a home — hovering over one shows what it\'s about.','Clicking a direction instantly shows only the pieces made for that specific zone.','Explains, in plain language, why that direction matters (e.g. "fire and finance share this corner").'],
+    html:`<div style="font-family:var(--sans);"><div style="background:var(--focus-panel); padding:36px 28px; display:flex; gap:32px; align-items:center;">${mandalaSvg(220,'SE',true)}
+      <div style="color:var(--focus-text);"><div class="tag" style="color:var(--brass);">Southeast · Agneya · Fire</div><h2 style="font-family:var(--serif); font-size:24px; margin:8px 0;">Fire and finance share a corner. Handle both with care.</h2><p style="font-size:12.5px; color:var(--focus-muted); max-width:44ch; line-height:1.6;">Vastu links this zone to finance, energy and the kitchen.</p>
+        <div style="display:flex; gap:6px; margin-top:14px;">${['NE','N','NW','W','SW','S','SE','E'].map(d=>`<span class="pill" style="${d==='SE'?'background:rgba(184,134,62,0.25);color:var(--focus-text);':'background:rgba(255,255,255,0.06);color:var(--focus-muted);'}">${d}</span>`).join('')}</div></div></div>
+      <div style="padding:26px 28px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px;">${['Copper-Brass Wind Chime','Brass Ashtadhatu Pyramid','Copper Vastu Kalash'].map(n=>`<div style="border:1px solid var(--line); border-radius:8px; overflow:hidden;"><div style="height:110px; background:var(--ground-raised);"></div><div style="padding:12px 14px;"><div style="font-family:var(--serif); font-size:13.5px;">${n}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:3px;">Southeast · Agneya</div></div></div>`).join('')}</div></div>`},
+  {label:'Browse the full collection', url:'sarthakarts.com/collection', tagline:'Everything you sell, in one scrollable list, with simple filters on the side.',
+    points:['Both product lines live here — murtis (deity idols) and Vastu instruments — browsable together or by category.','Shoppers can narrow down by category, direction, metal (copper/brass/silver), purpose (wealth, health, career...), and for murtis, by deity.','Every item shows its price and photo upfront.','Sorted by "most placed" (your best-sellers) by default.'],
+    html:`<div style="font-family:var(--sans); padding:24px 28px;"><div style="font-family:var(--serif); font-size:20px; margin-bottom:4px;">The collection</div>
+      <p style="font-size:12px; color:var(--ink-muted); max-width:58ch; line-height:1.6; margin-bottom:20px;">Every piece lists the metal, exact weight, and single gemstone.</p>
+      <div style="display:flex; gap:24px;"><div style="width:170px; flex-shrink:0;"><div class="field-label">Direction</div>${['Northeast','North','Southwest','Southeast'].map(d=>`<div style="font-size:12px; color:var(--ink-muted); padding:5px 0;">☐ ${d}</div>`).join('')}</div>
+      <div style="flex:1;"><div style="display:flex; justify-content:flex-end; margin-bottom:12px;"><span class="pill pill-neutral">Sort: Most placed</span></div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">${[['Copper Vastu Kalash','₹18,400','Northeast'],['Brass Ashtadhatu Pyramid','₹24,900','Center'],['Silver Sri Yantra Plate','₹31,200','North'],['Gold-Accent Om Wall Panel','₹42,600','East'],['Copper-Brass Wind Chime','₹9,800','Northwest'],['Silver Sri Yantra Plate — Small','₹19,500','North']].map(([n,p,d])=>`<div style="border:1px solid var(--line); border-radius:8px; overflow:hidden;"><div style="height:130px; background:var(--ground-raised);"></div><div style="padding:12px 14px;"><div style="font-family:var(--serif); font-size:13px;">${n}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:3px;">${d}</div><div class="num" style="font-size:13px; margin-top:6px;">${p}</div></div></div>`).join('')}</div></div></div></div>`},
+  {label:'A single product page', url:'sarthakarts.com/collection/silver-sri-yantra-plate', tagline:'Where a shopper decides to buy — full photos, the honest details, and the price.',
+    points:['Large product photos with room for close-ups (the hammer marks and texture are part of the appeal).','Exactly what it\'s made of and how much of it — real weight in grams, real gemstone, no vague language.','What\'s included in the box (dust cover, placement card, certificate).','An "Add to cart" button and a wishlist option.'],
+    html:`<div style="font-family:var(--sans); padding:26px 28px; display:flex; gap:36px;">
+      <div style="flex:1;"><div style="height:340px; background:var(--ground-raised); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); font-size:12px;">Product photography</div>
+        <div style="display:flex; gap:8px; margin-top:8px;">${[1,2,3,4].map(()=>`<div style="width:52px; height:52px; background:var(--ground-raised); border-radius:5px; border:1px solid var(--line);"></div>`).join('')}</div></div>
+      <div style="flex:1;"><div style="display:flex; align-items:center; gap:10px;"><div class="tag" style="color:var(--ruby);">North · Uttara</div>${mandalaSvg(34,'N',false)}</div>
+        <h1 style="font-family:var(--serif); font-size:23px; margin:8px 0;">Silver Sri Yantra Plate</h1>
+        <p style="font-size:12.5px; color:var(--ink-muted); line-height:1.7;">A hand-engraved silver yantra for the wall that governs wealth and career, with a single ruby set at the bindu.</p>
+        <div class="num" style="font-size:22px; margin:16px 0; color:var(--ruby);">₹31,200</div>
+        <div style="display:flex; gap:10px; margin-bottom:18px;"><span class="btn btn-primary">Add to cart</span><span class="btn btn-ghost">♡ Wishlist</span></div>
+        <div style="border-top:1px solid var(--line); padding-top:14px;"><div class="field-label">What it's made of</div><table class="dt"><tr><td>Silver</td><td style="text-align:right;" class="num">180g</td></tr><tr><td>Ruby (bindu stone)</td><td style="text-align:right;" class="num">1</td></tr></table></div></div></div>`},
+  {label:'Shopping cart', url:'sarthakarts.com/cart', tagline:'Where items sit before checkout — a simple running total.',
+    points:['A short list of items with quantity and price.','A field to enter a discount code.','A clear total including delivery and tax, before moving to checkout.'],
+    html:`<div style="font-family:var(--sans); padding:26px 28px; display:flex; gap:32px;">
+      <div style="flex:1;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Your cart</div>${[['Copper Vastu Kalash','₹18,400',1],['Copper-Brass Wind Chime','₹9,800',1]].map(([n,p,q])=>`<div style="display:flex; gap:14px; padding:14px 0; border-bottom:1px solid var(--line); align-items:center;"><div style="width:60px; height:60px; background:var(--ground-raised); border-radius:5px;"></div><div style="flex:1;"><div style="font-family:var(--serif); font-size:13.5px;">${n}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:3px;">Qty ${q}</div></div><div class="num" style="font-size:13px;">${p}</div></div>`).join('')}</div>
+      <div style="width:260px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:18px;"><div class="field-label">Order summary</div>
+        <div style="display:flex; justify-content:space-between; font-size:12.5px; padding:6px 0;"><span>Subtotal</span><span class="num">₹28,200</span></div>
+        <div style="display:flex; justify-content:space-between; font-family:var(--serif); font-size:15px; padding:10px 0; border-top:1px solid var(--line); margin-top:8px;"><span>Total</span><span class="num">₹29,610</span></div>
+        <span class="btn btn-primary" style="width:100%; text-align:center; margin-top:10px; display:block;">Checkout</span></div></div>`},
+  {label:'Checkout', url:'sarthakarts.com/checkout', tagline:'The final step of buying — address, then payment. Works the same for Indian and international customers, showing whichever payment options fit their location.',
+    points:['Address entry — a customer can check out even without creating an account.','An option to mark the order as a gift and add a short note — the receipt/price is left out of what the recipient sees.','Indian customers see UPI, card, or cash on delivery. International customers see card payment automatically instead — same page, no separate international site.','Prices show in the customer\'s own currency. The total is locked in — no surprises after this point.'],
+    html:`<div style="font-family:var(--sans); padding:26px 28px;"><div style="display:flex; gap:6px; margin-bottom:22px;">${['Address','Shipping','Payment','Review'].map((s,i)=>`<div style="flex:1; text-align:center; padding:8px; font-size:11px; font-weight:600; border-bottom:2px solid ${i===2?'var(--brass)':'var(--line)'}; color:${i===2?'var(--ink)':'var(--ink-faint)'};">${s}</div>`).join('')}</div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px; font-size:12.5px; color:var(--ink-muted);"><div style="width:16px; height:16px; border:1.5px solid var(--brass); border-radius:3px; background:var(--brass); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px;">✓</div>This is a gift — add a note for the recipient</div>
+      <div style="display:flex; gap:32px;"><div style="flex:1;"><div class="field-label">Payment method — Indian address shown here</div>${[['UPI','Pay via any UPI app',true],['Card','Credit or debit card',false],['Cash on delivery','Available for orders under ₹25,000',false]].map(([n,d,sel])=>`<div style="border:1px solid ${sel?'var(--brass)':'var(--line)'}; border-radius:6px; padding:12px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-size:13px; font-weight:600;">${n}</div><div style="font-size:11px; color:var(--ink-muted);">${d}</div></div><div style="width:16px; height:16px; border-radius:50%; border:1.5px solid ${sel?'var(--brass)':'var(--line)'}; ${sel?'background:var(--brass);':''}"></div></div>`).join('')}</div>
+      <div style="width:260px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:18px; height:fit-content;"><div class="field-label">Total due</div><div class="num" style="font-family:var(--serif); font-size:20px;">₹29,610</div><span class="btn btn-primary" style="width:100%; text-align:center; margin-top:14px; display:block;">Place order</span></div></div></div>`},
+  {label:'"My orders" (customer account)', url:'sarthakarts.com/account/orders', tagline:'Where a returning customer checks on their past purchases.',
+    points:['A list of past orders with delivery status (packed, shipped, delivered).','A button to track the delivery.','Download of the certificate that came with the order, any time.','A "Request a return" option on any delivered order (except engraved/personalized pieces, which are final sale) — starts a simple form asking why, then you approve or decline it from your side.'],
+    html:`<div style="font-family:var(--sans); padding:26px 28px;"><div style="display:flex; gap:24px;">
+      <div style="width:160px; flex-shrink:0;">${['Orders','Wishlist','Addresses','Wallet','Settings'].map((s,i)=>`<div style="font-size:12.5px; padding:8px 10px; border-radius:5px; ${i===0?'background:var(--ground-raised); font-weight:600;':'color:var(--ink-muted);'}">${s}</div>`).join('')}</div>
+      <div style="flex:1;"><div class="field-label">Order history</div>${[['#SA-10421','Jul 1, 2026','₹29,610','Shipped','pill-warning',false],['#SA-10388','Jun 18, 2026','₹18,400','Delivered','pill-success',true]].map(([id,d,p,s,cls,canReturn])=>`<div style="display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-bottom:1px solid var(--line);"><div><div style="font-size:13px; font-weight:600;">${id}</div><div style="font-size:11px; color:var(--ink-muted);">${d}</div></div><div class="num" style="font-size:12.5px;">${p}</div><span class="pill ${cls}">${s}</span><span class="btn btn-ghost btn-sm">Track</span>${canReturn?'<span class="btn btn-ghost btn-sm">Request a return</span>':''}</div>`).join('')}</div></div></div>`},
+  {label:'Book a consultation', url:'sarthakarts.com/consultation', tagline:'Two services live here now — a Vastu placement consultation and an astrology consultation — customers pick which one they want first.',
+    points:['A first screen where the customer chooses which kind of consultation they want.','Then a calendar showing which days and times are available for that service.','A small fee to book — Vastu placement\'s fee gets credited back if they later spend over ₹15,000; whether astrology works the same way is still to be decided.','It works the other way too: any customer whose order crosses ₹15,000 automatically gets one free Vastu consultation to book whenever they like — exactly what the site\'s top banner promises.','Confirmation with a call/video link sent automatically.','You can add a third type of consultation later (say, numerology) the same way you added astrology — no rebuild, just a new entry in your settings.'],
+    html:`<div style="font-family:var(--sans); padding:26px 28px;">
+      <div class="tag" style="color:var(--brass);">Choose a consultation</div>
+      <h2 style="font-family:var(--serif); font-size:19px; margin:8px 0 16px;">What would you like help with?</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:22px;">
+        <div style="border:2px solid var(--brass); border-radius:8px; padding:14px;"><div style="font-family:var(--serif); font-size:14px;">Vastu placement</div><div style="font-size:11.5px; color:var(--ink-muted); margin-top:5px;">20 min · ₹999 · credited toward orders over ₹15,000</div></div>
+        <div style="border:1px solid var(--line); border-radius:8px; padding:14px; opacity:0.75;"><div style="font-family:var(--serif); font-size:14px;">Astrology</div><div style="font-size:11.5px; color:var(--ink-muted); margin-top:5px;">30 min · ₹999</div></div>
+      </div>
+      <div style="border-top:1px solid var(--line); padding-top:18px; display:flex; gap:32px;">
+        <div style="flex:1;"><div class="tag" style="color:var(--brass);">Vastu placement selected</div>
+          <div style="margin-top:12px;"><div class="field-label">Available slots — Jul 7</div><div style="display:flex; gap:8px; flex-wrap:wrap;">${['10:00 AM','11:30 AM','3:00 PM','5:30 PM'].map((t,i)=>`<span class="pill ${i===1?'pill-warning':'pill-neutral'}">${t}</span>`).join('')}</div></div>
+        </div>
+        <div style="width:220px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:16px; height:fit-content;"><div class="field-label">Consultation fee</div><div class="num" style="font-family:var(--serif); font-size:18px;">₹999</div><span class="btn btn-primary" style="width:100%; text-align:center; margin-top:12px; display:block;">Confirm booking</span></div>
+      </div>
+    </div>`},
+  {label:'Our craft', url:'sarthakarts.com/our-craft', tagline:'The story of how each piece is actually made, told simply.',
+    points:['A simple four-step picture, exactly as the brand copy describes it: design the piece, shape the metal, set the stone, certify it.','Explains why nothing is mass-produced — one smith, one piece, start to finish.'],
+    html:`<div style="font-family:var(--sans); padding:30px 28px;"><div class="tag" style="color:var(--brass);">Our craft</div><h1 style="font-family:var(--serif); font-size:24px; margin:8px 0 20px;">Made by hand, not run through a mould twice.</h1>
+      <div style="display:flex; align-items:center; gap:0; max-width:640px;">${[['design','◐'],['shape','◇'],['set','●'],['certify','✓']].map(([n,icon],i)=>`<div style="display:flex; align-items:center; flex:1;"><div style="text-align:center;"><div style="width:44px; height:44px; border:1px solid var(--brass); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--brass); margin:0 auto;">${icon}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:6px; text-transform:capitalize;">${n}</div></div>${i<3?`<div style="flex:1; height:1px; background:var(--line); margin:0 8px 22px;"></div>`:''}</div>`).join('')}</div></div>`},
+  {label:'Vastu explained + FAQ', url:'sarthakarts.com/vastu-shastra', tagline:'Where a curious or unsure visitor gets their questions answered.',
+    points:['A simple explanation of what Vastu Shastra actually is, for people new to it.','Common questions answered honestly — including "is this real gold or plated?"'],
+    html:`<div style="font-family:var(--sans); padding:30px 28px; max-width:600px;"><div class="tag" style="color:var(--brass);">Vastu Shastra, briefly</div>
+      <div class="field-label" style="margin-top:14px;">Common questions</div>${['Is this real gold/silver, or plated?','Why do prices change?','Do you offer a certificate of authenticity?','Can copper darken over time?'].map((q,i)=>`<div style="border-bottom:1px solid var(--line); padding:13px 0; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:13px; ${i===0?'font-weight:600;':''}">${q}</span><span style="color:var(--ink-faint);">${i===0?'−':'+'}</span></div>`).join('')}</div>`},
+  {label:'About + the footer', url:'sarthakarts.com/about', tagline:'Your story, plus the bottom section that appears on every page.',
+    points:['Why you started making these pieces, in your own words.','Quick links to every other page (visible from anywhere on the site).','A small feed of your recent social media posts.','A simple email sign-up for a monthly placement tip.'],
+    html:`<div style="font-family:var(--sans);"><div style="padding:30px 28px; max-width:600px;"><div class="tag" style="color:var(--brass);">About</div><h1 style="font-family:var(--serif); font-size:22px; margin:8px 0 14px;">Why we started making these</h1></div>
+      <div style="background:var(--focus-panel); color:var(--focus-text); padding:28px; display:grid; grid-template-columns:repeat(3,1fr) 1.3fr; gap:24px; margin-top:20px;">${[['Shop',['The Collection','Shop by Direction','Gifting']],['Learn',['Vastu Shastra, briefly','Our Craft','Book a Consultation','FAQ']],['Company',['About','Contact','Shipping & Returns']]].map(([h,items])=>`<div><div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--brass); margin-bottom:10px;">${h}</div>${items.map(i=>`<div style="font-size:12px; color:var(--focus-muted); padding:4px 0;">${i}</div>`).join('')}</div>`).join('')}
+      <div><div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--brass); margin-bottom:10px;">On Instagram</div><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:4px;">${[1,2,3].map(()=>`<div style="aspect-ratio:1; background:rgba(255,255,255,0.06); border-radius:3px;"></div>`).join('')}</div></div></div></div>`}
+];
+
+const adminPages = [
+  {label:'Your daily dashboard', url:'admin.sarthakarts.com', nav:'Dashboard', tagline:'The first screen you see when you log in — a quick morning check-in.',
+    points:['Today\'s sales and how many orders came in.','A clear "needs your attention" list — orders to ship, low stock, unanswered reviews.','A quick split of how many orders came from India vs. from abroad.'],
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Good morning</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px;">${[['Revenue, today','₹58,200','+12% vs yesterday','var(--success)'],['Orders, today','4','2 pending','var(--warning)'],['Low stock','2 items','review needed','var(--critical)'],['Consultations','3 upcoming','next in 2h','var(--ink-muted)']].map(([l,v,d,c])=>`<div class="metric-card"><div class="metric-label">${l}</div><div class="metric-value">${v}</div><div class="metric-delta" style="color:${c};">${d}</div></div>`).join('')}</div>
+      <div style="display:flex; gap:16px;"><div style="flex:1; border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Needs your attention</div>
+        <div style="font-size:12.5px; padding:8px 0; border-bottom:1px solid var(--line); display:flex; justify-content:space-between;"><span>Order #SA-10421 ready to ship</span><span class="pill pill-warning">Pending</span></div>
+        <div style="font-size:12.5px; padding:8px 0; border-bottom:1px solid var(--line); display:flex; justify-content:space-between;"><span>Copper Kalash — 3 units left</span><span class="pill pill-critical">Low stock</span></div>
+        <div style="font-size:12.5px; padding:8px 0; display:flex; justify-content:space-between;"><span>1 return request awaiting your decision</span><span class="pill pill-neutral">Review</span></div></div>
+      <div style="flex:1; border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Orders by market, this week</div><table class="dt"><tr><td>India</td><td class="num" style="text-align:right;">9 orders</td></tr><tr><td>International</td><td class="num" style="text-align:right;">3 orders</td></tr></table></div></div></div>`},
+  {label:'Your product list', url:'admin.sarthakarts.com/products', nav:'Products', tagline:'Every item you sell, in one table, with stock and status at a glance.',
+    points:['See instantly which products are running low.','Add a brand-new product with one click.','Bring in many products at once from a spreadsheet, if you ever need to.'],
+    body:`<div style="flex:1; padding:22px 26px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><div style="font-family:var(--serif); font-size:19px;">Products <span style="font-size:12px; color:var(--ink-faint); font-family:var(--sans);">32 total</span></div><div style="display:flex; gap:8px;"><span class="btn btn-ghost btn-sm">Import CSV</span><span class="btn btn-primary btn-sm">+ Add product</span></div></div>
+      <table class="dt"><tr><th>☐</th><th>Product</th><th>Direction</th><th>Price</th><th>Stock</th><th>Status</th></tr>${[['Copper Vastu Kalash','Northeast','₹18,400','14','pill-success','Live'],['Silver Sri Yantra Plate','North','₹31,200','3','pill-critical','Low stock'],['Gold-Accent Om Wall Panel','East','₹42,600','—','pill-warning','Pending review']].map(([n,d,p,s,cls,st])=>`<tr><td>☐</td><td style="font-weight:600;">${n}</td><td>${d}</td><td class="num">${p}</td><td class="num">${s}</td><td><span class="pill ${cls}">${st}</span></td></tr>`).join('')}</table></div>`},
+  {label:'Adding or editing a product', url:'admin.sarthakarts.com/products/new', nav:'Products', tagline:'This is where you enter the details of a new piece — including setting the price yourself, directly.',
+    points:['You list exactly what a piece is made of and how much (e.g. 180g silver, 1 ruby) — this is just for the honest listing and the certificate, separate from pricing.','You type in the price yourself. There\'s no automatic calculation and no suggestion — full control, always your number.','If you want a specific price for international shoppers (e.g. a clean $199) instead of a converted number, you can set that too, but it\'s optional.'],
+    body:`<div style="flex:1; padding:22px 26px; display:flex; gap:24px;"><div style="flex:1;"><div style="font-family:var(--serif); font-size:18px; margin-bottom:16px;">Edit — Silver Sri Yantra Plate</div>
+      <div class="field-label">What it's made of</div><table class="dt" style="margin-bottom:6px;"><tr><th>Material</th><th>Amount</th><th></th></tr><tr><td>Silver</td><td class="num">180g</td><td style="color:var(--ink-faint);">✕</td></tr><tr><td>Ruby (bindu)</td><td class="num">1</td><td style="color:var(--ink-faint);">✕</td></tr></table><span class="btn btn-ghost btn-sm">+ Add material</span></div>
+      <div style="width:250px; flex-shrink:0; border:1px solid var(--brass); border-radius:8px; padding:16px; background:rgba(184,134,62,0.06); height:fit-content;"><div class="field-label" style="color:var(--brass);">Price — set by you</div>
+        <div class="field-label" style="margin-top:2px;">Price in ₹</div><input class="field-input" value="₹31,200" disabled/>
+        <div class="field-label" style="margin-top:12px;">Optional: a specific price for USD shoppers</div><input class="field-input" value="$379" disabled/>
+        <div style="font-size:10.5px; color:var(--ink-faint); margin-top:10px;">No automatic suggestion — this is always your number.</div></div></div>`},
+  {label:'Orders coming in', url:'admin.sarthakarts.com/orders', nav:'Orders', tagline:'Every sale, and where it stands, in one list.',
+    points:['Filter to just the ones that need packing, shipping, or have been returned.','Click into any order to see the full details.'],
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:12px;">Orders</div>
+      <div style="display:flex; gap:8px; margin-bottom:14px;">${['All','Pending','Packed','Shipped','Delivered','Returns'].map((f,i)=>`<span class="pill" style="border:1px solid var(--line); background:${i===0?'var(--ink)':'transparent'}; color:${i===0?'var(--ground)':'var(--ink-muted)'};">${f}</span>`).join('')}</div>
+      <table class="dt"><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr>${[['#SA-10421','Meera R.','₹29,610','pill-warning','Pending'],['#SA-10419','Divya S.','₹42,600','pill-success','Shipped']].map(([id,c,t,cls,st])=>`<tr><td style="font-weight:600;">${id}</td><td>${c}</td><td class="num">${t}</td><td><span class="pill ${cls}">${st}</span></td></tr>`).join('')}</table></div>`},
+  {label:'One order, up close', url:'admin.sarthakarts.com/orders/1042', nav:'Orders', tagline:'Everything about a single sale — who bought it, what they bought, and where it\'s going.',
+    points:['Update the order\'s status with one click as you pack and ship it.','Print a shipping label straight from this screen.','See the exact same composition details the customer received, in case they call with a question.'],
+    body:`<div style="flex:1; padding:22px 26px; display:flex; gap:24px;"><div style="flex:1;"><div style="font-family:var(--serif); font-size:18px;">Order #SA-10421 <span class="pill pill-warning" style="margin-left:8px;">Pending</span></div>
+      <table class="dt" style="margin-top:14px;"><tr><td>Copper Vastu Kalash</td><td class="num" style="text-align:right;">₹18,400</td></tr></table></div>
+      <div style="width:230px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:16px; height:fit-content;"><div class="field-label">Update status</div>${['Confirmed','Packed','Shipped','Delivered'].map((s,i)=>`<div style="font-size:12.5px; padding:7px 0; display:flex; align-items:center; gap:8px; color:${i<1?'var(--ink)':'var(--ink-faint)'};"><span style="width:14px;height:14px;border-radius:50%;border:1.5px solid ${i<1?'var(--success)':'var(--line)'}; background:${i<1?'var(--success)':'transparent'};"></span>${s}</div>`).join('')}<span class="btn btn-primary btn-sm" style="display:block; text-align:center; margin-top:12px;">Print shipping label</span></div></div>`},
+  {label:'Return requests', url:'admin.sarthakarts.com/returns', nav:'Returns', tagline:'When a customer asks to send something back, it lands here for you to approve or decline.',
+    points:['Every return request, with the customer\'s reason, in one list.','Approve or decline with one click — either way, the customer sees your decision.','Once you\'ve received the item back, one click starts the refund.'],
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Return requests</div>
+      <table class="dt"><tr><th>Order</th><th>Customer</th><th>Reason</th><th>Status</th><th></th></tr>${[['#SA-10388','Divya S.','Changed my mind','pill-warning','Requested'],['#SA-10312','Rohan M.','Arrived damaged','pill-neutral','Approved']].map(([id,c,r,cls,st])=>`<tr><td style="font-weight:600;">${id}</td><td>${c}</td><td>${r}</td><td><span class="pill ${cls}">${st}</span></td><td><span class="btn btn-primary btn-sm">Approve</span> <span class="btn btn-ghost btn-sm">Decline</span></td></tr>`).join('')}</table></div>`},
+  {label:'Customer reviews', url:'admin.sarthakarts.com/reviews', nav:'Reviews', tagline:'What customers are saying about your pieces, and a place to reply.',
+    points:['Only customers who actually bought and received the item can leave a review — there\'s no way to post a fake one.','Reply publicly to any review, right from this screen.','Hide a review if it ever needs to come down, without deleting your record of it.'],
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Customer reviews</div>
+      ${[['Meera Reddy','Copper Vastu Kalash','★★★★★','pill-success','Published','Beautifully made, exactly as described.'],['Arjun Kapoor','Silver Sri Yantra Plate','★★★★☆','pill-warning','Needs reply','Lovely piece, delivery took a bit longer than expected.']].map(([n,p,stars,cls,st,body])=>`<div style="border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin-bottom:10px;"><div style="display:flex; justify-content:space-between; align-items:center;"><div><span style="font-size:13px; font-weight:600;">${n}</span> <span style="font-size:11px; color:var(--ink-muted);">— ${p}</span></div><span class="pill ${cls}">${st}</span></div><div style="color:var(--brass); font-size:13px; margin:6px 0 4px;">${stars}</div><div style="font-size:12.5px; color:var(--ink-muted);">${body}</div></div>`).join('')}</div>`},
+  {label:'Consultation bookings', url:'admin.sarthakarts.com/consultations', nav:'Consultations', tagline:'Where each consultant manages their own calendar, and you see who\'s booked — for both Vastu placement and astrology.',
+    points:['A list of upcoming calls, tagged by which type of consultation it is.','Each consultant sets their own available hours here — you don\'t have to do it for them.','If the same person handles both Vastu placement and astrology, they manage it all from one calendar, not two separate ones.'],
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Consultations</div>
+      <div style="display:flex; gap:8px; margin-bottom:14px;">${['All types','Vastu placement','Astrology'].map((f,i)=>`<span class="pill" style="border:1px solid var(--line); background:${i===0?'var(--ink)':'transparent'}; color:${i===0?'var(--ground)':'var(--ink-muted)'};">${f}</span>`).join('')}</div>
+      <div style="display:flex; gap:16px;"><div style="flex:1; border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Upcoming bookings</div>${[['Rohan M.','Vastu placement','Jul 4, 3:00 PM','pill-warning','Awaiting call'],['Priya T.','Astrology','Jul 5, 11:30 AM','pill-neutral','Confirmed']].map(([n,type,t,cls,st])=>`<div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:12.5px;"><span>${n} · <span style="color:var(--ink-faint);">${type}</span> · ${t}</span><span class="pill ${cls}">${st}</span></div>`).join('')}</div>
+      <div style="width:220px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Available hours</div>${['Mon','Tue','Wed'].map((d,i)=>`<div style="font-size:12px; display:flex; justify-content:space-between; padding:5px 0;"><span>${d}</span><span style="color:var(--ink-muted);">${i===2?'Off':'10am–6pm'}</span></div>`).join('')}</div></div></div>`},
+  {label:'Editing your website text', url:'admin.sarthakarts.com/content', nav:'Content', tagline:'This is where you change any wording on the site yourself — no developer needed.',
+    points:['Pick any page — About, Our Craft, FAQ — and edit the words directly, like a Word document.','Fix a typo or update your story any time you like, and it goes live immediately.'],
+    body:`<div style="flex:1; padding:22px 26px; display:flex; gap:20px;"><div style="width:170px; flex-shrink:0;">${['About — story','Our Craft — intro','Philosophy — intro','FAQ — all questions'].map((n,i)=>`<div style="font-size:12px; padding:8px 10px; border-radius:5px; ${i===0?'background:var(--ground-raised); font-weight:600;':'color:var(--ink-muted);'}">${n}</div>`).join('')}</div>
+      <div style="flex:1;"><div class="field-label">About — story (editable)</div><div style="border:1px solid var(--line); border-radius:6px; padding:12px; font-size:12.5px; line-height:1.7; color:var(--ink-muted); min-height:100px; background:#fff;">Opening: what problem you saw...<br><br><span style="color:var(--ink-faint);">[type here, just like a document]</span></div>
+      <div style="display:flex; justify-content:space-between; margin-top:10px;"><span style="font-size:10.5px; color:var(--ink-faint);">Last edited by you · 2 weeks ago</span><span class="btn btn-primary btn-sm">Save changes</span></div></div></div>`},
+  {label:'Your customers', url:'admin.sarthakarts.com/customers', nav:'Customers', tagline:'A simple list of who\'s bought from you, and how much they\'ve spent in total.',
+    points:['See your most loyal, highest-spending customers at a glance.'],
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:14px;">Customers</div>
+      <table class="dt"><tr><th>Name</th><th>Orders</th><th>Total spent</th></tr>${[['Meera Reddy','3','₹68,400'],['Divya Shah','5','₹142,000']].map(([n,o,v])=>`<tr><td style="font-weight:600;">${n}</td><td class="num">${o}</td><td class="num">${v}</td></tr>`).join('')}</table></div>`},
+  {label:'How the business is doing', url:'admin.sarthakarts.com/analytics', nav:'Analytics', tagline:'Simple charts showing what\'s selling and how revenue is trending.',
+    points:['A revenue graph for the last 30 days.','Your best-selling products.','Which of the eight directions sells the most — so you know what to stock more of.'],
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Analytics</div>
+      <div style="border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:16px;"><div class="field-label">Revenue, last 30 days</div><div style="display:flex; align-items:flex-end; gap:4px; height:70px; margin-top:10px;">${[30,45,28,60,52,70,48,65,58,80,72,90].map(h=>`<div style="flex:1; height:${h}%; background:var(--brass); opacity:0.75; border-radius:2px 2px 0 0;"></div>`).join('')}</div></div>
+      <div style="border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Best-selling direction</div><table class="dt"><tr><td>North</td><td class="num" style="text-align:right;">32%</td></tr><tr><td>Northeast</td><td class="num" style="text-align:right;">24%</td></tr></table></div></div>`},
+  {label:'Store settings', url:'admin.sarthakarts.com/settings', nav:'Settings', tagline:'The control room — shipping, taxes, payment methods, currencies, consultation types, and who has access.',
+    points:['Both your India and international payment methods are already turned on.','Choose which currencies shoppers can pay in, and which one you think in when setting prices.','Set shipping costs and delivery zones, for both home and abroad.','Add, edit, or remove a type of consultation right here — this is exactly how astrology was added, and how you\'d add a third type later.'],
+    body:`<div style="flex:1; padding:22px 26px; display:flex; gap:20px;"><div style="width:170px; flex-shrink:0;">${['Store profile','Shipping','Tax','Payment methods','Currencies','Consultation types','Access','Social accounts'].map((n,i)=>`<div style="font-size:12px; padding:8px 10px; border-radius:5px; ${i===5?'background:var(--ground-raised); font-weight:600;':'color:var(--ink-muted);'}">${n}</div>`).join('')}</div>
+      <div style="flex:1;"><div class="field-label">Consultation types</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-bottom:8px;"><span style="font-size:13px; font-weight:600;">Vastu placement</span><span style="font-size:11px; color:var(--ink-muted);">20 min · ₹999</span></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-bottom:8px;"><span style="font-size:13px; font-weight:600;">Astrology</span><span style="font-size:11px; color:var(--ink-muted);">30 min · ₹999</span></div>
+        <span class="btn btn-ghost btn-sm">+ Add a consultation type</span></div></div>`},
+  {label:'Social media', url:'admin.sarthakarts.com/social', nav:'Social', tagline:'Show off your Instagram and other social posts right on your website.',
+    points:['Pin your favourite recent posts to appear on your homepage and About page.','No technical setup needed to start — you just choose which posts to show.'],
+    body:`<div style="flex:1; padding:22px 26px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><div style="font-family:var(--serif); font-size:19px;">Social content</div><span class="btn btn-primary btn-sm">+ Pin a post</span></div>
+      <div style="display:flex; gap:10px; margin-bottom:16px;">${[['Instagram','pill-success','Connected'],['Threads','pill-neutral','Not connected'],['X','pill-neutral','Not connected']].map(([n,c,d])=>`<div style="flex:1; border:1px solid var(--line); border-radius:6px; padding:10px 12px;"><div style="font-size:12.5px; font-weight:600;">${n}</div><div style="font-size:10.5px; color:var(--ink-muted); margin-top:3px;">${d}</div></div>`).join('')}</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">${[1,2,3,4].map(()=>`<div style="aspect-ratio:1; background:var(--ground-raised); border-radius:6px; border:1px solid var(--line);"></div>`).join('')}</div></div>`}
+];
+
+const adminNavItems = ['Dashboard','Products','Orders','Returns','Reviews','Consultations','Customers','Content','Analytics','Settings','Social'];
+function adminSidebar(active){
+  return `<div style="width:200px; background:var(--focus-panel); padding:20px 12px; flex-shrink:0;"><div style="font-family:var(--serif); color:var(--focus-text); font-size:15px; padding:0 6px 18px;">Sarthak Arts</div>${adminNavItems.map(n=>`<div class="sidebar-item ${n===active?'active':''}">${n}</div>`).join('')}</div>`;
+}
+
+function renderPage(p, isAdmin, num){
+  return `<div class="page-card">
+    <div class="page-num">Page ${num}</div>
+    <div class="page-name">${p.label}</div>
+    <div class="page-tagline">${p.tagline}</div>
+    <div class="photo-frame">
+      <div class="photo-chrome"><div class="photo-dot"></div><div class="photo-dot"></div><div class="photo-dot"></div><div class="photo-url">${p.url}</div></div>
+      <div class="photo-body">${isAdmin ? `<div style="display:flex; font-family:var(--sans); min-height:340px;">${adminSidebar(p.nav)}${p.body}</div>` : p.html}</div>
+    </div>
+    <div class="whats-here"><div class="whats-here-label">What's on this page</div><ul>${p.points.map(pt=>`<li>${pt}</li>`).join('')}</ul></div>
+  </div>`;
+}
+
+document.getElementById('customer-pages').innerHTML = customerPages.map((p,i)=>renderPage(p,false,i+1)).join('');
+document.getElementById('admin-pages').innerHTML = adminPages.map((p,i)=>renderPage(p,true,i+1)).join('');
+</script>
+</body>
+</html>

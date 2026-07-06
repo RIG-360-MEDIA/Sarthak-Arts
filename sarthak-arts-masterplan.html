@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarthak Arts — Platform Masterplan</title>
+<style>
+  :root{
+    --ground:#F3EAD9; --ground-raised:#EBE0CE; --ground-deep:#E4D6BC;
+    --ink:#2B211A; --ink-muted:#5A4E42; --ink-faint:#8C7C67;
+    --brass:#B8863E; --brass-soft:#D9C39A;
+    --focus-panel:#201B17; --focus-text:#EBD9BE; --focus-muted:#B8A78E;
+    --line:#D9CBAE;
+    --ruby:#7A2E2E; --sapphire:#2E4A6B; --emerald:#2E5B4F; --amethyst:#5B4670; --topaz:#8C6836;
+    --success:#3B6D11; --success-bg:#E4EDD4;
+    --warning:#8A5A0B; --warning-bg:#F5E4C6;
+    --critical:#A3352B; --critical-bg:#F5DCD8;
+    --serif:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    --sans:-apple-system,'Segoe UI',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  .doc{font-family:var(--sans); color:var(--ink); max-width:920px; margin:0 auto; padding:2rem 1.5rem 5rem; line-height:1.6;}
+  .doc h1,.doc h2,.doc h3,.doc h4,.doc p{margin:0;}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+  /* document typography */
+  .cover{border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:32px;}
+  .cover-eyebrow{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--brass); font-weight:600;}
+  .cover-title{font-family:var(--serif); font-size:34px; margin-top:10px; text-wrap:balance;}
+  .cover-meta{font-size:12.5px; color:var(--ink-muted); margin-top:14px; display:flex; flex-direction:column; gap:4px;}
+  .cover-meta b{color:var(--ink); font-weight:600;}
+
+  .toc{background:var(--ground-raised); border-radius:10px; padding:20px 24px; margin-bottom:40px;}
+  .toc-title{font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--brass); font-weight:700; margin-bottom:12px;}
+  .toc-grid{columns:2; column-gap:28px; font-size:12.5px;}
+  .toc a{color:var(--ink-muted); text-decoration:none; display:block; padding:3px 0; break-inside:avoid;}
+  .toc a:hover{color:var(--ink); text-decoration:underline;}
+
+  section.doc-sec{margin:44px 0; scroll-margin-top:20px;}
+  .doc-sec h2{font-family:var(--serif); font-size:24px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:18px;}
+  .doc-sec h3{font-family:var(--serif); font-size:17px; margin:26px 0 10px;}
+  .doc-sec h4{font-size:13px; font-weight:700; margin:16px 0 6px; text-transform:uppercase; letter-spacing:0.5px; color:var(--brass);}
+  .doc-sec p{font-size:14px; color:var(--ink-muted); margin:10px 0;}
+  .doc-sec p strong{color:var(--ink); font-weight:600;}
+  .doc-sec ul,.doc-sec ol{margin:10px 0; padding-left:22px; font-size:14px; color:var(--ink-muted);}
+  .doc-sec li{margin:6px 0;}
+  .doc-sec li strong{color:var(--ink); font-weight:600;}
+  .doc-sec code{background:var(--ground-raised); padding:1px 6px; border-radius:4px; font-size:12.5px; font-family:ui-monospace,monospace; color:var(--ink);}
+  .callout{background:var(--ground-raised); border-left:3px solid var(--brass); border-radius:0 8px 8px 0; padding:14px 18px; margin:16px 0; font-size:14px;}
+  .callout p{color:var(--ink);}
+
+  table.doc-table{width:100%; border-collapse:collapse; font-size:13px; margin:14px 0 20px;}
+  table.doc-table th{text-align:left; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; color:var(--brass); font-weight:700; padding:8px 12px; border-bottom:2px solid var(--ink);}
+  table.doc-table td{padding:10px 12px; border-bottom:1px solid var(--line); color:var(--ink-muted); vertical-align:top;}
+  table.doc-table td:first-child{color:var(--ink); font-weight:600; white-space:nowrap;}
+  table.doc-table tr:hover td{background:rgba(184,134,62,0.04);}
+
+  .overflow-x{overflow-x:auto;}
+
+  /* page/screen entry wrapper (used inside sections 7 and 8) */
+  .page-entry{margin:30px 0 40px; padding-top:26px; border-top:1px solid var(--line);}
+  .page-entry:first-of-type{border-top:none; padding-top:0;}
+  .page-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:6px;}
+  .page-title{font-family:var(--serif); font-size:19px;}
+  .page-route{font-size:11.5px; color:var(--ink-faint); font-family:ui-monospace,monospace;}
+  .page-desc{font-size:13.5px; color:var(--ink-muted); margin-bottom:16px;}
+
+  /* mockup frame + shared UI atoms (same as approved mockup set) */
+  .frame{border-radius:10px; overflow:hidden; border:1px solid var(--line); box-shadow:0 1px 2px rgba(43,33,26,0.08); background:#fff;}
+  .frame-chrome{background:var(--ground-deep); padding:9px 14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--line);}
+  .frame-dot{width:8px; height:8px; border-radius:50%; background:var(--line);}
+  .frame-url{font-family:var(--sans); font-size:11px; color:var(--ink-faint); margin-left:6px; background:var(--ground); padding:3px 10px; border-radius:4px; flex:1; max-width:320px;}
+  .frame-body{background:var(--ground);}
+  .caption{margin-top:14px; padding:14px 16px; background:var(--ground-raised); border-radius:8px; border-left:3px solid var(--brass);}
+  .caption-label{font-size:10.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--brass); font-weight:700; margin-bottom:6px;}
+  .caption p{font-size:13px; line-height:1.6; color:var(--ink-muted); margin:0;}
+  .caption p+p{margin-top:8px;}
+  .caption strong{color:var(--ink); font-weight:600;}
+  .caption code{background:#fff; padding:1px 6px; border-radius:4px; font-size:11.5px; font-family:ui-monospace,monospace;}
+
+  .btn{font-family:var(--sans); font-size:12.5px; font-weight:600; padding:9px 18px; border-radius:5px; border:1px solid var(--ink); background:transparent; color:var(--ink); cursor:default; display:inline-block;}
+  .btn-primary{background:var(--ink); color:var(--ground); border-color:var(--ink);}
+  .btn-brass{background:var(--brass); color:#fff; border-color:var(--brass);}
+  .btn-ghost{border-color:var(--line); color:var(--ink-muted);}
+  .btn-sm{padding:5px 11px; font-size:11.5px;}
+  .pill{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px;}
+  .pill-success{background:var(--success-bg); color:var(--success);}
+  .pill-warning{background:var(--warning-bg); color:var(--warning);}
+  .pill-critical{background:var(--critical-bg); color:var(--critical);}
+  .pill-neutral{background:var(--ground-deep); color:var(--ink-muted);}
+  .pill-dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .tag{font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:var(--ink-faint); font-weight:600;}
+  .num{font-variant-numeric:tabular-nums; font-family:var(--serif);}
+  table.dt{width:100%; border-collapse:collapse; font-size:12.5px;}
+  table.dt th{text-align:left; font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-faint); font-weight:600; padding:9px 12px; border-bottom:1px solid var(--line);}
+  table.dt td{padding:11px 12px; border-bottom:1px solid var(--line); color:var(--ink);}
+  table.dt tr:last-child td{border-bottom:none;}
+  .field-label{font-size:11px; font-weight:600; color:var(--ink-muted); margin-bottom:5px; display:block;}
+  .field-input{width:100%; font-family:var(--sans); font-size:13px; padding:9px 11px; border:1px solid var(--line); border-radius:5px; background:#fff; color:var(--ink);}
+  .sidebar-item{padding:10px 16px; font-size:13px; border-radius:6px; color:var(--focus-muted); display:flex; align-items:center; gap:9px;}
+  .sidebar-item.active{background:rgba(184,134,62,0.16); color:var(--focus-text); font-weight:600;}
+  .metric-card{background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px 16px;}
+  .metric-label{font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.5px;}
+  .metric-value{font-family:var(--serif); font-size:24px; margin-top:6px;}
+  .metric-delta{font-size:11.5px; margin-top:4px; font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="doc">
+  <h2 class="sr-only">Sarthak Arts e-commerce platform masterplan: complete written specification with every customer and admin screen mockup embedded inline, for formal review and approval.</h2>
+
+  <div class="cover">
+    <div class="cover-eyebrow">Platform masterplan · full document</div>
+    <h1 class="cover-title">Sarthak Arts — E-Commerce Platform</h1>
+    <div class="cover-meta">
+      <div><b>Status:</b> Approved design, pending final written review</div>
+      <div><b>Date:</b> 2026-07-03</div>
+      <div><b>Source copy:</b> <code>bhoomi-dhatu-site-copy.md</code> (placeholder brand name "Bhoomi &amp; Dhatu" swapped to Sarthak Arts throughout)</div>
+      <div><b>This document</b> contains the full written specification with every mockup embedded inline — nothing requires a separate link to review.</div>
+    </div>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <div class="toc-grid">
+      <a href="#sec-0">0. What this document is</a>
+      <a href="#sec-1">1. The one governing rule</a>
+      <a href="#sec-2">2. Business facts</a>
+      <a href="#sec-3">3. Architecture &amp; tech stack</a>
+      <a href="#sec-4">4. Data model</a>
+      <a href="#sec-5">5. Design system</a>
+      <a href="#sec-6">6. Site map</a>
+      <a href="#sec-7">7. Customer storefront — pages &amp; mockups</a>
+      <a href="#sec-8">8. Admin &amp; seller panel — screens &amp; mockups</a>
+      <a href="#sec-9">9. Core intelligent systems</a>
+      <a href="#sec-10">10. Payments, auth &amp; security</a>
+      <a href="#sec-11">11. Infrastructure &amp; DevOps</a>
+      <a href="#sec-12">12. Testing &amp; QA strategy</a>
+      <a href="#sec-13">13. Phased roadmap</a>
+      <a href="#sec-14">14. Open items for the owner</a>
+    </div>
+  </nav>
+
+  <section class="doc-sec" id="sec-0">
+    <h2>0. What this document is</h2>
+    <p>A complete, implementation-ready blueprint for the Sarthak Arts e-commerce platform: a premium, single-seller D2C store selling handcrafted Vastu Shastra instruments (copper, brass, silver pieces set with a single gemstone each), selling to both Indian and international customers. It covers architecture, data model, design system, every customer-facing page, every admin/seller screen, the platform's bespoke consultation booking system, the full order/returns/reviews lifecycles, SEO, legal pages, testing strategy, infrastructure, and a phased build roadmap.</p>
+    <p>This document assumes the reader has not seen the brainstorming conversation that produced it — every decision is stated with its reasoning, not just its conclusion. <strong>Every page and screen described in Sections 7 and 8 has its actual visual mockup embedded directly beneath its description</strong> — there is nothing to click through to elsewhere.</p>
+  </section>
+
+  <section class="doc-sec" id="sec-1">
+    <h2>1. The one rule that governs everything</h2>
+    <div class="callout"><p><strong>Nothing is hardcoded. Every layer — frontend, backend, database — is modular, configurable, and evolvable without ever requiring a rebuild or a restart-from-scratch.</strong></p></div>
+    <p>This is not a nice-to-have; it is the primary architectural constraint on this project, stated explicitly by the business owner and treated as a hard gate on every decision in this document. Concretely:</p>
+    <ul>
+      <li>Anything that is a <strong>business decision</strong> (a direction's name, a metal's rate, a role's permissions, a shipping zone, a discount type, a payment gateway) lives as <strong>data in the database</strong>, editable from the admin panel.</li>
+      <li>Anything that is a <strong>structural/technical decision</strong> (how the database is normalized, which framework renders a page) lives in code — but is written so business decisions never leak into it as literals.</li>
+      <li>The test applied to every design choice below: <em>"If this needs to change in six months, does it require a rebuild, or just a configuration/data change?"</em> If the answer is "rebuild," the design was rejected and redone.</li>
+      <li>This governs every table, every screen, every integration described below, and continues to govern the project after launch.</li>
+    </ul>
+  </section>
+
+  <section class="doc-sec" id="sec-2">
+    <h2>2. Business facts this design is built around</h2>
+    <div class="overflow-x"><table class="doc-table">
+      <tr><th>Fact</th><th>Detail</th></tr>
+      <tr><td>Brand</td><td><strong>Sarthak Arts</strong> (domain: sarthakarts.com) — the site copy's placeholder name "Bhoomi &amp; Dhatu" is swapped throughout</td></tr>
+      <tr><td>Business model</td><td>Single-seller D2C — one business, one seller/admin entity. Not a multi-vendor marketplace.</td></tr>
+      <tr><td>Product</td><td><strong>Murtis (deity idols) and Indian Vastu products</strong>, handcrafted in copper/brass/silver. Vastu instruments map to the 8 directions; murtis carry each deity's traditional placement/facing guidance — both lines share the same catalog, composition, placement-card and certificate machinery, with a <code>deities</code> reference table powering murti filtering and guidance</td></tr>
+      <tr><td>Catalog scale</td><td>Medium at launch (~30–100 SKUs), explicitly architected to scale well beyond that without redesign</td></tr>
+      <tr><td>Market at launch</td><td><strong>India and international, both active from day one</strong> — INR for Indian customers, other currencies for international customers, Razorpay and Stripe both live at launch. Specific international countries to start with is an open item (Section 14).</td></tr>
+      <tr><td>Operator</td><td>Non-technical owner runs the business day-to-day — the admin panel must be fully self-service, no code/database knowledge assumed</td></tr>
+      <tr><td>Consultation service</td><td>Custom-built booking system, generalized to support <strong>multiple consultation types</strong> — launches with Vastu placement and astrology, both bookable through the same system. One consultant per type at launch. A third type later is a data operation, not a rebuild.</td></tr>
+      <tr><td>Pricing model</td><td><strong>Fully manual.</strong> The admin/seller sets the price of every product directly, themselves — full control, no automated calculation, no live rate integration of any kind.</td></tr>
+      <tr><td>Content ownership</td><td>Owner edits editorial pages (About, Our Craft, Philosophy, FAQ) themselves via a built-in lightweight CMS — no developer needed for copy changes</td></tr>
+      <tr><td>Social presence</td><td>Instagram/Threads/X activity surfaced on the platform, launching as admin-curated content, upgradeable later to live API sync</td></tr>
+      <tr><td>Checkout access</td><td>Guest checkout allowed — account creation is optional, offered after purchase</td></tr>
+      <tr><td>Client platform</td><td>Fully responsive web only at launch — no native mobile app</td></tr>
+    </table></div>
+  </section>
+
+  <section class="doc-sec" id="sec-3">
+    <h2>3. Architecture &amp; tech stack</h2>
+    <p><strong>Chosen approach: a unified Next.js monolith</strong>, evaluated against two alternatives (separate frontend/backend services, and a headless-commerce engine like Medusa.js) and preferred because:</p>
+    <ul>
+      <li>Three distinct user-facing surfaces (customer storefront, admin panel, consultant portal) need one coherent data model and auth system — a monolith keeps type-safety and auth logic shared, not duplicated across a network boundary.</li>
+      <li>The consultation booking system doesn't map onto any off-the-shelf commerce engine's built-in models — it would be built custom regardless.</li>
+      <li>At this scale (medium catalog, single seller), a separate backend service is meaningfully more operational complexity for no present benefit.</li>
+    </ul>
+    <h3>Stack</h3>
+    <div class="overflow-x"><table class="doc-table">
+      <tr><th>Layer</th><th>Choice</th><th>Why</th></tr>
+      <tr><td>App framework</td><td>Next.js 15, App Router, TypeScript</td><td>SSR/ISR for the SEO-critical storefront, one codebase for all three surfaces via route groups</td></tr>
+      <tr><td>Route structure</td><td><code>(storefront)</code>, <code>(admin)</code>, <code>(consultant)</code> route groups</td><td>Shared types/auth, independent layouts and access rules per group</td></tr>
+      <tr><td>Database</td><td>PostgreSQL (Neon or Supabase)</td><td>Relational integrity for orders/inventory/price history; serverless-friendly, branchable for staging</td></tr>
+      <tr><td>ORM</td><td>Prisma</td><td>Type-safe schema, migrations that stay additive (never destructive)</td></tr>
+      <tr><td>Search</td><td>Postgres full-text search at launch, behind a swappable abstraction</td><td>Sufficient at medium catalog scale; swap-not-rewrite later to Meilisearch/Algolia</td></tr>
+      <tr><td>File storage</td><td>Cloudflare R2 (S3-compatible)</td><td>Product images, certificates, consultant documents; no egress fees</td></tr>
+      <tr><td>PDF generation</td><td><code>@react-pdf/renderer</code></td><td>Powers the certificate of composition (Section 7) and invoices</td></tr>
+      <tr><td>Background jobs</td><td>Vercel Cron</td><td>Abandoned-cart emails, low-stock checks, booking reminders</td></tr>
+      <tr><td>Payments</td><td><strong>Razorpay and Stripe, both active at launch</strong></td><td>Razorpay for India, Stripe for international — gateway chosen automatically by shipping destination</td></tr>
+      <tr><td>Currency</td><td>Multi-currency active at launch</td><td>Shopper sees prices in their own currency; admin sets prices in one base currency</td></tr>
+      <tr><td>Email</td><td>Resend</td><td>Transactional email and newsletter — one vendor for all outbound email</td></tr>
+      <tr><td>SMS/WhatsApp</td><td>MSG91 or Twilio</td><td>OTP login, order status updates</td></tr>
+      <tr><td>Hosting</td><td>Vercel + Neon/Supabase + Cloudflare R2 + Cloudflare DNS/CDN</td><td>Managed, low-ops, scales without infra rework</td></tr>
+      <tr><td>Auth</td><td>Custom session-based auth (bcrypt, HttpOnly cookies)</td><td>Three distinct role shapes are simpler to own directly than to bend a third-party product into</td></tr>
+      <tr><td>Testing</td><td>Vitest (unit/integration), Playwright (E2E)</td><td>See Section 12</td></tr>
+    </table></div>
+    <h4>Applying the modularity rule to this layer</h4>
+    <ul>
+      <li>Directions, metals, gemstones, categories, purposes → reference tables, not enums in code.</li>
+      <li>RBAC roles/permissions → tables with a join table, not a switch statement.</li>
+      <li>Payment gateway routing, currencies, shipping zones, tax rules → config records evaluated by a generic rules engine. Adding a third gateway or a new currency later is a data operation.</li>
+      <li>Notification triggers → an event-rule table (event type → template → channel).</li>
+    </ul>
+  </section>
+
+  <section class="doc-sec" id="sec-4">
+    <h2>4. Data model</h2>
+    <h3>4.1 Configuration / reference tables (admin-editable, never hardcoded)</h3>
+    <div class="overflow-x"><table class="doc-table">
+      <tr><th>Table</th><th>Purpose</th></tr>
+      <tr><td>directions</td><td>The 8 Vastu zones — extensible, count not assumed in code</td></tr>
+      <tr><td>metals</td><td>Copper/brass/silver/gold-accent etc.</td></tr>
+      <tr><td>gemstones</td><td>Ruby, sapphire, quartz, amethyst... each with an accent_hex driving dynamic UI color</td></tr>
+      <tr><td>categories</td><td>Hierarchical — Murtis (with deity subcategories) and Vastu instruments (kalash / yantra / pyramid / panel / chime)</td></tr>
+      <tr><td>deities</td><td>For murti products — Ganesha, Lakshmi, Shiva, Hanuman... each with traditional placement/facing guidance text</td></tr>
+      <tr><td>purposes</td><td>Wealth / Health / Relationships / Career / Peace</td></tr>
+      <tr><td>roles / permissions / role_permissions</td><td>RBAC</td></tr>
+      <tr><td>order_statuses</td><td>Confirmed → Packed → Shipped → Delivered, extensible</td></tr>
+      <tr><td>return_reasons</td><td>Reasons a customer can select when requesting a return</td></tr>
+      <tr><td>currencies / payment_gateways</td><td>INR + international currencies, and Razorpay + Stripe, all active at launch</td></tr>
+      <tr><td>shipping_zones / shipping_rates / tax_rules</td><td>Structured rate/tax tables, not literals</td></tr>
+      <tr><td>audit_questions / audit_answer_rules</td><td>Powers the home audit tool (Section 7)</td></tr>
+    </table></div>
+    <h3>4.2 Core commerce entities</h3>
+    <ul>
+      <li><strong>products</strong> — name, slug, description, category_id, status, SEO fields</li>
+      <li><strong>product_variants</strong> — actual sellable SKUs; every product has at least one default variant</li>
+      <li><strong>product_composition</strong> — the heart of the honest-materials copy and the certificate generator: metal, weight, gemstone per line item. Supports any number of line items. Purely descriptive — has no connection to pricing.</li>
+      <li><strong>product_price_history</strong> — a simple log of the admin's own price changes (old price, new price, changed_by, changed_at) — kept for the admin's own reference, not tied to any automated calculation</li>
+      <li><strong>product_directions</strong> — join table (a product can map to more than one zone)</li>
+      <li><strong>product_images</strong> — ordered, with required alt text</li>
+      <li><strong>carts / cart_items</strong> — persisted per user or guest session</li>
+      <li><strong>orders / order_items / order_status_history</strong> — status from <code>order_statuses</code>, never hardcoded; orders record which currency was actually paid</li>
+      <li><strong>order_certificates</strong> — generated PDF reference, snapshotted composition data</li>
+      <li><strong>return_requests</strong> — order_id, reason, status, timestamps</li>
+      <li><strong>addresses, payments, reviews, coupons, gift_options</strong> — standard commerce entities, each structured for extensibility (e.g. coupon rules as structured JSON so new discount shapes need no schema change; addresses support international formats)</li>
+    </ul>
+    <h3>4.3 Consultation booking entities</h3>
+    <p>Built generically around <strong>consultation types</strong>, not hardcoded to Vastu — this is what lets astrology slot in as a second type today, and any future type slot in the same way.</p>
+    <ul>
+      <li><strong>consultation_types</strong> — Vastu Placement and Astrology at launch; each has its own duration, fee, and whether it credits toward an order. A reference table, editable from Settings.</li>
+      <li><strong>consultants</strong> — linked to a user account holding the Consultant role. One row per consultant, schema supports N.</li>
+      <li><strong>consultant_consultation_types</strong> — join table: which type(s) a consultant offers — one, or both.</li>
+      <li><strong>consultant_availability</strong> — recurring + one-off slots, owned by the consultant directly. One calendar per consultant, regardless of how many types they offer.</li>
+      <li><strong>bookings</strong> — consultant, consultation_type, customer, slot, status, video-link, linked order (the order-credit rule is per-type, via <code>consultation_types.credits_toward_order</code>)</li>
+    </ul>
+    <h3>4.4–4.6 Content, social, identity</h3>
+    <ul>
+      <li><strong>content_blocks</strong> — powers every owner-editable editorial and legal page</li>
+      <li><strong>social_accounts / social_posts</strong> — <code>source</code> field (manual/synced) allows admin-curated launch, live-sync upgrade later</li>
+      <li><strong>users / user_roles</strong> — one person can hold multiple roles (e.g. Admin + Consultant); guest checkout links a lightweight guest record that upgrades on signup</li>
+      <li>No <code>seller_id</code>/tenant isolation anywhere — single-seller; adding it later is an additive migration, not a rebuild</li>
+    </ul>
+  </section>
+
+  <section class="doc-sec" id="sec-5">
+    <h2>5. Design system</h2>
+    <p>The visual language fuses three structural concepts researched and workshopped during design review — not a flat palette, but <strong>four layers, each governing a different part of the system</strong>, so the pieces compose instead of competing.</p>
+    <h3>5.1 The four layers</h3>
+    <ul>
+      <li><strong>Foundation</strong> — warm parchment ground, ink-brown text, brass linework. Ledger-honest, not stark.</li>
+      <li><strong>Space</strong> (Brahmasthan principle — a home's sacred center stays open, not filled) — every page protects one dominant focal object and a deliberately empty center.</li>
+      <li><strong>Navigation</strong> (Mandala Interface) — the 8-direction Vastu Purusha Mandala wheel is the literal, functional "Shop by Direction" filter, rendered on a rare dark charcoal panel reserved <em>only</em> for this and the hero glyph.</li>
+      <li><strong>Motif + dynamic color</strong> (Smith's Hand) — a recurring design → shape → set → certify process line-art motif; accent color is never arbitrary, always the real gemstone/direction color resolved from data.</li>
+    </ul>
+    <h3>5.2 Tokens</h3>
+    <div class="overflow-x"><table class="doc-table">
+      <tr><th>Token</th><th>Value</th><th>Use</th></tr>
+      <tr><td>--ground</td><td>#F3EAD9</td><td>primary background</td></tr>
+      <tr><td>--ink</td><td>#2B211A</td><td>primary text, fine linework</td></tr>
+      <tr><td>--brass</td><td>#B8863E</td><td>structural accent — dividers, numerals, wheel linework</td></tr>
+      <tr><td>--focus-panel</td><td>#201B17</td><td>the rare dark ground — mandala nav + hero glyph only</td></tr>
+      <tr><td>--accent-dynamic</td><td>resolved per-record</td><td>gemstone/direction color, read from data, never hardcoded</td></tr>
+    </table></div>
+    <h3>5.3 Typography &amp; component rules</h3>
+    <ul>
+      <li>Display serif for headlines (production candidate: Fraunces); humanist sans for UI/body (Inter); tabular ledger numerals for weights/prices/dates.</li>
+      <li>The mandala wheel is one reusable component, wedge count read from live <code>directions</code> data (8 today, not hardcoded).</li>
+      <li>No generic "spiritual site" stock iconography — only the mandala wheel and the smith's-process marks recur.</li>
+      <li>WCAG 2.1 AA baseline; dynamic accent colors are contrast-checked programmatically before saving.</li>
+      <li>Mobile-first storefront; desktop-first admin (data-dense), usable on tablet.</li>
+    </ul>
+  </section>
+
+  <section class="doc-sec" id="sec-6">
+    <h2>6. Site map — every route</h2>
+    <h3>6.1 Customer storefront</h3>
+    <div class="overflow-x"><table class="doc-table">
+      <tr><th>Route</th><th>Page</th></tr>
+      <tr><td>/</td><td>Homepage</td></tr>
+      <tr><td>/direction</td><td>Shop by Direction (interactive mandala wheel)</td></tr>
+      <tr><td>/collection</td><td>Full collection (PLP), filterable</td></tr>
+      <tr><td>/collection/[slug]</td><td>Product detail (PDP)</td></tr>
+      <tr><td>/home-audit</td><td>The 2-minute home audit tool</td></tr>
+      <tr><td>/cart</td><td>Cart</td></tr>
+      <tr><td>/checkout</td><td>Checkout (guest or logged-in)</td></tr>
+      <tr><td>/account, /account/orders, /account/orders/[id]/return</td><td>Account overview, orders + tracking + certificates, return request</td></tr>
+      <tr><td>/account/wishlist, /account/addresses, /account/wallet</td><td>Standard account management</td></tr>
+      <tr><td>/consultation</td><td>Book a consultation — choose Vastu placement or astrology, then book a slot</td></tr>
+      <tr><td>/our-craft</td><td>Our Craft</td></tr>
+      <tr><td>/vastu-shastra</td><td>Vastu philosophy + FAQ</td></tr>
+      <tr><td>/about</td><td>About</td></tr>
+      <tr><td>/legal/terms, /legal/privacy, /shipping-returns</td><td>Legal &amp; policy pages</td></tr>
+    </table></div>
+    <h3>6.2 Admin &amp; seller panel</h3>
+    <div class="overflow-x"><table class="doc-table">
+      <tr><th>Route</th><th>Screen</th></tr>
+      <tr><td>/admin</td><td>Dashboard</td></tr>
+      <tr><td>/admin/products, /admin/products/[id]</td><td>Product list, add/edit (price is entered directly here — Section 9)</td></tr>
+      <tr><td>/admin/orders, /admin/orders/[id]</td><td>Orders list, order detail</td></tr>
+      <tr><td>/admin/returns</td><td>Return requests queue</td></tr>
+      <tr><td>/admin/reviews</td><td>Review moderation</td></tr>
+      <tr><td>/admin/consultations</td><td>Consultation calendar, across both types</td></tr>
+      <tr><td>/admin/content</td><td>Content/CMS editor (incl. legal pages)</td></tr>
+      <tr><td>/admin/customers</td><td>Customer list</td></tr>
+      <tr><td>/admin/analytics</td><td>Analytics &amp; reports</td></tr>
+      <tr><td>/admin/settings</td><td>Store profile, shipping, tax, gateways, roles, social</td></tr>
+      <tr><td>/admin/social</td><td>Social content curation</td></tr>
+    </table></div>
+  </section>
+
+  <section class="doc-sec" id="sec-7">
+    <h2>7. Customer storefront — every page, with mockup</h2>
+    <p>Every page below shows its actual rendered mockup directly beneath its description, in the approved design system.</p>
+    <div id="customer-pages"></div>
+
+    <h3>7.1 The certificate of composition — how it's actually produced</h3>
+    <p>Every order ships with a certificate stating exact metal weight and gemstone. Mechanism: at order confirmation, the system snapshots that product's <em>current</em> <code>product_composition</code> into <code>order_certificates</code> (so a later product edit never retroactively rewrites an issued certificate) → a PDF is generated server-side, styled with the same design tokens as the site → stored in R2 → attached to the confirmation email and re-downloadable from Account → Orders. Fully automatic, no manual admin step.</p>
+
+    <h3>7.2 Returns — the customer-facing side</h3>
+    <p>From Account → Orders, within the configured return window, the customer opens the return flow, selects a reason from the admin-editable <code>return_reasons</code> list, adds a note, and submits — creating a <code>return_requests</code> row. Status updates flow through <em>Requested → Approved → Refunded</em> (or Rejected, with a visible reason). Engraved/personalized pieces are excluded automatically via a <code>products.is_final_sale</code> flag.</p>
+
+    <h3>7.3 The 2-minute home audit — what it actually is</h3>
+    <p>Referenced in the homepage hero copy but never specified until this document. Design: a short guided quiz at <code>/home-audit</code> — plain-language questions (entrance direction, kitchen direction, whether the layout is standard or irregular), each question and answer-mapping stored in <code>audit_questions</code>/<code>audit_answer_rules</code> so the quiz itself is fully admin-editable, not a hardcoded wizard. Irregular-layout answers surface the consultation booking CTA, reusing the copy's own existing "Do I need a consultation?" logic. <strong>Needs owner confirmation</strong> on the exact question set (Section 14).</p>
+
+    <h3>7.4 Guest checkout</h3>
+    <p>Checkout allows completing a purchase without an account. After a successful guest order, the confirmation page offers one-click account creation from the details already entered. Recommended as a premium-checkout default, not explicitly requested — flagged for confirmation in Section 14.</p>
+
+    <h3>7.5 SEO &amp; discoverability</h3>
+    <p>Dynamic meta tags per product (falling back to the copy doc's own template pattern when left blank); JSON-LD structured data (Product, Review/AggregateRating, BreadcrumbList, FAQPage); auto-generated XML sitemap; canonical URLs on filtered views; required alt text on every product image; Core Web Vitals addressed structurally via the SSR/ISR architecture already chosen.</p>
+
+    <h3>7.6 Legal &amp; policy pages</h3>
+    <p>Terms of Service, Privacy Policy, and Shipping &amp; Returns — referenced by the footer nav but undesigned until now. All three are <code>content_blocks</code>-backed, owner-editable from the same CMS screen as every other editorial page.</p>
+
+    <h3>7.7 Gifting — minimal launch scope</h3>
+    <p>The footer lists "Gifting" with no further detail in the source copy. Minimal Phase 2 scope: an <code>is_gift</code> flag + gift note field at checkout. A full gift-registry/gift-card system is explicitly out of scope unless the owner asks for more (Section 14).</p>
+  </section>
+
+  <section class="doc-sec" id="sec-8">
+    <h2>8. Admin &amp; seller panel — every screen, every control, with mockup</h2>
+    <p>Every screen below shows its actual rendered mockup directly beneath its description of exactly what the admin/seller can do there.</p>
+    <div id="admin-pages"></div>
+  </section>
+
+  <section class="doc-sec" id="sec-9">
+    <h2>9. Core intelligent systems — full working</h2>
+    <h3>9.1 Pricing — fully manual, by design</h3>
+    <p>There is no pricing engine, no live metal-rate feed, and no automated price computation anywhere in this platform — a deliberate business decision, not a deferred feature.</p>
+    <ol>
+      <li>The admin fills in a plain <code>base_price</code> field directly, in their chosen base currency, when creating or editing a product.</li>
+      <li><code>product_composition</code> (the metal/gemstone breakdown) is entered separately and used only for the material-honesty promise and the certificate — it has no computational link to the price field.</li>
+      <li><strong>International pricing:</strong> the storefront converts and displays the admin's entered price into the shopper's local currency at the current exchange rate — a display step, not a pricing decision. The admin can also set an explicit override price per currency for a cleaner number (e.g. a flat $199 instead of a converted $198.73).</li>
+      <li>Every price change is logged to <code>product_price_history</code> for the admin's own reference — not shown to customers.</li>
+      <li><strong>There's nothing to keep confidential here beyond ordinary business practice</strong> — with no formula, rate feed, or suggestion mechanism, there's no computed cost/margin data anywhere in the system to leak.</li>
+    </ol>
+    <h3>9.2 The consultation booking system, end to end</h3>
+    <ol>
+      <li>Customer opens <code>/consultation</code> and first picks a type — Vastu placement or astrology — read from <code>consultation_types</code>, so a third type appears here automatically once added.</li>
+      <li>Within that type: if it has one consultant, it skips straight to date/slot selection; if several, a picker step appears.</li>
+      <li>Available slots computed from that consultant's availability minus already-booked slots.</li>
+      <li>Customer pays that type's consultation fee via Razorpay or Stripe depending on their location; a <code>bookings</code> row is created with the chosen type.</li>
+      <li>The consultant (own login) sees and manages the booking and their availability directly — one calendar, even if they offer both types.</li>
+      <li>A video/call link is sent via email/SMS at booking time.</li>
+      <li>On completion: <strong>if</strong> that type has the order-credit rule enabled, the customer's account carries a credit flag — an order over ₹15,000 (or the equivalent) applies the fee as a discount, enforced by <code>bookings.linked_order</code>. Whether astrology should carry the same credit/fee/duration as Vastu is a business decision (Section 14).</li>
+      <li><strong>The reverse direction also works — the big-order gift.</strong> Any order crossing the configured threshold (₹15,000 at launch) automatically grants that customer one free Vastu placement consultation (a <code>consultation_entitlements</code> row), exactly as the announcement bar promises — bookable through the normal flow at ₹0. Threshold, granted type, and on/off are admin settings.</li>
+    </ol>
+    <h3>9.3 Notifications — full trigger list</h3>
+    <div class="overflow-x"><table class="doc-table">
+      <tr><th>Trigger</th><th>Channel(s)</th><th>Recipient</th></tr>
+      <tr><td>Order confirmed / packed-shipped / delivered / cancelled</td><td>Email + SMS</td><td>Customer</td></tr>
+      <tr><td>Abandoned cart (24h idle)</td><td>Email</td><td>Customer</td></tr>
+      <tr><td>Back-in-stock on wishlisted item</td><td>Email</td><td>Customer</td></tr>
+      <tr><td>Return submitted / approved / rejected / refunded</td><td>Email</td><td>Customer (+ Admin on submit)</td></tr>
+      <tr><td>New order / low stock / new review</td><td>In-admin alert (+ email for orders)</td><td>Admin</td></tr>
+      <tr><td>Booking confirmed / reminder</td><td>Email + SMS</td><td>Customer + Consultant</td></tr>
+      <tr><td>Newsletter monthly send</td><td>Email</td><td>Opted-in subscribers</td></tr>
+    </table></div>
+    <p>Every row above is data in an event-rule table (event → template → channel), not code wired into business logic — adding a trigger is a data operation.</p>
+    <h3>9.4 Search, end to end</h3>
+    <p>Product search and direction/category/purpose filters query the same underlying tables via Postgres full-text search at launch, behind a small abstraction so a future swap to Meilisearch/Algolia is a backend change, not a rewrite of every calling page.</p>
+    <h3>9.5 The core commerce data flow — browse to fulfillment</h3>
+    <ol>
+      <li><strong>Browse</strong> — read-only, from products/composition/reference tables.</li>
+      <li><strong>Add to cart</strong> — a cart_items row, linked to user or guest session.</li>
+      <li><strong>Checkout begins</strong> — shipping cost and tax resolved from config tables by address zone, not hardcoded math; coupons applied if entered.</li>
+      <li><strong>Payment</strong> — gateway chosen automatically by destination (Razorpay for India, Stripe for international). On success: <code>orders</code>/<code>order_items</code> created from server-held cart state (never client-submitted, preventing price tampering), status logged Confirmed, certificate generated, notifications fire, cart cleared. <strong>No internal payout engine needed</strong> — single-seller means both gateways settle directly to the business's own bank account(s).</li>
+      <li><strong>Fulfillment</strong> — admin updates status Packed → Shipped (tracking captured) → Delivered.</li>
+      <li><strong>Post-delivery</strong> — return window opens; customer may review or request a return within it.</li>
+    </ol>
+    <h3>9.6 Returns &amp; refunds, end to end</h3>
+    <p>Customer submits a request (excluded automatically for final-sale items) → admin approves/rejects on the returns queue, with a visible reason either way → if approved, pickup/drop-off arranged → on confirmed receipt, refund triggered via the original gateway's refund API (Razorpay or Stripe, whichever was used) back to the original payment method, in the original currency → order history reflects the full journey, one continuous auditable record.</p>
+    <h3>9.7 Reviews &amp; moderation, end to end</h3>
+    <p>A review can only be submitted against a Delivered order — <code>verified_purchase</code> is set automatically, there is no unverified path. Defaults to published (configurable to require approval). Admin can hide any review or reply, both from the review moderation screen and surfaced as a dashboard alert when new and unreplied.</p>
+  </section>
+
+  <section class="doc-sec" id="sec-10">
+    <h2>10. Payments, auth &amp; security</h2>
+    <ul>
+      <li><strong>Payments:</strong> Razorpay and Stripe both live at launch — Razorpay for India, Stripe for international. Gateway selection is a config lookup by destination, not a hardcoded conditional.</li>
+      <li><strong>Auth:</strong> custom session-based; customers get social login + OTP + guest checkout; staff get email+password with mandatory MFA. HttpOnly, secure cookies with refresh-token rotation.</li>
+      <li><strong>RBAC:</strong> roles/permissions tables checked via route-group middleware; a user can hold multiple roles at once.</li>
+      <li><strong>Data protection:</strong> TLS everywhere, encryption at rest, parameterized queries (no raw SQL interpolation), CSRF protection, rate limiting on auth endpoints.</li>
+      <li><strong>Audit trail:</strong> price history, order-status, return, and content-edit history are all permanent, append-only records.</li>
+      <li><strong>Order integrity:</strong> orders are always built server-side from database state at payment confirmation, never trusting client-submitted prices.</li>
+    </ul>
+    <div class="callout"><p><strong>No pricing engine, so nothing to protect there:</strong> since the admin sets every price manually and there's no formula, rate feed, or suggestion mechanism anywhere in the system, there's no computed pricing/cost data that could leak to a customer even by accident. What customers see is exactly what any store shows — the material composition (metal type, exact weight, gemstone, the "full material transparency" trust feature) and the final selling price. The admin's own reasoning for a price lives entirely outside the system, the same as it would for any manually-priced store.</p></div>
+  </section>
+
+  <section class="doc-sec" id="sec-11">
+    <h2>11. Infrastructure &amp; DevOps</h2>
+    <ul>
+      <li><strong>Hosting:</strong> Vercel (auto-scaling, edge-cached storefront via ISR).</li>
+      <li><strong>Database:</strong> Neon/Supabase Postgres, branch-per-environment so schema changes are tested before touching live data.</li>
+      <li><strong>Storage:</strong> Cloudflare R2 + CDN.</li>
+      <li><strong>CI/CD:</strong> lint → typecheck → test → deploy, staging as a mandatory gate for schema-affecting changes.</li>
+      <li><strong>Monitoring:</strong> error tracking + uptime checks from day one, given the owner has no engineering team to notice an outage manually.</li>
+      <li><strong>Backups:</strong> automated daily Postgres backups, retained on a rolling window.</li>
+    </ul>
+  </section>
+
+  <section class="doc-sec" id="sec-12">
+    <h2>12. Testing &amp; QA strategy</h2>
+    <div class="overflow-x"><table class="doc-table">
+      <tr><th>Layer</th><th>Tool</th><th>Covers</th></tr>
+      <tr><td>Unit tests</td><td>Vitest</td><td>Currency conversion/display logic, coupon/discount logic, tax/shipping resolution, notification-rule matching</td></tr>
+      <tr><td>Integration tests</td><td>Vitest + test DB</td><td>Order creation from cart state, payment webhooks (both gateways), return/refund transitions, RBAC checks</td></tr>
+      <tr><td>End-to-end</td><td>Playwright</td><td>Full checkout (both gateways, incl. guest), admin product creation with manual pricing, consultation booking</td></tr>
+      <tr><td>Manual QA gate</td><td>Staging environment</td><td>Every schema-affecting change verified before production — non-negotiable given the owner can't self-recover from a bad migration</td></tr>
+    </table></div>
+  </section>
+
+  <section class="doc-sec" id="sec-13">
+    <h2>13. Phased roadmap</h2>
+    <p>Structured to be timeline-agnostic — each phase is a complete, shippable state, not a partial one. Every phase boundary was checked against the modularity rule: none require a rebuild of a prior phase.</p>
+    <h3>Phase 1 — MVP</h3>
+    <ul>
+      <li>Storefront core (homepage, direction wheel, PLP, PDP, cart, checkout with both gateways + guest, account/orders), certificate generation, consultation booking for both launch types (Vastu placement, astrology).</li>
+      <li>Admin: dashboard, products with manual price entry, orders, basic settings including currency/gateway configuration.</li>
+      <li>Content pages shipped with real copy; CMS editing deferred to Phase 2.</li>
+      <li>Core notifications, SEO foundation, unit + E2E coverage for checkout (both gateways) and order logic.</li>
+    </ul>
+    <h3>Phase 2 — Core differentiators</h3>
+    <ul>
+      <li>CMS editor for editorial + legal content.</li>
+      <li>Returns/refunds workflow (both gateways); review submission + moderation; the home audit tool.</li>
+      <li>Bulk product tooling; analytics incl. direction-wise and market-wise (India vs. international) sales; social content module; gifting (minimal scope).</li>
+      <li>Full notification set; newsletter integration; per-currency price overrides if live conversion isn't precise enough.</li>
+    </ul>
+    <h3>Phase 3 — Further expansion</h3>
+    <ul>
+      <li>Additional international markets/currencies beyond the initial launch set, as demand shows up.</li>
+      <li>A second consultant for either type, or a third consultation type entirely; live social API sync; search backend swap if scale warrants; granular RBAC roles; native app only if usage data justifies it.</li>
+    </ul>
+  </section>
+
+  <section class="doc-sec" id="sec-14">
+    <h2>14. Open items for the business owner to confirm</h2>
+    <p>Real business decisions intentionally left as data/config rather than guessed at, plus decisions made provisionally during design review that deserve an explicit yes/no:</p>
+    <ol>
+      <li><strong>Which specific international markets/currencies to support at launch</strong> — e.g. US/UK/UAE as a starting set, or a different list.</li>
+      <li>Real shipping partner(s) for both domestic and international — needed for label generation and return pickups.</li>
+      <li>Return/refund policy specifics: window length, qualifying conditions, and whether it differs internationally.</li>
+      <li>Real consultation fee for Vastu placement and for astrology (can differ), whether either differs internationally, who the astrology consultant is (new person, or the Vastu consultant offering a second service), astrology's duration if not the same 20 minutes, and whether astrology should credit toward a first order the way Vastu placement does.</li>
+      <li>The exact home-audit question set and scoring logic — drafted consistent with existing copy, needs review by whoever owns the Vastu logic.</li>
+      <li>Confirm guest checkout is wanted — assumed as best practice, not explicitly requested.</li>
+      <li>Confirm gifting's minimal scope is sufficient, or a fuller feature is wanted.</li>
+      <li>Who drafts the actual legal copy for Terms of Service and Privacy Policy, with international privacy expectations in mind.</li>
+      <li>Whether per-currency price overrides are wanted from day one, or live conversion display is fine to start.</li>
+    </ol>
+    <p>None of these block the design or implementation plan — they're inputs the system is built to accept as configuration, per the modularity rule.</p>
+  </section>
+</div>
+
+<script>
+function mandalaSvg(size, litWedge, dark){
+  const dirs = ['NE','N','NW','W','SW','S','SE','E'];
+  let wedges = '';
+  const cx=size/2, cy=size/2, r=size*0.46;
+  for(let i=0;i<8;i++){
+    const a0 = -90 + i*45, a1 = a0+45;
+    const x0 = cx + r*Math.cos(a0*Math.PI/180), y0 = cy + r*Math.sin(a0*Math.PI/180);
+    const x1 = cx + r*Math.cos(a1*Math.PI/180), y1 = cy + r*Math.sin(a1*Math.PI/180);
+    const isLit = dirs[i]===litWedge;
+    wedges += `<path d="M${cx},${cy} L${x0},${y0} A${r},${r} 0 0,1 ${x1},${y1} Z" fill="${isLit?'#7A2E2E':(dark?'#3A3632':'#EBE0CE')}" opacity="${isLit?0.75:(dark?0.5:0.6)}" stroke="${dark?'#4A443C':'#D9CBAE'}" stroke-width="0.5"/>`;
+  }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${cx}" cy="${cy}" r="${r+6}" fill="none" stroke="#B8863E" stroke-width="0.75"/>
+    ${wedges}
+    <circle cx="${cx}" cy="${cy}" r="${size*0.045}" fill="${dark?'#F3EAD9':'#2B211A'}"/>
+  </svg>`;
+}
+
+const customerPages = [
+  {id:'home', label:'Homepage', url:'sarthakarts.com', caption:`<p><strong>Purpose:</strong> establish the brand's central claim and route visitors into direction-first or audit-first browsing within one screen.</p><p>The mandala glyph in the hero is the only decorative use of the dark focus-panel outside the navigation page itself. Direction preview uses each zone's elemental accent color, pulled from the <code>directions</code> table, not hardcoded.</p>`,
+    html:`<div style="font-family:var(--sans);">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 28px; border-bottom:1px solid var(--line);">
+        <div style="font-family:var(--serif); font-size:17px;">Sarthak Arts</div>
+        <div style="display:flex; gap:22px; font-size:12.5px; color:var(--ink-muted);"><span>The Collection</span><span>Shop by Direction</span><span>Our Craft</span><span>Book a Consultation</span><span>About</span></div>
+        <div style="font-size:12.5px; color:var(--ink-muted);">Cart (0)</div>
+      </div>
+      <div style="background:var(--ground-deep); text-align:center; font-size:11px; padding:6px; color:var(--ink-muted);">Handcrafted in copper, brass and silver — nothing cast from a mould twice.</div>
+      <div style="display:flex; gap:36px; align-items:center; padding:44px 28px;">
+        <div style="flex:1;">
+          <div class="tag" style="color:var(--brass);">Dikchakra-mapped instruments</div>
+          <h1 style="font-family:var(--serif); font-size:32px; line-height:1.25; margin:12px 0;">Metal and stone, placed the way your home was meant to hold them.</h1>
+          <p style="font-size:13.5px; color:var(--ink-muted); line-height:1.7; max-width:46ch;">Each piece is cast in copper, brass or silver and set with a single gemstone, sized and positioned according to classical Vastu Shastra.</p>
+          <div style="margin-top:20px; display:flex; gap:12px;"><span class="btn btn-primary">View the collection</span><span class="btn btn-ghost">Take the 2-minute home audit →</span></div>
+        </div>
+        <div style="width:230px; height:230px; background:var(--focus-panel); border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${mandalaSvg(180,'NE',true)}</div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+        ${['Handworked, not moulded','Direction-correct by design','Full material transparency','Guided placement'].map(t=>`<div style="background:var(--ground); padding:20px 18px;"><div style="font-family:var(--serif); font-size:14px; margin-bottom:6px;">${t}</div><div style="font-size:11.5px; color:var(--ink-muted); line-height:1.5;">Every listing states the exact composition.</div></div>`).join('')}
+      </div>
+      <div style="padding:32px 28px;">
+        <div style="font-family:var(--serif); font-size:19px; margin-bottom:14px;">Shop by direction</div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
+          ${[['Northeast','var(--sapphire)','Clarity, spiritual grounding'],['North','var(--topaz)','Wealth, career flow'],['Southwest','var(--emerald)','Stability, relationships'],['Southeast','var(--ruby)','Finance, energy, the kitchen']].map(([n,c,g])=>`<div style="border:1px solid var(--line); border-radius:6px; padding:14px; border-top:3px solid ${c};"><div style="font-family:var(--serif); font-size:14px;">${n}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:4px;">${g}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>`},
+  {id:'direction', label:'Shop by Direction', url:'sarthakarts.com/direction', caption:`<p><strong>Purpose:</strong> the mandala wheel is not a picture of a filter — it <em>is</em> the filter. Hover previews a zone; click filters the grid in place.</p><p>Wedge count renders from active <code>directions</code> rows (8 today), not hardcoded.</p>`,
+    html:`<div style="font-family:var(--sans);">
+      <div style="background:var(--focus-panel); padding:36px 28px; display:flex; gap:32px; align-items:center;">
+        ${mandalaSvg(220,'SE',true)}
+        <div style="color:var(--focus-text);">
+          <div class="tag" style="color:var(--brass);">Southeast · Agneya · Fire</div>
+          <h2 style="font-family:var(--serif); font-size:24px; margin:8px 0;">Fire and finance share a corner. Handle both with care.</h2>
+          <p style="font-size:12.5px; color:var(--focus-muted); max-width:44ch; line-height:1.6;">Vastu links this zone to finance, energy and the kitchen.</p>
+          <div style="display:flex; gap:6px; margin-top:14px;">${['NE','N','NW','W','SW','S','SE','E'].map(d=>`<span class="pill" style="${d==='SE'?'background:rgba(184,134,62,0.25);color:var(--focus-text);':'background:rgba(255,255,255,0.06);color:var(--focus-muted);'}">${d}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div style="padding:26px 28px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px;">
+        ${['Copper-Brass Wind Chime','Brass Ashtadhatu Pyramid','Copper Vastu Kalash'].map(n=>`<div style="border:1px solid var(--line); border-radius:8px; overflow:hidden;"><div style="height:110px; background:var(--ground-raised);"></div><div style="padding:12px 14px;"><div style="font-family:var(--serif); font-size:13.5px;">${n}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:3px;">Southeast · Agneya</div></div></div>`).join('')}
+      </div>
+    </div>`},
+  {id:'plp', label:'Collection (PLP)', url:'sarthakarts.com/collection', caption:`<p><strong>Purpose:</strong> browse-and-narrow. Filter rail (direction/metal/purpose/price) reads from the same reference tables powering the direction wheel.</p>`,
+    html:`<div style="font-family:var(--sans); padding:24px 28px;">
+      <div style="font-family:var(--serif); font-size:20px; margin-bottom:4px;">The collection</div>
+      <p style="font-size:12px; color:var(--ink-muted); max-width:58ch; line-height:1.6; margin-bottom:20px;">Every piece lists the metal, exact weight, and single gemstone. Prices adjust with material cost.</p>
+      <div style="display:flex; gap:24px;">
+        <div style="width:170px; flex-shrink:0;">
+          <div class="field-label">Direction</div>${['Northeast','North','Southwest','Southeast'].map(d=>`<div style="font-size:12px; color:var(--ink-muted); padding:5px 0;">☐ ${d}</div>`).join('')}
+          <div class="field-label" style="margin-top:16px;">Metal</div>${['Copper','Brass','Silver','Gold accent'].map(d=>`<div style="font-size:12px; color:var(--ink-muted); padding:5px 0;">☐ ${d}</div>`).join('')}
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex; justify-content:flex-end; margin-bottom:12px;"><span class="pill pill-neutral">Sort: Most placed</span></div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+            ${[['Copper Vastu Kalash','₹18,400','Northeast'],['Brass Ashtadhatu Pyramid','₹24,900','Center'],['Silver Sri Yantra Plate','₹31,200','North'],['Gold-Accent Om Wall Panel','₹42,600','East'],['Copper-Brass Wind Chime','₹9,800','Northwest'],['Silver Sri Yantra Plate — Small','₹19,500','North']].map(([n,p,d])=>`<div style="border:1px solid var(--line); border-radius:8px; overflow:hidden;"><div style="height:130px; background:var(--ground-raised);"></div><div style="padding:12px 14px;"><div style="font-family:var(--serif); font-size:13px;">${n}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:3px;">${d}</div><div class="num" style="font-size:13px; margin-top:6px;">${p}</div></div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`},
+  {id:'pdp', label:'Product page', url:'sarthakarts.com/collection/silver-sri-yantra-plate', caption:`<p><strong>Purpose:</strong> demonstrates the dynamic accent system live — this piece's bindu stone is a ruby, so ruby drives every accent on the page. A sapphire-set piece renders this same layout in blue, from data.</p><p>Composition and "included" boxes are ledger-styled (tabular numerals).</p>`,
+    html:`<div style="font-family:var(--sans); padding:26px 28px; display:flex; gap:36px;">
+      <div style="flex:1;"><div style="height:340px; background:var(--ground-raised); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); font-size:12px;">Product photography</div>
+        <div style="display:flex; gap:8px; margin-top:8px;">${[1,2,3,4].map(()=>`<div style="width:52px; height:52px; background:var(--ground-raised); border-radius:5px; border:1px solid var(--line);"></div>`).join('')}</div></div>
+      <div style="flex:1;">
+        <div style="display:flex; align-items:center; gap:10px;"><div class="tag" style="color:var(--ruby);">North · Uttara</div>${mandalaSvg(34,'N',false)}</div>
+        <h1 style="font-family:var(--serif); font-size:23px; margin:8px 0;">Silver Sri Yantra Plate</h1>
+        <p style="font-size:12.5px; color:var(--ink-muted); line-height:1.7;">A hand-engraved silver yantra for the wall that governs wealth and career, with a single ruby set at the bindu.</p>
+        <div class="num" style="font-size:22px; margin:16px 0; color:var(--ruby);">₹31,200</div>
+        <div style="display:flex; gap:10px; margin-bottom:18px;"><span class="btn btn-primary">Add to cart</span><span class="btn btn-ghost">♡ Wishlist</span></div>
+        <div style="border-top:1px solid var(--line); padding-top:14px;"><div class="field-label">Composition</div><table class="dt"><tr><td>Silver</td><td class="num" style="text-align:right;">180g</td></tr><tr><td>Ruby (bindu stone)</td><td class="num" style="text-align:right;">1</td></tr></table></div>
+      </div>
+    </div>`},
+  {id:'cart', label:'Cart', url:'sarthakarts.com/cart', caption:`<p><strong>Purpose:</strong> single-seller simplicity — no multi-seller grouping logic, since this isn't a marketplace.</p>`,
+    html:`<div style="font-family:var(--sans); padding:26px 28px; display:flex; gap:32px;">
+      <div style="flex:1;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Your cart</div>
+        ${[['Copper Vastu Kalash','₹18,400',1],['Copper-Brass Wind Chime','₹9,800',1]].map(([n,p,q])=>`<div style="display:flex; gap:14px; padding:14px 0; border-bottom:1px solid var(--line); align-items:center;"><div style="width:60px; height:60px; background:var(--ground-raised); border-radius:5px;"></div><div style="flex:1;"><div style="font-family:var(--serif); font-size:13.5px;">${n}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:3px;">Qty ${q} · Remove</div></div><div class="num" style="font-size:13px;">${p}</div></div>`).join('')}
+      </div>
+      <div style="width:260px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:18px;">
+        <div class="field-label">Order summary</div>
+        <div style="display:flex; justify-content:space-between; font-size:12.5px; padding:6px 0;"><span>Subtotal</span><span class="num">₹28,200</span></div>
+        <div style="display:flex; justify-content:space-between; font-family:var(--serif); font-size:15px; padding:10px 0; border-top:1px solid var(--line); margin-top:8px;"><span>Total</span><span class="num">₹29,610</span></div>
+        <span class="btn btn-primary" style="width:100%; text-align:center; margin-top:10px; display:block;">Checkout</span>
+      </div>
+    </div>`},
+  {id:'checkout', label:'Checkout', url:'sarthakarts.com/checkout', caption:`<p><strong>Purpose:</strong> guest or logged-in checkout, address → shipping → payment → review. Gateway is chosen automatically by shipping destination — Razorpay for India, Stripe for international — both active at launch, shown here for an Indian address.</p>`,
+    html:`<div style="font-family:var(--sans); padding:26px 28px;">
+      <div style="display:flex; gap:6px; margin-bottom:22px;">${['Address','Shipping','Payment','Review'].map((s,i)=>`<div style="flex:1; text-align:center; padding:8px; font-size:11px; font-weight:600; border-bottom:2px solid ${i===2?'var(--brass)':'var(--line)'}; color:${i===2?'var(--ink)':'var(--ink-faint)'};">${s}</div>`).join('')}</div>
+      <div style="display:flex; gap:32px;">
+        <div style="flex:1;"><div class="field-label">Payment method — India address detected</div>
+          ${[['UPI','Pay via any UPI app',true],['Card','Credit or debit card',false],['Cash on delivery','Available for orders under ₹25,000',false]].map(([n,d,sel])=>`<div style="border:1px solid ${sel?'var(--brass)':'var(--line)'}; border-radius:6px; padding:12px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-size:13px; font-weight:600;">${n}</div><div style="font-size:11px; color:var(--ink-muted);">${d}</div></div><div style="width:16px; height:16px; border-radius:50%; border:1.5px solid ${sel?'var(--brass)':'var(--line)'}; ${sel?'background:var(--brass);':''}"></div></div>`).join('')}
+          <div style="font-size:10.5px; color:var(--ink-faint); margin-top:6px;">International addresses see card payment via Stripe instead — same screen, gateway chosen automatically.</div>
+        </div>
+        <div style="width:260px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:18px; height:fit-content;"><div class="field-label">Total due</div><div class="num" style="font-family:var(--serif); font-size:20px;">₹29,610</div><span class="btn btn-primary" style="width:100%; text-align:center; margin-top:14px; display:block;">Place order</span></div>
+      </div>
+    </div>`},
+  {id:'account', label:'Account · Orders', url:'sarthakarts.com/account/orders', caption:`<p><strong>Purpose:</strong> order history with status pills, tracking, certificate/invoice download, reorder. Status vocabulary is a reference table, not a hardcoded enum.</p>`,
+    html:`<div style="font-family:var(--sans); padding:26px 28px;"><div style="display:flex; gap:24px;">
+      <div style="width:160px; flex-shrink:0;">${['Orders','Wishlist','Addresses','Wallet','Settings'].map((s,i)=>`<div style="font-size:12.5px; padding:8px 10px; border-radius:5px; ${i===0?'background:var(--ground-raised); font-weight:600;':'color:var(--ink-muted);'}">${s}</div>`).join('')}</div>
+      <div style="flex:1;"><div class="field-label">Order history</div>
+        ${[['#SA-10421','Jul 1, 2026','₹29,610','Shipped','pill-warning'],['#SA-10388','Jun 18, 2026','₹18,400','Delivered','pill-success']].map(([id,d,p,s,cls])=>`<div style="display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-bottom:1px solid var(--line);"><div><div style="font-size:13px; font-weight:600;">${id}</div><div style="font-size:11px; color:var(--ink-muted);">${d}</div></div><div class="num" style="font-size:12.5px;">${p}</div><span class="pill ${cls}"><span class="pill-dot"></span>${s}</span><span class="btn btn-ghost btn-sm">Track</span></div>`).join('')}
+      </div></div></div>`},
+  {id:'consult', label:'Book a consultation', url:'sarthakarts.com/consultation', caption:`<p><strong>Purpose:</strong> the new first step — pick a consultation type — reads live from <code>consultation_types</code>, so a third type would just appear as a third card, no rebuild. After picking one, the flow continues into the slot-selection screen shown below (unchanged from before): since each type has one consultant at launch, the consultant-picker step is skipped, straight to date/slot.</p>
+    <p>Fee and whether it credits toward a first order are both per-type — Vastu placement shown here credits toward ₹15,000; whether astrology should too is an open decision (see written spec).</p>`,
+    html:`<div style="font-family:var(--sans); padding:26px 28px;">
+      <div class="tag" style="color:var(--brass);">Choose a consultation</div>
+      <h2 style="font-family:var(--serif); font-size:20px; margin:8px 0 18px;">What would you like help with?</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:26px;">
+        <div style="border:2px solid var(--brass); border-radius:8px; padding:16px;"><div style="font-family:var(--serif); font-size:15px;">Vastu placement</div><div style="font-size:12px; color:var(--ink-muted); margin-top:6px;">20 minutes · ₹999 · credited toward orders over ₹15,000</div></div>
+        <div style="border:1px solid var(--line); border-radius:8px; padding:16px; opacity:0.75;"><div style="font-family:var(--serif); font-size:15px;">Astrology</div><div style="font-size:12px; color:var(--ink-muted); margin-top:6px;">30 minutes · ₹999</div></div>
+      </div>
+      <div style="border-top:1px solid var(--line); padding-top:22px; display:flex; gap:36px;">
+        <div style="flex:1;"><div class="tag" style="color:var(--brass);">Vastu placement selected</div><h3 style="font-family:var(--serif); font-size:17px; margin:8px 0;">Not every home fits a diagram.</h3>
+          <div style="margin-top:16px;"><div class="field-label">Available slots — Jul 7</div><div style="display:flex; gap:8px; flex-wrap:wrap;">${['10:00 AM','11:30 AM','3:00 PM','5:30 PM'].map((t,i)=>`<span class="pill ${i===1?'pill-warning':'pill-neutral'}">${t}</span>`).join('')}</div></div>
+        </div>
+        <div style="width:240px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:18px; height:fit-content;"><div class="field-label">Consultation fee</div><div class="num" style="font-family:var(--serif); font-size:19px;">₹999</div><span class="btn btn-primary" style="width:100%; text-align:center; margin-top:14px; display:block;">Confirm booking — 11:30 AM, Jul 7</span></div>
+      </div>
+    </div>`},
+  {id:'craft', label:'Our Craft', url:'sarthakarts.com/our-craft', caption:`<p><strong>Purpose:</strong> the process line-art motif (design → shape → set → certify) in its full form here, recurring in miniature on every PDP.</p>`,
+    html:`<div style="font-family:var(--sans); padding:30px 28px;"><div class="tag" style="color:var(--brass);">Our craft</div><h1 style="font-family:var(--serif); font-size:24px; margin:8px 0 20px;">Made by hand, not run through a mould twice.</h1>
+      <div style="display:flex; align-items:center; gap:0; max-width:640px;">
+        ${[['design','◐'],['shape','◇'],['set','●'],['certify','✓']].map(([n,icon],i)=>`<div style="display:flex; align-items:center; flex:1;"><div style="text-align:center;"><div style="width:44px; height:44px; border:1px solid var(--brass); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--brass); margin:0 auto;">${icon}</div><div style="font-size:11px; color:var(--ink-muted); margin-top:6px; text-transform:capitalize;">${n}</div></div>${i<3?`<div style="flex:1; height:1px; background:var(--line); margin:0 8px 22px;"></div>`:''}</div>`).join('')}
+      </div></div>`},
+  {id:'faq', label:'Philosophy & FAQ', url:'sarthakarts.com/vastu-shastra', caption:`<p><strong>Purpose:</strong> combines the Vastu education section with trust/FAQ — accordion pattern, sourced from <code>content_blocks</code>, owner-editable.</p>`,
+    html:`<div style="font-family:var(--sans); padding:30px 28px; max-width:600px;"><div class="tag" style="color:var(--brass);">Vastu Shastra, briefly</div>
+      <div class="field-label" style="margin-top:14px;">Common questions</div>
+      ${['Is this real gold/silver, or plated?','Why do prices change?','Do you offer a certificate of authenticity?','Can copper darken over time?'].map((q,i)=>`<div style="border-bottom:1px solid var(--line); padding:13px 0; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:13px; ${i===0?'font-weight:600;':''}">${q}</span><span style="color:var(--ink-faint);">${i===0?'−':'+'}</span></div>`).join('')}</div>`},
+  {id:'about', label:'About & footer', url:'sarthakarts.com/about', caption:`<p><strong>Purpose:</strong> brand story + persistent footer, shown together since footer content is site-wide.</p>`,
+    html:`<div style="font-family:var(--sans);"><div style="padding:30px 28px; max-width:600px;"><div class="tag" style="color:var(--brass);">About</div><h1 style="font-family:var(--serif); font-size:22px; margin:8px 0 14px;">Why we started making these</h1></div>
+      <div style="background:var(--focus-panel); color:var(--focus-text); padding:28px; display:grid; grid-template-columns:repeat(3,1fr) 1.3fr; gap:24px; margin-top:20px;">
+        ${[['Shop',['The Collection','Shop by Direction','Gifting']],['Learn',['Vastu Shastra, briefly','Our Craft','Book a Consultation','FAQ']],['Company',['About','Contact','Shipping & Returns']]].map(([h,items])=>`<div><div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--brass); margin-bottom:10px;">${h}</div>${items.map(i=>`<div style="font-size:12px; color:var(--focus-muted); padding:4px 0;">${i}</div>`).join('')}</div>`).join('')}
+        <div><div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--brass); margin-bottom:10px;">On Instagram</div><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:4px;">${[1,2,3].map(()=>`<div style="aspect-ratio:1; background:rgba(255,255,255,0.06); border-radius:3px;"></div>`).join('')}</div></div>
+      </div></div>`}
+];
+
+const adminPages = [
+  {id:'dash', label:'Dashboard', url:'admin.sarthakarts.com', nav:'Dashboard', caption:`<p><strong>Purpose:</strong> single admin's daily operating view. Metric deltas and the low-stock/pending alert list are what a solo operator checks first each morning.</p>`,
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Good morning</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px;">${[['Revenue, today','₹58,200','+12% vs yesterday','var(--success)'],['Orders, today','4','2 pending','var(--warning)'],['Low stock','2 items','review needed','var(--critical)'],['Consultations','3 upcoming','next in 2h','var(--ink-muted)']].map(([l,v,d,c])=>`<div class="metric-card"><div class="metric-label">${l}</div><div class="metric-value">${v}</div><div class="metric-delta" style="color:${c};">${d}</div></div>`).join('')}</div>
+      <div style="display:flex; gap:16px;">
+        <div style="flex:1; border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Needs your attention</div>
+          <div style="font-size:12.5px; padding:8px 0; border-bottom:1px solid var(--line); display:flex; justify-content:space-between;"><span>Order #SA-10421 ready to ship</span><span class="pill pill-warning">Pending</span></div>
+          <div style="font-size:12.5px; padding:8px 0; display:flex; justify-content:space-between;"><span>Copper Kalash — 3 units left</span><span class="pill pill-critical">Low stock</span></div>
+        </div>
+        <div style="flex:1; border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Orders by market, this week</div><table class="dt"><tr><td>India</td><td class="num" style="text-align:right;">9 orders</td></tr><tr><td>International</td><td class="num" style="text-align:right;">3 orders</td></tr></table></div>
+      </div></div>`},
+  {id:'products', label:'Products', url:'admin.sarthakarts.com/products', nav:'Products', caption:`<p><strong>Purpose:</strong> catalog management with bulk actions built in from day one even though the launch catalog is medium-sized.</p>`,
+    body:`<div style="flex:1; padding:22px 26px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><div style="font-family:var(--serif); font-size:19px;">Products <span style="font-size:12px; color:var(--ink-faint); font-family:var(--sans);">32 total</span></div><div style="display:flex; gap:8px;"><span class="btn btn-ghost btn-sm">Import CSV</span><span class="btn btn-primary btn-sm">+ Add product</span></div></div>
+      <table class="dt"><tr><th>☐</th><th>Product</th><th>Direction</th><th>Price</th><th>Stock</th><th>Status</th></tr>
+      ${[['Copper Vastu Kalash','Northeast','₹18,400','14','pill-success','Live'],['Silver Sri Yantra Plate','North','₹31,200','3','pill-critical','Low stock'],['Gold-Accent Om Wall Panel','East','₹42,600','—','pill-warning','Pending review']].map(([n,d,p,s,cls,st])=>`<tr><td>☐</td><td style="font-weight:600;">${n}</td><td>${d}</td><td class="num">${p}</td><td class="num">${s}</td><td><span class="pill ${cls}">${st}</span></td></tr>`).join('')}</table></div>`},
+  {id:'editproduct', label:'Add / edit product', url:'admin.sarthakarts.com/products/new', nav:'Products', caption:`<p><strong>Purpose:</strong> where the modularity mandate is most visible to the admin — the composition builder allows any number of metal/gemstone line items, entirely separate from the price field. There is no pricing engine anywhere in this platform — the admin's price entry here is the only source of truth, always.</p>`,
+    body:`<div style="flex:1; padding:22px 26px; display:flex; gap:24px;">
+      <div style="flex:1;"><div style="font-family:var(--serif); font-size:18px; margin-bottom:16px;">Edit — Silver Sri Yantra Plate</div>
+        <div class="field-label">Composition (for the material-transparency listing and certificate — not linked to price)</div><table class="dt" style="margin-bottom:6px;"><tr><th>Metal / gem</th><th>Weight / qty</th><th></th></tr><tr><td>Silver</td><td class="num">180g</td><td style="color:var(--ink-faint);">✕</td></tr><tr><td>Ruby (bindu)</td><td class="num">1</td><td style="color:var(--ink-faint);">✕</td></tr></table>
+        <span class="btn btn-ghost btn-sm">+ Add material</span></div>
+      <div style="width:250px; flex-shrink:0; border:1px solid var(--brass); border-radius:8px; padding:16px; background:rgba(184,134,62,0.06); height:fit-content;">
+        <div class="field-label" style="color:var(--brass);">Price — set by you</div>
+        <div class="field-label" style="margin-top:2px;">Base price (INR)</div><input class="field-input" value="₹31,200" disabled/>
+        <div class="field-label" style="margin-top:12px;">Optional: override for USD shoppers</div><input class="field-input" value="$379" disabled/>
+        <div style="font-size:10.5px; color:var(--ink-faint); margin-top:10px;">No automated suggestion — this is your number, always. Other currencies convert automatically from the base price unless you set an override.</div>
+      </div></div>`},
+  {id:'orders', label:'Orders', url:'admin.sarthakarts.com/orders', nav:'Orders', caption:`<p><strong>Purpose:</strong> the daily fulfillment queue, filterable by status — filters read from the <code>order_statuses</code> reference table.</p>`,
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:12px;">Orders</div>
+      <div style="display:flex; gap:8px; margin-bottom:14px;">${['All','Pending','Packed','Shipped','Delivered','Returns'].map((f,i)=>`<span class="pill ${i===0?'pill-neutral':''}" style="border:1px solid var(--line); background:${i===0?'var(--ink)':'transparent'}; color:${i===0?'var(--ground)':'var(--ink-muted)'};">${f}</span>`).join('')}</div>
+      <table class="dt"><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr>
+      ${[['#SA-10421','Meera R.','₹29,610','pill-warning','Pending'],['#SA-10419','Divya S.','₹42,600','pill-success','Shipped']].map(([id,c,t,cls,st])=>`<tr><td style="font-weight:600;">${id}</td><td>${c}</td><td class="num">${t}</td><td><span class="pill ${cls}">${st}</span></td></tr>`).join('')}</table></div>`},
+  {id:'orderdetail', label:'Order detail', url:'admin.sarthakarts.com/orders/1042', nav:'Orders', caption:`<p><strong>Purpose:</strong> everything about one order — status update, shipping label, and a direct link to certificate/composition data so the admin never leaves the screen to answer a customer question.</p>`,
+    body:`<div style="flex:1; padding:22px 26px; display:flex; gap:24px;">
+      <div style="flex:1;"><div style="font-family:var(--serif); font-size:18px;">Order #SA-10421 <span class="pill pill-warning" style="margin-left:8px;">Pending</span></div>
+        <table class="dt" style="margin-top:14px;"><tr><td>Copper Vastu Kalash</td><td class="num" style="text-align:right;">₹18,400</td></tr></table></div>
+      <div style="width:230px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:16px; height:fit-content;"><div class="field-label">Update status</div>
+        ${['Confirmed','Packed','Shipped','Delivered'].map((s,i)=>`<div style="font-size:12.5px; padding:7px 0; display:flex; align-items:center; gap:8px; color:${i<1?'var(--ink)':'var(--ink-faint)'};"><span style="width:14px;height:14px;border-radius:50%;border:1.5px solid ${i<1?'var(--success)':'var(--line)'}; background:${i<1?'var(--success)':'transparent'};"></span>${s}</div>`).join('')}
+        <span class="btn btn-primary btn-sm" style="display:block; text-align:center; margin-top:12px;">Generate shipping label</span></div></div>`},
+  {id:'calendar', label:'Consultations', url:'admin.sarthakarts.com/consultations', nav:'Consultations', caption:`<p><strong>Purpose:</strong> each consultant's own availability screen plus the admin's read view, across both consultation types. Because <code>consultants</code> and <code>consultation_types</code> are real tables, a second consultant or a third type appears on this same screen the moment one is added — nothing rebuilt.</p>`,
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Consultations</div>
+      <div style="display:flex; gap:8px; margin-bottom:14px;">${['All types','Vastu placement','Astrology'].map((f,i)=>`<span class="pill" style="border:1px solid var(--line); background:${i===0?'var(--ink)':'transparent'}; color:${i===0?'var(--ground)':'var(--ink-muted)'};">${f}</span>`).join('')}</div>
+      <div style="display:flex; gap:16px;"><div style="flex:1; border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Upcoming bookings</div>
+        ${[['Rohan M.','Vastu placement','Jul 4, 3:00 PM','pill-warning','Awaiting call'],['Priya T.','Astrology','Jul 5, 11:30 AM','pill-neutral','Confirmed']].map(([n,type,t,cls,st])=>`<div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:12.5px;"><span>${n} · <span style="color:var(--ink-faint);">${type}</span> · ${t}</span><span class="pill ${cls}">${st}</span></div>`).join('')}</div>
+        <div style="width:220px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Your availability</div>${['Mon','Tue','Wed'].map((d,i)=>`<div style="font-size:12px; display:flex; justify-content:space-between; padding:5px 0;"><span>${d}</span><span style="color:var(--ink-muted);">${i===2?'Off':'10am–6pm'}</span></div>`).join('')}</div></div></div>`},
+  {id:'cms', label:'Content editor', url:'admin.sarthakarts.com/content', nav:'Content', caption:`<p><strong>Purpose:</strong> the lightweight CMS — the non-technical owner edits About/Our Craft/Philosophy/FAQ/legal copy directly, no code deploy needed.</p>`,
+    body:`<div style="flex:1; padding:22px 26px; display:flex; gap:20px;">
+      <div style="width:170px; flex-shrink:0;">${['About — story','Our Craft — intro','Philosophy — intro','FAQ — all questions'].map((n,i)=>`<div style="font-size:12px; padding:8px 10px; border-radius:5px; ${i===0?'background:var(--ground-raised); font-weight:600;':'color:var(--ink-muted);'}">${n}</div>`).join('')}</div>
+      <div style="flex:1;"><div class="field-label">About — story (editable)</div><div style="border:1px solid var(--line); border-radius:6px; padding:12px; font-size:12.5px; line-height:1.7; color:var(--ink-muted); min-height:100px; background:#fff;">Opening: what problem you saw...<br><br><span style="color:var(--ink-faint);">[rich text editor]</span></div>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;"><span style="font-size:10.5px; color:var(--ink-faint);">Last edited by Owner · 2 weeks ago</span><span class="btn btn-primary btn-sm">Save changes</span></div></div></div>`},
+  {id:'customers', label:'Customers', url:'admin.sarthakarts.com/customers', nav:'Customers', caption:`<p><strong>Purpose:</strong> deliberately simple at this scale — order count, lifetime value, last order, without an over-built CRM the business doesn't need yet.</p>`,
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:14px;">Customers</div>
+      <table class="dt"><tr><th>Name</th><th>Orders</th><th>Lifetime value</th></tr>${[['Meera Reddy','3','₹68,400'],['Divya Shah','5','₹142,000']].map(([n,o,v])=>`<tr><td style="font-weight:600;">${n}</td><td class="num">${o}</td><td class="num">${v}</td></tr>`).join('')}</table></div>`},
+  {id:'analytics', label:'Analytics', url:'admin.sarthakarts.com/analytics', nav:'Analytics', caption:`<p><strong>Purpose:</strong> the reporting an owner actually checks, including <strong>sales by direction</strong> — a report unique to this business.</p>`,
+    body:`<div style="flex:1; padding:22px 26px;"><div style="font-family:var(--serif); font-size:19px; margin-bottom:16px;">Analytics</div>
+      <div style="border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:16px;"><div class="field-label">Revenue, last 30 days</div><div style="display:flex; align-items:flex-end; gap:4px; height:70px; margin-top:10px;">${[30,45,28,60,52,70,48,65,58,80,72,90].map(h=>`<div style="flex:1; height:${h}%; background:var(--brass); opacity:0.75; border-radius:2px 2px 0 0;"></div>`).join('')}</div></div>
+      <div style="border:1px solid var(--line); border-radius:8px; padding:16px;"><div class="field-label">Sales by direction</div><table class="dt"><tr><td>North</td><td class="num" style="text-align:right;">32%</td></tr><tr><td>Northeast</td><td class="num" style="text-align:right;">24%</td></tr></table></div></div>`},
+  {id:'settings', label:'Settings', url:'admin.sarthakarts.com/settings', nav:'Settings', caption:`<p><strong>Purpose:</strong> the control room for every config-driven system in this document — shipping, tax, gateways (Razorpay and Stripe both active), currencies, roles, social.</p>`,
+    body:`<div style="flex:1; padding:22px 26px; display:flex; gap:20px;">
+      <div style="width:170px; flex-shrink:0;">${['Store profile','Shipping','Tax','Payment gateways','Currencies','Consultation types','Roles & access','Social accounts'].map((n,i)=>`<div style="font-size:12px; padding:8px 10px; border-radius:5px; ${i===5?'background:var(--ground-raised); font-weight:600;':'color:var(--ink-muted);'}">${n}</div>`).join('')}</div>
+      <div style="flex:1;"><div class="field-label">Consultation types</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-bottom:8px;"><span style="font-size:13px; font-weight:600;">Vastu placement</span><span style="font-size:11px; color:var(--ink-muted);">20 min · ₹999 · credits toward orders</span></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-bottom:8px;"><span style="font-size:13px; font-weight:600;">Astrology</span><span style="font-size:11px; color:var(--ink-muted);">30 min · ₹999</span></div>
+        <span class="btn btn-ghost btn-sm">+ Add a consultation type</span></div></div>`},
+  {id:'social', label:'Social content', url:'admin.sarthakarts.com/social', nav:'Social', caption:`<p><strong>Purpose:</strong> launches fully admin-curated — owner pins posts manually, zero API dependency. The <code>source</code> field lets this evolve to live sync later without changing this screen.</p>`,
+    body:`<div style="flex:1; padding:22px 26px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><div style="font-family:var(--serif); font-size:19px;">Social content</div><span class="btn btn-primary btn-sm">+ Pin a post</span></div>
+      <div style="display:flex; gap:10px; margin-bottom:16px;">${[['Instagram','pill-success','Connected'],['Threads','pill-neutral','Not connected'],['X','pill-neutral','Not connected']].map(([n,c,d])=>`<div style="flex:1; border:1px solid var(--line); border-radius:6px; padding:10px 12px;"><div style="font-size:12.5px; font-weight:600;">${n} <span class="pill ${c}" style="margin-left:4px;">${c==='pill-success'?'Live':'Manual'}</span></div><div style="font-size:10.5px; color:var(--ink-muted); margin-top:3px;">${d}</div></div>`).join('')}</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">${[1,2,3,4].map(()=>`<div style="aspect-ratio:1; background:var(--ground-raised); border-radius:6px; border:1px solid var(--line);"></div>`).join('')}</div></div>`}
+];
+
+const adminNavItems = ['Dashboard','Products','Orders','Consultations','Customers','Content','Analytics','Settings','Social'];
+function adminSidebar(active){
+  return `<div style="width:200px; background:var(--focus-panel); padding:20px 12px; flex-shrink:0;">
+    <div style="font-family:var(--serif); color:var(--focus-text); font-size:15px; padding:0 6px 18px;">Sarthak Arts</div>
+    ${adminNavItems.map(n=>`<div class="sidebar-item ${n===active?'active':''}">${n}</div>`).join('')}
+  </div>`;
+}
+
+function renderPage(p, isAdmin){
+  return `<div class="page-entry">
+    <div class="page-head"><div class="page-title">${p.label}</div><div class="page-route">${p.url}</div></div>
+    <div class="frame">
+      <div class="frame-chrome"><div class="frame-dot"></div><div class="frame-dot"></div><div class="frame-dot"></div><div class="frame-url">${p.url}</div></div>
+      <div class="frame-body">${isAdmin ? `<div style="display:flex; font-family:var(--sans); min-height:340px;">${adminSidebar(p.nav)}${p.body}</div>` : p.html}</div>
+    </div>
+    <div class="caption"><div class="caption-label">${isAdmin?'Admin / seller':'Customer'} — ${p.label}</div>${p.caption}</div>
+  </div>`;
+}
+
+document.getElementById('customer-pages').innerHTML = customerPages.map(p=>renderPage(p,false)).join('');
+document.getElementById('admin-pages').innerHTML = adminPages.map(p=>renderPage(p,true)).join('');
+</script>
+</body>
+</html>
