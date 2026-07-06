@@ -252,6 +252,7 @@ model CartItem {
 
 model CheckoutIntent {
   id              String   @id @default(cuid())
+  cartId          String?
   cartSnapshot    Json
   email           String
   phone           String
