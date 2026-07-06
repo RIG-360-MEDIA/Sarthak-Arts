@@ -1,0 +1,340 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- reference / config (admin-editable, never hardcoded) ----------
+
+model Direction {
+  id           Int                @id @default(autoincrement())
+  code         String             @unique
+  name         String
+  sanskritName String
+  element      String?
+  governs      String
+  microcopy    String
+  displayOrder Int
+  active       Boolean            @default(true)
+  products     ProductDirection[]
+}
+
+model Metal {
+  id           Int                  @id @default(autoincrement())
+  code         String               @unique
+  name         String
+  puritySpec   String?
+  compositions ProductComposition[]
+}
+
+model Gemstone {
+  id           Int                  @id @default(autoincrement())
+  code         String               @unique
+  name         String
+  accentHex    String
+  compositions ProductComposition[]
+}
+
+model Deity {
+  id                Int       @id @default(autoincrement())
+  code              String    @unique
+  name              String
+  placementGuidance String
+  displayOrder      Int       @default(0)
+  active            Boolean   @default(true)
+  products          Product[]
+}
+
+model Category {
+  id       Int        @id @default(autoincrement())
+  code     String     @unique
+  name     String
+  parentId Int?
+  parent   Category?  @relation("Tree", fields: [parentId], references: [id])
+  children Category[] @relation("Tree")
+  products Product[]
+}
+
+model Purpose {
+  id       Int              @id @default(autoincrement())
+  code     String           @unique
+  name     String
+  products ProductPurpose[]
+}
+
+model OrderStatus {
+  id           Int                  @id @default(autoincrement())
+  code         String               @unique
+  name         String
+  displayOrder Int
+  orders       Order[]
+  history      OrderStatusHistory[]
+}
+
+model Currency {
+  id          Int     @id @default(autoincrement())
+  code        String  @unique
+  symbol      String
+  active      Boolean @default(true)
+  isDefault   Boolean @default(false)
+  ratePerBase Decimal @default(1)
+}
+
+model PaymentGateway {
+  id          Int     @id @default(autoincrement())
+  code        String  @unique
+  name        String
+  active      Boolean @default(true)
+  routingRule Json
+}
+
+model ShippingZone {
+  id        Int            @id @default(autoincrement())
+  code      String         @unique
+  name      String
+  countries String[]
+  rates     ShippingRate[]
+}
+
+model ShippingRate {
+  id             Int          @id @default(autoincrement())
+  zoneId         Int
+  zone           ShippingZone @relation(fields: [zoneId], references: [id])
+  name           String
+  amountMinor    Int
+  freeAboveMinor Int?
+}
+
+model TaxRule {
+  id          Int     @id @default(autoincrement())
+  region      String
+  ratePercent Decimal
+  appliesTo   String  @default("all")
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ---------- identity ----------
+
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  passwordHash String?
+  name         String?
+  phone        String?
+  isGuest      Boolean    @default(false)
+  roles        UserRole[]
+  createdAt    DateTime   @default(now())
+}
+
+model Role {
+  id    Int        @id @default(autoincrement())
+  code  String     @unique
+  name  String
+  users UserRole[]
+}
+
+model UserRole {
+  userId Int
+  roleId Int
+  user   User @relation(fields: [userId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+}
+
+// ---------- catalog ----------
+
+model Product {
+  id              Int                   @id @default(autoincrement())
+  slug            String                @unique
+  name            String
+  positioningLine String
+  placementNote   String
+  description     String
+  careNote        String
+  includedItems   String
+  basePriceMinor  Int
+  baseCurrency    String                @default("INR")
+  status          String                @default("live")
+  isFinalSale     Boolean               @default(false)
+  categoryId      Int
+  category        Category              @relation(fields: [categoryId], references: [id])
+  deityId         Int?
+  deity           Deity?                @relation(fields: [deityId], references: [id])
+  directions      ProductDirection[]
+  purposes        ProductPurpose[]
+  composition     ProductComposition[]
+  images          ProductImage[]
+  priceHistory    ProductPriceHistory[]
+  cartItems       CartItem[]
+  orderItems      OrderItem[]
+  createdAt       DateTime              @default(now())
+}
+
+model ProductDirection {
+  productId   Int
+  directionId Int
+  product     Product   @relation(fields: [productId], references: [id])
+  direction   Direction @relation(fields: [directionId], references: [id])
+
+  @@id([productId, directionId])
+}
+
+model ProductPurpose {
+  productId Int
+  purposeId Int
+  product   Product @relation(fields: [productId], references: [id])
+  purpose   Purpose @relation(fields: [purposeId], references: [id])
+
+  @@id([productId, purposeId])
+}
+
+model ProductComposition {
+  id          Int       @id @default(autoincrement())
+  productId   Int
+  product     Product   @relation(fields: [productId], references: [id])
+  metalId     Int?
+  metal       Metal?    @relation(fields: [metalId], references: [id])
+  gemstoneId  Int?
+  gemstone    Gemstone? @relation(fields: [gemstoneId], references: [id])
+  weightGrams Decimal?
+  gemstoneQty Int?
+  label       String?
+  sortOrder   Int       @default(0)
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  url       String
+  alt       String
+  sortOrder Int     @default(0)
+}
+
+model ProductPriceHistory {
+  id            Int      @id @default(autoincrement())
+  productId     Int
+  product       Product  @relation(fields: [productId], references: [id])
+  oldPriceMinor Int?
+  newPriceMinor Int
+  changedById   Int?
+  changedAt     DateTime @default(now())
+}
+
+// ---------- cart & checkout ----------
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    Int?
+  items     CartItem[]
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
+
+  @@unique([cartId, productId])
+}
+
+model CheckoutIntent {
+  id              String   @id @default(cuid())
+  cartSnapshot    Json
+  email           String
+  phone           String
+  shippingAddress Json
+  currency        String
+  subtotalMinor   Int
+  shippingMinor   Int
+  taxMinor        Int
+  totalMinor      Int
+  gatewayCode     String
+  gatewayOrderId  String   @unique
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+}
+
+// ---------- orders ----------
+
+model Order {
+  id              Int                  @id @default(autoincrement())
+  orderNumber     String               @unique
+  userId          Int?
+  isGuestOrder    Boolean              @default(true)
+  email           String
+  phone           String
+  currency        String
+  subtotalMinor   Int
+  shippingMinor   Int
+  taxMinor        Int
+  totalMinor      Int
+  shippingAddress Json
+  isGift          Boolean              @default(false)
+  giftNote        String?
+  statusId        Int
+  status          OrderStatus          @relation(fields: [statusId], references: [id])
+  items           OrderItem[]
+  statusHistory   OrderStatusHistory[]
+  payments        Payment[]
+  certificates    OrderCertificate[]
+  createdAt       DateTime             @default(now())
+}
+
+model OrderItem {
+  id                  Int                @id @default(autoincrement())
+  orderId             Int
+  order               Order              @relation(fields: [orderId], references: [id])
+  productId           Int
+  product             Product            @relation(fields: [productId], references: [id])
+  name                String
+  unitPriceMinor      Int
+  quantity            Int
+  compositionSnapshot Json
+  certificates        OrderCertificate[]
+}
+
+model OrderStatusHistory {
+  id        Int         @id @default(autoincrement())
+  orderId   Int
+  order     Order       @relation(fields: [orderId], references: [id])
+  statusId  Int
+  status    OrderStatus @relation(fields: [statusId], references: [id])
+  note      String?
+  createdAt DateTime    @default(now())
+}
+
+model Payment {
+  id               Int      @id @default(autoincrement())
+  orderId          Int
+  order            Order    @relation(fields: [orderId], references: [id])
+  gateway          String
+  gatewayOrderId   String?
+  gatewayPaymentId String?
+  amountMinor      Int
+  currency         String
+  status           String
+  createdAt        DateTime @default(now())
+}
+
+model OrderCertificate {
+  id          Int       @id @default(autoincrement())
+  orderId     Int
+  order       Order     @relation(fields: [orderId], references: [id])
+  orderItemId Int
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  storageKey  String
+  generatedAt DateTime  @default(now())
+}
