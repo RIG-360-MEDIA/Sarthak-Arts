@@ -1,0 +1,275 @@
+<title>Sarthak Arts — Go-Live Runbook</title>
+<style>
+  :root {
+    --ground: #EFE7D6;
+    --surface: #F7F1E4;
+    --surface-2: #F1E8D6;
+    --ink: #2B211A;
+    --ink-muted: #6A5C4C;
+    --ink-faint: #9A8B76;
+    --line: #DDCFB4;
+    --brass: #A9781F;
+    --done: #4E7A4A;
+    --owner: #1F6F6B;
+    --dev: #3F5E8C;
+    --client: #A6552E;
+    --shadow: 0 1px 2px rgba(43,33,26,.06), 0 8px 24px rgba(43,33,26,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #1E1912;
+      --surface: #272017;
+      --surface-2: #2E2619;
+      --ink: #ECDBBF;
+      --ink-muted: #B8A78E;
+      --ink-faint: #83745F;
+      --line: #3A3025;
+      --brass: #CB9E4F;
+      --done: #7FB073;
+      --owner: #4FB0A6;
+      --dev: #7CA0D6;
+      --client: #D98A5C;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #EFE7D6; --surface: #F7F1E4; --surface-2: #F1E8D6;
+    --ink: #2B211A; --ink-muted: #6A5C4C; --ink-faint: #9A8B76; --line: #DDCFB4;
+    --brass: #A9781F; --done: #4E7A4A; --owner: #1F6F6B; --dev: #3F5E8C; --client: #A6552E;
+    --shadow: 0 1px 2px rgba(43,33,26,.06), 0 8px 24px rgba(43,33,26,.05);
+  }
+  :root[data-theme="dark"] {
+    --ground: #1E1912; --surface: #272017; --surface-2: #2E2619;
+    --ink: #ECDBBF; --ink-muted: #B8A78E; --ink-faint: #83745F; --line: #3A3025;
+    --brass: #CB9E4F; --done: #7FB073; --owner: #4FB0A6; --dev: #7CA0D6; --client: #D98A5C;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 40px 22px 80px; }
+  .serif { font-family: Georgia, "Times New Roman", serif; }
+
+  .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--brass); font-weight: 700; }
+  h1 { font-family: Georgia, serif; font-weight: 600; font-size: clamp(28px, 5vw, 40px); line-height: 1.12; margin: 10px 0 8px; text-wrap: balance; letter-spacing: -.01em; }
+  .lede { font-size: 16px; color: var(--ink-muted); max-width: 60ch; margin: 0; }
+
+  header { display: flex; gap: 18px; align-items: flex-start; }
+  .mark { flex-shrink: 0; margin-top: 4px; }
+
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 16px; font-size: 12.5px; color: var(--ink-faint); }
+  .meta b { color: var(--ink-muted); font-weight: 600; }
+
+  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 24px 0 8px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); }
+  .legend .li { display: flex; gap: 9px; align-items: flex-start; font-size: 12.5px; color: var(--ink-muted); }
+  .legend .li b { color: var(--ink); font-weight: 600; }
+
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .c-owner  { color: var(--owner);  background: color-mix(in srgb, var(--owner) 14%, transparent); }
+  .c-dev    { color: var(--dev);    background: color-mix(in srgb, var(--dev) 14%, transparent); }
+  .c-client { color: var(--client); background: color-mix(in srgb, var(--client) 15%, transparent); }
+  .c-done   { color: var(--done);   background: color-mix(in srgb, var(--done) 15%, transparent); }
+
+  .callout { margin: 22px 0 6px; border-left: 3px solid var(--brass); background: var(--surface-2);
+    border-radius: 0 10px 10px 0; padding: 14px 18px; font-size: 14px; color: var(--ink-muted); }
+  .callout b { color: var(--ink); }
+
+  .phase { margin-top: 34px; }
+  .phase-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+  .phase-num { font-family: Georgia, serif; font-variant-numeric: tabular-nums; font-size: 26px; color: var(--brass); line-height: 1; }
+  .phase-title { font-family: Georgia, serif; font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+  .phase-when { margin-left: auto; font-size: 11.5px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .08em; align-self: center; }
+
+  .steps { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .step { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 15px 17px; box-shadow: var(--shadow); }
+  .step-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .step-id { font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 700; color: var(--ink-faint); font-family: Georgia, serif; }
+  .step-title { font-weight: 650; font-size: 15px; margin: 0; flex: 1 1 auto; }
+  .step-how { margin: 8px 0 0; font-size: 13.5px; color: var(--ink-muted); }
+  .step-need { margin: 9px 0 0; font-size: 12.5px; color: var(--ink-faint); display: flex; gap: 7px; }
+  .step-need b { color: var(--ink-muted); font-weight: 600; }
+  .step.is-done { opacity: .72; }
+  .step.is-done .step-title { text-decoration: line-through; text-decoration-color: var(--ink-faint); }
+
+  code { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12px;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; color: var(--ink); word-break: break-word; }
+
+  footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-faint); }
+  footer b { color: var(--ink-muted); }
+  a { color: var(--brass); }
+</style>
+
+<div class="wrap">
+  <header>
+    <svg class="mark" width="46" height="46" viewBox="0 0 46 46" fill="none" aria-hidden="true">
+      <circle cx="23" cy="23" r="21" stroke="var(--brass)" stroke-width="1.2"/>
+      <circle cx="23" cy="23" r="13" stroke="var(--brass)" stroke-width="1" opacity=".65"/>
+      <circle cx="23" cy="23" r="3.4" fill="var(--brass)"/>
+      <g stroke="var(--brass)" stroke-width="1" opacity=".8">
+        <line x1="23" y1="2" x2="23" y2="44"/><line x1="2" y1="23" x2="44" y2="23"/>
+        <line x1="8.2" y1="8.2" x2="37.8" y2="37.8"/><line x1="37.8" y1="8.2" x2="8.2" y2="37.8"/>
+      </g>
+    </svg>
+    <div>
+      <div class="eyebrow">Sarthak Arts · Launch plan</div>
+      <h1>Go-Live Runbook</h1>
+      <p class="lede">The website is built and tested. What remains is turning it into a live business that takes real orders. This is the ordered path — who does each step, and what has to happen before it can.</p>
+    </div>
+  </header>
+
+  <div class="meta">
+    <span><b>Status of the build:</b> Feature-complete, tagged <code>v1.1</code></span>
+    <span><b>Prepared:</b> 7 July 2026</span>
+  </div>
+
+  <div class="legend" role="list" aria-label="Who does what">
+    <div class="li" role="listitem"><span class="chip c-owner">You</span><span>Steps <b>you</b> (running the store) do.</span></div>
+    <div class="li" role="listitem"><span class="chip c-dev">Developer</span><span>Code &amp; config — <b>I</b> can do these.</span></div>
+    <div class="li" role="listitem"><span class="chip c-client">Client / External</span><span>Needs the <b>business identity</b> or an outside service.</span></div>
+    <div class="li" role="listitem"><span class="chip c-done">Done</span><span>Already finished.</span></div>
+  </div>
+
+  <div class="callout">
+    <b>Two things gate everything — start them today, in parallel.</b> First, <b>Razorpay business verification (KYC)</b> — it takes days and every real payment waits on it. Second, <b>who owns the accounts</b>: the money, the customer data, and the domain must live under the <b>client's business identity</b>, not a personal account. Decide that before creating anything production.
+  </div>
+
+  <!-- PHASE 0 -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">0</span>
+      <span class="phase-title">The platform itself</span>
+      <span class="phase-when">Complete</span>
+    </div>
+    <div class="steps">
+      <div class="step is-done">
+        <div class="step-top"><span class="step-id">0.1</span><span class="chip c-done">Done</span><p class="step-title">Full storefront &amp; admin, built and tested</p></div>
+        <p class="step-how">Storefront, admin panel, consultations, reviews/returns, CMS, analytics, legal pages and gifting are all built. 39 automated tests pass; the whole purchase flow is proven end-to-end against a real database. All work is on the <code>master</code> branch, tagged <code>v0.1</code> through <code>v1.1</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHASE 1 -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">1</span>
+      <span class="phase-title">Kick off the long poles</span>
+      <span class="phase-when">Start today</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-top"><span class="step-id">1.1</span><span class="chip c-client">Client / External</span><p class="step-title">Begin Razorpay business verification (KYC)</p></div>
+        <p class="step-how">Sign up at razorpay.com with the <b>business</b> details and submit KYC — business PAN, bank account, and address proof. Once approved, Razorpay issues <b>live</b> API keys and the money from orders settles into that bank account. This is the single longest wait, so it goes first.</p>
+        <p class="step-need"><b>Why the client:</b><span>KYC is tied to a registered business and its bank — it can't be your personal account if the business is the client's.</span></p>
+      </div>
+      <div class="step">
+        <div class="step-top"><span class="step-id">1.2</span><span class="chip c-owner">You</span><p class="step-title">Confirm the domain and account ownership</p></div>
+        <p class="step-how">Make sure <code>sarthakarts.com</code> is registered (buy it if not). Decide the single account that will own production — hosting, database, email, payments. For a real handover this should be the client's business email/logins, so nothing important sits on a personal account.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHASE 2 -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">2</span>
+      <span class="phase-title">Make it production-ready</span>
+      <span class="phase-when">In parallel</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-top"><span class="step-id">2.1</span><span class="chip c-dev">Developer</span><p class="step-title">Move certificate storage to the cloud</p></div>
+        <p class="step-how">Certificates currently save to the computer's disk. A live host doesn't keep local files, so I'll switch the storage layer to a cloud bucket (Cloudflare R2 or Amazon S3). The code is built to swap drivers — it just needs a bucket and its keys.</p>
+        <p class="step-need"><b>Needs:</b><span>a Cloudflare R2 (or S3) account.</span></p>
+      </div>
+      <div class="step">
+        <div class="step-top"><span class="step-id">2.2</span><span class="chip c-dev">Developer</span><p class="step-title">Separate demo data from real data</p></div>
+        <p class="step-how">The current seed loads 5 sample products for the demo. I'll split it so production loads only the essentials — directions, currencies, order statuses, settings, page copy, and your admin login — with <b>no</b> sample products. You'll add the real catalogue through the admin.</p>
+      </div>
+      <div class="step">
+        <div class="step-top"><span class="step-id">2.3</span><span class="chip c-dev">Developer</span><p class="step-title">Hosting configuration</p></div>
+        <p class="step-how">Prepare the app for the host (Vercel is the natural fit for this stack): the pooled database connection for serverless, build settings, and the webhook endpoint. Nothing you need to touch — I set this up in the code.</p>
+      </div>
+      <div class="step">
+        <div class="step-top"><span class="step-id">2.4</span><span class="chip c-owner">You</span><span class="chip c-dev">Developer</span><p class="step-title">Create the production database</p></div>
+        <p class="step-how">Create a fresh Neon database under the client's account (separate from the demo one used to build this). I then run the setup and the production seed against it, so it starts clean with real settings and your admin account.</p>
+      </div>
+      <div class="step">
+        <div class="step-top"><span class="step-id">2.5</span><span class="chip c-owner">You</span><p class="step-title">Put the code on GitHub &amp; connect the host</p></div>
+        <p class="step-how">Create a GitHub repository under the client's account, push the code there, and connect it to the host. From then on, every update deploys automatically.</p>
+      </div>
+      <div class="step">
+        <div class="step-top"><span class="step-id">2.6</span><span class="chip c-owner">You</span><span class="chip c-dev">Developer</span><p class="step-title">Set the secret keys on the host</p></div>
+        <p class="step-how">Enter the production values in the host's settings: database link, a fresh login secret, admin email/password, the Razorpay live keys (from step 1.1), the email key (step 3.2), and the storage keys (step 2.1). I'll give you the exact list; you paste the values so the secrets stay with the client.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHASE 3 -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">3</span>
+      <span class="phase-title">Switch on payments &amp; email</span>
+      <span class="phase-when">After KYC clears</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-top"><span class="step-id">3.1</span><span class="chip c-client">Client / External</span><p class="step-title">Go live on Razorpay</p></div>
+        <p class="step-how">Once KYC is approved: add the live keys to the host, register the webhook address (<code>https://sarthakarts.com/api/webhooks/razorpay</code>) with its secret, and switch from test to live. Then place one small real order to confirm money flows and the order appears.</p>
+        <p class="step-need"><b>Note:</b><span>the payment engine is already built and proven in test mode — this only swaps the keys on.</span></p>
+      </div>
+      <div class="step">
+        <div class="step-top"><span class="step-id">3.2</span><span class="chip c-owner">You</span><p class="step-title">Turn on order &amp; booking emails</p></div>
+        <p class="step-how">Sign up for an email service (Resend is a good fit), verify <code>sarthakarts.com</code> as a sending address by adding a few DNS records, and add its key to the host. Order confirmations, certificates, and booking emails then send automatically — the code already handles them.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHASE 4 -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">4</span>
+      <span class="phase-title">Real content</span>
+      <span class="phase-when">Before opening</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-top"><span class="step-id">4.1</span><span class="chip c-owner">You</span><p class="step-title">Add the real products &amp; photography</p></div>
+        <p class="step-how">Through the admin: add each real murti and Vastu piece — name, description, exact price, materials and weights, direction and purpose, and real photos. The sample products don't carry over to production, so you start with a clean catalogue.</p>
+      </div>
+      <div class="step">
+        <div class="step-top"><span class="step-id">4.2</span><span class="chip c-owner">You</span><p class="step-title">Review the legal &amp; store copy</p></div>
+        <p class="step-how">In <b>Admin → Content</b>, read through the Terms, Privacy, and Shipping &amp; Returns drafts and adjust them (ideally with a quick legal check). Also set your store name, announcement bar, and shipping/tax to real values in Settings.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHASE 5 -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">5</span>
+      <span class="phase-title">Open for business</span>
+      <span class="phase-when">Launch</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-top"><span class="step-id">5.1</span><span class="chip c-owner">You</span><span class="chip c-dev">Developer</span><p class="step-title">Point the domain &amp; do a final check</p></div>
+        <p class="step-how">Connect <code>sarthakarts.com</code> to the host and confirm the padlock (HTTPS) is on. Then walk the whole thing once on the live site: browse, buy one real item, confirm the order, certificate, and email all arrive, and that it shows up in the admin.</p>
+      </div>
+      <div class="step">
+        <div class="step-top"><span class="step-id">5.2</span><span class="chip c-owner">You</span><p class="step-title">Announce and take orders</p></div>
+        <p class="step-how">Share it — social, WhatsApp, whoever's waiting. The store is open.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>What I can start right now, without waiting on any account:</b> steps 2.1, 2.2, and 2.3 — the cloud-storage driver, the production-safe seed, and the hosting configuration. The rest unlocks as the accounts (Razorpay KYC, the client's database and host, the email service) come online.</p>
+  </footer>
+</div>
