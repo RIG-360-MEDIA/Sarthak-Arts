@@ -6,6 +6,8 @@ const NAV = [
   ["Products", "/admin/products"],
   ["Orders", "/admin/orders"],
   ["Consultations", "/admin/consultations"],
+  ["Reviews", "/admin/reviews"],
+  ["Returns", "/admin/returns"],
   ["Settings", "/admin/settings"],
 ];
 

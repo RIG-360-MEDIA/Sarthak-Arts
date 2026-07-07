@@ -18,6 +18,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product || product.status !== "live") notFound();
   const allDirections = await prisma.direction.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } });
   const currency = await resolveDisplayCurrency();
+  const reviews = await prisma.review.findMany({
+    where: { productId: product.id, status: "published" },
+    orderBy: { createdAt: "desc" },
+  });
+  const avg = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : null;
   const dir = product.directions[0]?.direction;
   const accent = product.composition.find((c) => c.gemstone)?.gemstone?.accentHex ?? "var(--brass)";
 
@@ -70,6 +75,27 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <h3 style={{ fontSize: 15 }}>Included</h3>
         <p style={{ fontSize: 14, color: "var(--ink-muted)" }}>{product.includedItems}</p>
       </div>
+
+      <section style={{ gridColumn: "1 / -1", marginTop: 12, borderTop: "1px solid var(--line)", paddingTop: 20 }}>
+        <h3 style={{ fontSize: 16 }}>
+          Reviews {avg !== null && <span style={{ color: "var(--brass)" }}>· {avg.toFixed(1)}★ ({reviews.length})</span>}
+        </h3>
+        {reviews.length === 0 && <p style={{ fontSize: 14, color: "var(--ink-muted)" }}>No reviews yet.</p>}
+        {reviews.map((r) => (
+          <div key={r.id} style={{ padding: "12px 0", borderBottom: "1px solid var(--line)" }}>
+            <div style={{ fontSize: 13 }}>
+              <strong>{r.customerName}</strong> · {r.rating}★
+              {r.verifiedPurchase && <span style={{ color: "var(--success)", fontSize: 11, marginLeft: 6 }}>✓ Verified purchase</span>}
+            </div>
+            <p style={{ fontSize: 14, color: "var(--ink-muted)", margin: "4px 0" }}>{r.body}</p>
+            {r.sellerReply && (
+              <p style={{ fontSize: 13, color: "var(--ink-muted)", marginLeft: 16, paddingLeft: 10, borderLeft: "2px solid var(--brass)" }}>
+                <strong>Sarthak Arts:</strong> {r.sellerReply}
+              </p>
+            )}
+          </div>
+        ))}
+      </section>
     </div>
   );
 }
