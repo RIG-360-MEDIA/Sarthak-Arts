@@ -42,3 +42,21 @@ export async function sendOrderConfirmation(orderId: number): Promise<void> {
     attachments,
   });
 }
+
+export async function sendBookingConfirmation(bookingId: number): Promise<void> {
+  const booking = await prisma.booking.findUniqueOrThrow({
+    where: { id: bookingId },
+    include: { consultationType: true },
+  });
+  if (!process.env.RESEND_API_KEY) {
+    console.log(`[email disabled] would send booking confirmation ${bookingId} to ${booking.customerEmail}`);
+    return;
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  await resend.emails.send({
+    from: "bookings@sarthakarts.com",
+    to: booking.customerEmail,
+    subject: `Your ${booking.consultationType.name} consultation is booked`,
+    html: `<p>Your ${booking.consultationType.name} is booked for ${booking.slotStart.toUTCString()}. A call link will follow.</p>`,
+  });
+}

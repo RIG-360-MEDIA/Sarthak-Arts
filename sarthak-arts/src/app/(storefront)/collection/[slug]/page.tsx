@@ -1,9 +1,25 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { Mandala } from "@/components/Mandala";
 import { resolveDisplayCurrency, formatDisplay } from "@/lib/currency";
 import { addToCart } from "./actions";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const p = await prisma.product.findUnique({
+    where: { slug },
+    include: { directions: { include: { direction: true } }, composition: { include: { metal: true } } },
+  });
+  if (!p) return { title: "Product — Sarthak Arts" };
+  const dir = p.directions[0]?.direction.name ?? "Vastu";
+  const metal = p.composition.find((c) => c.metal)?.metal?.name ?? "copper, brass & silver";
+  return {
+    title: `${p.name} — ${dir} Vastu Piece in ${metal} | Sarthak Arts`,
+    description: `${p.name}, handcrafted and built for the ${dir} zone of the home. Ships with placement guide and certificate of composition.`,
+  };
+}
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

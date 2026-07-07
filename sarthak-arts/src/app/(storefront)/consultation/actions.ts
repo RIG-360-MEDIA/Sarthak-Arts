@@ -34,5 +34,8 @@ export async function createBooking(formData: FormData): Promise<void> {
   });
   if (entitlement) await prisma.consultationEntitlement.update({ where: { id: entitlement.id }, data: { status: "used" } });
 
+  const { sendBookingConfirmation } = await import("@/lib/email");
+  await sendBookingConfirmation(booking.id);
+
   redirect(`/consultation/confirmed?id=${booking.id}`);
 }
