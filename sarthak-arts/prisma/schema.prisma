@@ -163,6 +163,7 @@ model Product {
   includedItems   String
   basePriceMinor  Int
   baseCurrency    String                @default("INR")
+  stockQuantity   Int                   @default(0)
   status          String                @default("live")
   isFinalSale     Boolean               @default(false)
   categoryId      Int

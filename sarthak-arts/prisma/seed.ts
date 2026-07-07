@@ -71,6 +71,7 @@ async function main() {
     ]],
     ["consultation_credit_threshold_minor", 1500000],
     ["store_name", "Sarthak Arts"],
+    ["low_stock_threshold", 5],
   ];
   for (const [key, value] of settings)
     await db.setting.upsert({ where: { key }, update: {}, create: { key, value: value as object } });
@@ -188,6 +189,16 @@ async function main() {
     if (!(await db.productImage.findFirst({ where: { productId: created.id } })))
       await db.productImage.create({ data: { productId: created.id, url: `/placeholder/${p.slug}.svg`, alt: p.name, sortOrder: 0 } });
   }
+  const stockBySlug: Record<string, number> = {
+    "copper-vastu-kalash": 14,
+    "brass-ashtadhatu-pyramid": 8,
+    "silver-sri-yantra-plate": 3,
+    "gold-accent-om-wall-panel": 0,
+    "copper-brass-wind-chime": 21,
+  };
+  for (const [slug, stockQuantity] of Object.entries(stockBySlug))
+    await db.product.update({ where: { slug }, data: { stockQuantity } });
+
   console.log("Seed complete.");
 }
 
