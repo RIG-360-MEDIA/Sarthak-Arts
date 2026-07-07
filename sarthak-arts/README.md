@@ -49,6 +49,10 @@ These are wired and waiting on real credentials/content — no code changes need
 - **Live social sync** — posts are admin-curated now; the `SocialPost.source` field is ready for API sync later.
 - **Real product photography and catalog** — sample products and placeholder art ship in the seed; the admin accepts the real catalog as data.
 
+## Deploying
+
+The app is production-ready: cloud file storage (S3-compatible — Cloudflare R2 or Amazon S3, via `STORAGE_DRIVER=s3`), a production seed that loads reference data + logins but no sample products (`npm run db:seed:prod`), and pooled/direct database URLs for serverless. See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full step-by-step (Neon, Vercel, R2, Razorpay, Resend, domain).
+
 ## Tag history
 
-`v0.1-slice` → `v0.2-storefront` → `v0.3-admin` → `v0.4-consultations` → `v0.5-post-purchase` → `v1.0` (CMS, social, analytics, polish — feature-complete) → `v1.1` (legal pages via CMS + gifting) → **`v1.2`** (consultant/astrologer portal — every role now has its own interface).
+`v0.1-slice` → `v0.2-storefront` → `v0.3-admin` → `v0.4-consultations` → `v0.5-post-purchase` → `v1.0` (CMS, social, analytics, polish — feature-complete) → `v1.1` (legal pages via CMS + gifting) → `v1.2` (consultant/astrologer portal — every role has its own interface) → **`v1.3`** (production readiness — cloud storage, prod seed, deploy config + guide).

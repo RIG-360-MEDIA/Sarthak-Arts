@@ -183,18 +183,17 @@
       <span class="phase-when">In parallel</span>
     </div>
     <div class="steps">
-      <div class="step">
-        <div class="step-top"><span class="step-id">2.1</span><span class="chip c-dev">Developer</span><p class="step-title">Move certificate storage to the cloud</p></div>
-        <p class="step-how">Certificates currently save to the computer's disk. A live host doesn't keep local files, so I'll switch the storage layer to a cloud bucket (Cloudflare R2 or Amazon S3). The code is built to swap drivers — it just needs a bucket and its keys.</p>
-        <p class="step-need"><b>Needs:</b><span>a Cloudflare R2 (or S3) account.</span></p>
+      <div class="step is-done">
+        <div class="step-top"><span class="step-id">2.1</span><span class="chip c-done">Done</span><p class="step-title">Move certificate storage to the cloud</p></div>
+        <p class="step-how">Done — the storage layer now supports cloud buckets (Cloudflare R2 or Amazon S3), chosen by a single setting. It just needs a bucket and its keys plugged in at deploy time.</p>
       </div>
-      <div class="step">
-        <div class="step-top"><span class="step-id">2.2</span><span class="chip c-dev">Developer</span><p class="step-title">Separate demo data from real data</p></div>
-        <p class="step-how">The current seed loads 5 sample products for the demo. I'll split it so production loads only the essentials — directions, currencies, order statuses, settings, page copy, and your admin login — with <b>no</b> sample products. You'll add the real catalogue through the admin.</p>
+      <div class="step is-done">
+        <div class="step-top"><span class="step-id">2.2</span><span class="chip c-done">Done</span><p class="step-title">Separate demo data from real data</p></div>
+        <p class="step-how">Done — production setup (<code>npm run db:seed:prod</code>) loads only the essentials (directions, currencies, order statuses, settings, page copy, and the owner + consultant logins) with <b>no</b> sample products. You add the real catalogue through the admin.</p>
       </div>
-      <div class="step">
-        <div class="step-top"><span class="step-id">2.3</span><span class="chip c-dev">Developer</span><p class="step-title">Hosting configuration</p></div>
-        <p class="step-how">Prepare the app for the host (Vercel is the natural fit for this stack): the pooled database connection for serverless, build settings, and the webhook endpoint. Nothing you need to touch — I set this up in the code.</p>
+      <div class="step is-done">
+        <div class="step-top"><span class="step-id">2.3</span><span class="chip c-done">Done</span><p class="step-title">Hosting configuration &amp; guide</p></div>
+        <p class="step-how">Done — pooled/direct database connections for serverless are wired, and a full step-by-step <code>DEPLOYMENT.md</code> covers Neon, Vercel, R2, Razorpay, Resend, and the domain.</p>
       </div>
       <div class="step">
         <div class="step-top"><span class="step-id">2.4</span><span class="chip c-owner">You</span><span class="chip c-dev">Developer</span><p class="step-title">Create the production database</p></div>
@@ -270,6 +269,6 @@
   </section>
 
   <footer>
-    <p><b>What I can start right now, without waiting on any account:</b> steps 2.1, 2.2, and 2.3 — the cloud-storage driver, the production-safe seed, and the hosting configuration. The rest unlocks as the accounts (Razorpay KYC, the client's database and host, the email service) come online.</p>
+    <p><b>All developer work is done</b> (the platform is complete and deploy-ready through <code>v1.3</code>, with a full <code>DEPLOYMENT.md</code>). What remains is only what needs the business's identity, accounts, and money: <b>Razorpay KYC</b> (start first — longest wait), the client's <b>domain, database, host, and email accounts</b>, and the <b>real catalogue</b>. Follow the guide and paste the keys in — no more code changes.</p>
   </footer>
 </div>
