@@ -4,6 +4,10 @@ import bcrypt from "bcryptjs";
 const db = new PrismaClient();
 
 async function main() {
+  // Demo data (sample products, stock, availability slots, social posts) loads for dev.
+  // Production runs with SEED_DEMO=false to seed only reference/config data + logins.
+  const demo = process.env.SEED_DEMO !== "false";
+
   const directions = [
     ["northeast", "Northeast", "Ishanya", "Water", "Clarity, spiritual grounding", "Keep water moving here, and clarity follows.", 1],
     ["north", "North", "Uttara", null, "Wealth, career flow", "The zone most linked to career and cash flow.", 2],
@@ -161,7 +165,7 @@ async function main() {
     },
   ];
 
-  for (const p of products) {
+  if (demo) for (const p of products) {
     const created = await db.product.upsert({
       where: { slug: p.slug },
       update: {},
@@ -224,7 +228,7 @@ async function main() {
       where: { consultantId_consultationTypeId: { consultantId: consultant.id, consultationTypeId: t.id } },
       update: {}, create: { consultantId: consultant.id, consultationTypeId: t.id },
     });
-  if ((await db.consultantAvailability.count()) === 0) {
+  if (demo && (await db.consultantAvailability.count()) === 0) {
     const base = new Date("2026-07-10T04:30:00.000Z"); // 10:00 IST
     for (let day = 0; day < 5; day++)
       for (const hourOffset of [0, 2, 5]) {
@@ -260,7 +264,7 @@ async function main() {
     "gold-accent-om-wall-panel": 0,
     "copper-brass-wind-chime": 21,
   };
-  for (const [slug, stockQuantity] of Object.entries(stockBySlug))
+  if (demo) for (const [slug, stockQuantity] of Object.entries(stockBySlug))
     await db.product.update({ where: { slug }, data: { stockQuantity } });
 
   // content blocks (owner-editable copy) — sourced from the client copy doc
@@ -287,11 +291,11 @@ async function main() {
   ] as const)
     await db.socialAccount.upsert({ where: { platform }, update: {}, create: { platform, handle, profileUrl } });
 
-  if ((await db.socialPost.count()) === 0)
+  if (demo && (await db.socialPost.count()) === 0)
     for (let i = 1; i <= 4; i++)
       await db.socialPost.create({ data: { platform: "instagram", caption: `A piece from the workshop #${i}`, mediaUrl: `/placeholder/copper-vastu-kalash.svg`, permalink: "https://instagram.com/sarthakarts" } });
 
-  console.log("Seed complete.");
+  console.log(`Seed complete. Mode: ${demo ? "demo (sample products loaded)" : "production (reference data only, no sample products)"}.`);
 }
 
 main().finally(() => db.$disconnect());
