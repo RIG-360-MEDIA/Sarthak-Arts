@@ -476,3 +476,38 @@ model ReturnRequest {
   requestedAt  DateTime     @default(now())
   resolvedAt   DateTime?
 }
+
+// ---------- content, social & subscribers ----------
+
+model ContentBlock {
+  key       String   @id
+  title     String?
+  body      String
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+}
+
+model SocialAccount {
+  id         Int     @id @default(autoincrement())
+  platform   String  @unique
+  handle     String
+  profileUrl String
+  active     Boolean @default(true)
+}
+
+model SocialPost {
+  id        Int      @id @default(autoincrement())
+  platform  String
+  caption   String
+  mediaUrl  String
+  permalink String
+  source    String   @default("manual")
+  pinned    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Subscriber {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+}

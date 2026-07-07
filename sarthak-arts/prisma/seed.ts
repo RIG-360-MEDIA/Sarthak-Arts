@@ -244,6 +244,31 @@ async function main() {
   for (const [slug, stockQuantity] of Object.entries(stockBySlug))
     await db.product.update({ where: { slug }, data: { stockQuantity } });
 
+  // content blocks (owner-editable copy) — sourced from the client copy doc
+  const blocks: [string, string | null, string][] = [
+    ["about.body", "Why we started making these", "We started Sarthak Arts because too many so-called Vastu objects are sold without honesty — no real material, no real direction. We work direction-first, with a small circle of craftspeople, so each piece is built for one zone of a home and stated plainly."],
+    ["our-craft.intro", "Made by hand, not run through a mould twice", "Every piece passes through the hands of one metalworker from raw sheet or ingot to finished object. We work with a small circle of coppersmiths, silversmiths and stone-setters. We don't run production batches — we run orders."],
+    ["our-craft.materials", "The materials", "We use copper, brass and silver at stated purity, and gold only as a thin overlay where a listing says so. Every product page lists the exact metal weight, not a range."],
+    ["our-craft.stones", "The stones", "Gemstones are chosen by hand for colour and clarity. Each stone is set, not glued, so it can be reset or replaced by a jeweller decades from now if needed."],
+    ["vastu.intro", "Vastu Shastra, briefly", "Vastu Shastra is a traditional Indian system for arranging buildings and objects so a home works with natural energy rather than against it. We don't claim our products guarantee an outcome — what we can tell you is that every piece is built to the traditional specification for its direction and purpose."],
+    ["faq.1", "Is this real gold/silver, or plated?", "Each listing states this exactly. Where we use a gold overlay on brass, we say gold-accent or gold overlay, never gold. Solid silver and copper pieces are stated as solid."],
+    ["faq.2", "Do you offer a certificate of authenticity?", "Yes — every order ships with a certificate stating the exact metal weight and gemstone in your piece."],
+    ["faq.3", "Can copper darken over time?", "Yes, and that's expected — copper develops a natural patina with air exposure, which in Vastu tradition is not considered a flaw. A light polish restores the bright finish."],
+    ["faq.4", "What if I'm not sure which direction applies to my home?", "Use the direction guide, take the 2-minute home audit, or book a short consultation — we'll point you to the right pieces."],
+  ];
+  for (const [key, title, body] of blocks)
+    await db.contentBlock.upsert({ where: { key }, update: {}, create: { key, title, body } });
+
+  for (const [platform, handle, profileUrl] of [
+    ["instagram", "@sarthakarts", "https://instagram.com/sarthakarts"],
+    ["threads", "@sarthakarts", "https://www.threads.net/@sarthakarts"],
+  ] as const)
+    await db.socialAccount.upsert({ where: { platform }, update: {}, create: { platform, handle, profileUrl } });
+
+  if ((await db.socialPost.count()) === 0)
+    for (let i = 1; i <= 4; i++)
+      await db.socialPost.create({ data: { platform: "instagram", caption: `A piece from the workshop #${i}`, mediaUrl: `/placeholder/copper-vastu-kalash.svg`, permalink: "https://instagram.com/sarthakarts" } });
+
   console.log("Seed complete.");
 }
 
