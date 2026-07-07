@@ -177,6 +177,7 @@ model Product {
   priceHistory    ProductPriceHistory[]
   cartItems       CartItem[]
   orderItems      OrderItem[]
+  reviews         Review[]
   createdAt       DateTime              @default(now())
 }
 
@@ -306,6 +307,8 @@ model OrderItem {
   quantity            Int
   compositionSnapshot Json
   certificates        OrderCertificate[]
+  review              Review?
+  returnRequest       ReturnRequest?
 }
 
 model OrderStatusHistory {
@@ -433,4 +436,43 @@ model AuditAnswerRule {
   mapsToDirection  String?
   recommendConsult Boolean       @default(false)
   displayOrder     Int           @default(0)
+}
+
+// ---------- reviews & returns ----------
+
+model Review {
+  id               Int       @id @default(autoincrement())
+  productId        Int
+  product          Product   @relation(fields: [productId], references: [id])
+  orderItemId      Int       @unique
+  orderItem        OrderItem @relation(fields: [orderItemId], references: [id])
+  customerName     String
+  customerEmail    String
+  rating           Int
+  body             String
+  verifiedPurchase Boolean   @default(true)
+  status           String    @default("published")
+  sellerReply      String?
+  createdAt        DateTime  @default(now())
+}
+
+model ReturnReason {
+  id          Int             @id @default(autoincrement())
+  code        String          @unique
+  displayName String
+  active      Boolean         @default(true)
+  requests    ReturnRequest[]
+}
+
+model ReturnRequest {
+  id           Int          @id @default(autoincrement())
+  orderItemId  Int          @unique
+  orderItem    OrderItem    @relation(fields: [orderItemId], references: [id])
+  reasonId     Int
+  reason       ReturnReason @relation(fields: [reasonId], references: [id])
+  customerNote String?
+  status       String       @default("requested")
+  adminNote    String?
+  requestedAt  DateTime     @default(now())
+  resolvedAt   DateTime?
 }

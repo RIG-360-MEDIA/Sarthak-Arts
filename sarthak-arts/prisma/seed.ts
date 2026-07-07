@@ -72,6 +72,7 @@ async function main() {
     ["consultation_credit_threshold_minor", 1500000],
     ["store_name", "Sarthak Arts"],
     ["low_stock_threshold", 5],
+    ["return_window_days", 7],
   ];
   for (const [key, value] of settings)
     await db.setting.upsert({ where: { key }, update: {}, create: { key, value: value as object } });
@@ -224,6 +225,14 @@ async function main() {
     await db.auditAnswerRule.create({ data: { questionId: q3.id, answerText: "Yes, fairly standard", displayOrder: 1 } });
     await db.auditAnswerRule.create({ data: { questionId: q3.id, answerText: "No — it's irregular (L-shaped, corner, multi-floor)", recommendConsult: true, displayOrder: 2 } });
   }
+
+  for (const [code, displayName] of [
+    ["changed-mind", "Changed my mind"],
+    ["damaged", "Arrived damaged"],
+    ["not-as-described", "Not as described"],
+    ["wrong-item", "Wrong item received"],
+  ] as const)
+    await db.returnReason.upsert({ where: { code }, update: {}, create: { code, displayName } });
 
   const stockBySlug: Record<string, number> = {
     "copper-vastu-kalash": 14,
