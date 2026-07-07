@@ -44,4 +44,4 @@ These are wired and waiting on real credentials/content — no code changes need
 
 ## Tag history
 
-`v0.1-slice` → `v0.2-storefront` → `v0.3-admin` → `v0.4-consultations` → `v0.5-post-purchase` → **`v1.0`** (CMS, social, analytics, polish — feature-complete).
+`v0.1-slice` → `v0.2-storefront` → `v0.3-admin` → `v0.4-consultations` → `v0.5-post-purchase` → `v1.0` (CMS, social, analytics, polish — feature-complete) → **`v1.1`** (legal pages via CMS + gifting at checkout).

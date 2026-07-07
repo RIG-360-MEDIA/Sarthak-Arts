@@ -25,6 +25,11 @@ export default async function CheckoutPage() {
         <label>State</label><input name="state" required />
         <label>PIN code</label><input name="postalCode" required />
         <input type="hidden" name="country" value="IN" />
+        <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16, fontSize: 14 }}>
+          <input type="checkbox" name="isGift" style={{ width: "auto" }} /> This is a gift
+        </label>
+        <label>Gift message (optional)</label>
+        <textarea name="giftNote" rows={2} placeholder="A short note to enclose. Prices are never shown in a gift parcel." />
         <button style={{ marginTop: 20 }}>Continue to payment</button>
       </form>
       <div style={{ border: "1px solid var(--line)", borderRadius: 8, padding: 20, height: "fit-content" }}>

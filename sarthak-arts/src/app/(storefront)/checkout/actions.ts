@@ -54,6 +54,8 @@ export async function beginCheckout(formData: FormData): Promise<void> {
       },
       currency: "INR",
       ...totals,
+      isGift: formData.get("isGift") === "on",
+      giftNote: (formData.get("giftNote") as string)?.trim() || null,
       gatewayCode: "razorpay",
       gatewayOrderId: String(gatewayOrder.id),
     },

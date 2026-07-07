@@ -50,6 +50,13 @@ export default async function OrderView({
       <h1>{order.orderNumber}</h1>
       <p style={{ color: "var(--ink-muted)" }}>Status: {order.status.name}</p>
 
+      {order.isGift && (
+        <div style={{ border: "1px solid var(--brass)", background: "var(--ground-raised)", borderRadius: 8, padding: "12px 14px", marginTop: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--brass)" }}>🎁 Sent as a gift — no prices are shown in the parcel.</div>
+          {order.giftNote && <p style={{ fontSize: 14, marginTop: 6, whiteSpace: "pre-wrap" }}>“{order.giftNote}”</p>}
+        </div>
+      )}
+
       {order.items.map((item) => {
         const returnable = canReturn({
           statusCode: order.status.code,

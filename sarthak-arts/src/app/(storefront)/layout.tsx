@@ -49,7 +49,9 @@ export default async function StorefrontLayout({ children }: { children: React.R
           </div>
           <div>
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "var(--brass)", marginBottom: 10 }}>Help</div>
-            <a href="/order-lookup" style={{ display: "block", fontSize: 13, color: "var(--focus-muted)", textDecoration: "none", padding: "3px 0" }}>Track / return an order</a>
+            {[["Track / return an order", "/order-lookup"], ["Shipping & Returns", "/shipping-returns"], ["Terms of Service", "/terms"], ["Privacy Policy", "/privacy"]].map(([l, h]) => (
+              <a key={h} href={h} style={{ display: "block", fontSize: 13, color: "var(--focus-muted)", textDecoration: "none", padding: "3px 0" }}>{l}</a>
+            ))}
           </div>
           <div>
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "var(--brass)", marginBottom: 10 }}>On Instagram</div>

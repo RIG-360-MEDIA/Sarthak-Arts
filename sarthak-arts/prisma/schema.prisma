@@ -267,6 +267,8 @@ model CheckoutIntent {
   gatewayCode     String
   gatewayOrderId  String   @unique
   status          String   @default("pending")
+  isGift          Boolean  @default(false)
+  giftNote        String?
   createdAt       DateTime @default(now())
 }
 

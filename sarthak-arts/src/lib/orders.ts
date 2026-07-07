@@ -25,6 +25,8 @@ export async function completeIntent(gatewayOrderId: string, gatewayPaymentId: s
         taxMinor: intent.taxMinor,
         totalMinor: intent.totalMinor,
         shippingAddress: intent.shippingAddress as object,
+        isGift: intent.isGift,
+        giftNote: intent.giftNote,
         statusId: confirmed.id,
         items: {
           create: items.map((i) => ({

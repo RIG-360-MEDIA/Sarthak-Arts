@@ -16,7 +16,7 @@ export default async function AdminContent() {
           <label>Title</label>
           <input name="title" defaultValue={b.title ?? ""} />
           <label>Body</label>
-          <textarea name="body" rows={3} defaultValue={b.body} />
+          <textarea name="body" rows={Math.min(20, Math.max(3, b.body.split("\n").length + 1))} defaultValue={b.body} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
             <span style={{ fontSize: 11, color: "var(--ink-faint)" }}>Updated {b.updatedAt.toISOString().slice(0, 10)}{b.updatedBy ? ` by ${b.updatedBy}` : ""}</span>
             <button className="btn-ghost" style={{ fontSize: 12, padding: "4px 12px" }}>Save</button>

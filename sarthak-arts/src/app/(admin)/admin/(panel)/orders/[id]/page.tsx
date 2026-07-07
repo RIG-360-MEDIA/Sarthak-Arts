@@ -22,6 +22,12 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
         <h1>{order.orderNumber} — {order.status.name}</h1>
         <p style={{ color: "var(--ink-muted)" }}>{order.email} · {order.phone}</p>
         <p style={{ fontSize: 14 }}>{addr.name}, {addr.line1}, {addr.city}, {addr.state} {addr.postalCode}, {addr.country}</p>
+        {order.isGift && (
+          <div style={{ border: "1px solid var(--brass)", background: "var(--ground-raised)", borderRadius: 8, padding: "12px 14px", marginTop: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "var(--brass)" }}>🎁 Gift order — enclose the message, no prices in the parcel</div>
+            {order.giftNote && <p style={{ fontSize: 14, marginTop: 6, whiteSpace: "pre-wrap" }}>“{order.giftNote}”</p>}
+          </div>
+        )}
         <table style={{ marginTop: 12 }}>
           <tbody>
             {order.items.map((i) => (
