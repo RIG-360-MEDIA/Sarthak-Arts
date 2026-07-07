@@ -15,5 +15,5 @@ export async function login(formData: FormData): Promise<void> {
   if (!ok || !isAdmin) redirect("/admin/login?error=1");
   const token = await signSession({ userId: user!.id, role: "admin" }, process.env.SESSION_SECRET!);
   (await cookies()).set("admin_session", token, { httpOnly: true, sameSite: "lax", maxAge: 60 * 60 * 24 * 7 });
-  redirect("/admin/orders");
+  redirect("/admin");
 }
