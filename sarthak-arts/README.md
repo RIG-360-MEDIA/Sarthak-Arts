@@ -30,7 +30,14 @@ npm run dev                  # http://localhost:3000
 
 **Storefront:** homepage, collection listing + filters, product pages (with reviews, gemstone-accent pricing, SEO metadata), shop-by-direction wheel, search, cart, guest checkout → payment → order, consultation booking, 2-minute home audit, guest order lookup with review/return, and editorial pages (About, Our Craft, Vastu Shastra/FAQ) with a full footer + newsletter capture.
 
-**Admin:** dashboard, products (manual pricing, composition editor, price history), orders (status flow), consultations (bookings + availability), reviews (moderation), returns, **content** (edit any storefront copy — goes live instantly), **social** (curate the Instagram feed), **analytics** (revenue, top products, sales-by-direction), and settings.
+**Admin:** dashboard, products (manual pricing, composition editor, price history), orders (status flow), consultations (bookings + availability + provisioning consultant logins), reviews (moderation), returns, **content** (edit any storefront copy — goes live instantly), **social** (curate the Instagram feed), **analytics** (revenue, top products, sales-by-direction), and settings.
+
+**Consultant / astrologer portal** (`/portal`): each consultant signs in to see only their own bookings (customer details, mark done, add a video-call link) and manage their own availability. Role-gated separately from admin. The admin creates/resets consultant logins from the Consultations screen.
+
+### Logins (dev)
+
+- **Admin:** `owner@sarthakarts.com` / `SarthakAdmin!2026` → `/admin`
+- **Consultant:** `consultant@sarthakarts.com` / (set via `CONSULTANT_PASSWORD`) → `/portal`
 
 ## Deferred (operational inputs, not missing features)
 
@@ -44,4 +51,4 @@ These are wired and waiting on real credentials/content — no code changes need
 
 ## Tag history
 
-`v0.1-slice` → `v0.2-storefront` → `v0.3-admin` → `v0.4-consultations` → `v0.5-post-purchase` → `v1.0` (CMS, social, analytics, polish — feature-complete) → **`v1.1`** (legal pages via CMS + gifting at checkout).
+`v0.1-slice` → `v0.2-storefront` → `v0.3-admin` → `v0.4-consultations` → `v0.5-post-purchase` → `v1.0` (CMS, social, analytics, polish — feature-complete) → `v1.1` (legal pages via CMS + gifting) → **`v1.2`** (consultant/astrologer portal — every role now has its own interface).
