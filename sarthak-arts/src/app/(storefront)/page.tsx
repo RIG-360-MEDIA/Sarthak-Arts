@@ -27,6 +27,7 @@ export default async function Home() {
           <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
             <Link href="/collection"><button>View the collection</button></Link>
             <Link href="/direction"><button className="btn-ghost">Shop by direction</button></Link>
+            <Link href="/home-audit"><button className="btn-ghost">Take the 2-minute home audit</button></Link>
           </div>
         </div>
         <div style={{ width: 240, height: 240, background: "var(--focus-panel)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
