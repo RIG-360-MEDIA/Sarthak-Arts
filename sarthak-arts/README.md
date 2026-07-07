@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sarthak Arts
 
-## Getting Started
+A custom D2C storefront and admin panel for **Sarthak Arts** — handcrafted Murtis and Indian Vastu products (copper, brass and silver pieces, set with gemstones). Built direction-first: every product is tied to a Vastu direction and purpose, ships with a certificate of composition, and the whole platform is configuration-driven — copy, currencies, shipping, statuses, FAQ and social posts are all database rows the owner edits, never code.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router, React 19, Server Actions) + TypeScript
+- **Prisma 6** + **PostgreSQL** (Neon)
+- Custom session auth (jose JWT + bcrypt, HttpOnly cookie, `proxy.ts`-gated `/admin`)
+- Money stored as integer minor units; multi-currency display via cookie + per-currency rate
+- Razorpay webhook-driven orders (HMAC-verified, idempotent); certificate PDFs via `@react-pdf/renderer` behind a storage abstraction
+- Vitest (TDD for all pure-logic modules)
+
+## Running locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env         # then fill in DATABASE_URL and SESSION_SECRET
+npm run db:migrate           # apply migrations
+npm run db:seed              # reference data, settings, sample products, content
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Storefront:** `/`
+- **Admin:** `/admin` — sign in with the seeded owner account:
+  - `owner@sarthakarts.com` / `SarthakAdmin!2026`
+- **Simulate a paid order** without a public webhook URL: `npm run simulate:webhook`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## What's in it
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Storefront:** homepage, collection listing + filters, product pages (with reviews, gemstone-accent pricing, SEO metadata), shop-by-direction wheel, search, cart, guest checkout → payment → order, consultation booking, 2-minute home audit, guest order lookup with review/return, and editorial pages (About, Our Craft, Vastu Shastra/FAQ) with a full footer + newsletter capture.
 
-## Learn More
+**Admin:** dashboard, products (manual pricing, composition editor, price history), orders (status flow), consultations (bookings + availability), reviews (moderation), returns, **content** (edit any storefront copy — goes live instantly), **social** (curate the Instagram feed), **analytics** (revenue, top products, sales-by-direction), and settings.
 
-To learn more about Next.js, take a look at the following resources:
+## Deferred (operational inputs, not missing features)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+These are wired and waiting on real credentials/content — no code changes needed to switch on:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Payment keys** — Razorpay/Stripe live keys are behind KYC; the webhook + signature verification are complete and tested against a local simulator.
+- **Transactional email** — `src/lib/email.ts` no-ops cleanly without `RESEND_API_KEY`; order- and booking-confirmation emails send the moment a key is set. The broader notification set (abandoned cart, back-in-stock) plugs into the same module.
+- **Customer accounts** — checkout is guest-first with email-gated order lookup; a full account area is a later addition.
+- **Live social sync** — posts are admin-curated now; the `SocialPost.source` field is ready for API sync later.
+- **Real product photography and catalog** — sample products and placeholder art ship in the seed; the admin accepts the real catalog as data.
 
-## Deploy on Vercel
+## Tag history
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`v0.1-slice` → `v0.2-storefront` → `v0.3-admin` → `v0.4-consultations` → `v0.5-post-purchase` → **`v1.0`** (CMS, social, analytics, polish — feature-complete).
