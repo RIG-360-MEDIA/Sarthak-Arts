@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { prisma } from "@/lib/db";
-import { formatMoney } from "@/lib/money";
 import { Mandala } from "@/components/Mandala";
+import { resolveDisplayCurrency, formatDisplay } from "@/lib/currency";
 import { addToCart } from "./actions";
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -17,6 +17,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   });
   if (!product || product.status !== "live") notFound();
   const allDirections = await prisma.direction.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } });
+  const currency = await resolveDisplayCurrency();
   const dir = product.directions[0]?.direction;
   const accent = product.composition.find((c) => c.gemstone)?.gemstone?.accentHex ?? "var(--brass)";
 
@@ -42,7 +43,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <h1 style={{ fontSize: 28, margin: "8px 0" }}>{product.name}</h1>
         <p style={{ color: "var(--ink-muted)" }}>{product.positioningLine}</p>
         <p className="num" style={{ fontSize: 24, color: accent, margin: "16px 0" }}>
-          {formatMoney(product.basePriceMinor, product.baseCurrency)}
+          {formatDisplay(product.basePriceMinor, currency.code, currency.ratePerBase)}
         </p>
         <form action={addToCart}>
           <input type="hidden" name="productId" value={product.id} />
