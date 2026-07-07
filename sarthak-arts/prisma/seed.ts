@@ -200,6 +200,25 @@ async function main() {
   });
   const consultant = (await db.consultant.findFirst({ where: { name: "Resident Consultant" } }))
     ?? (await db.consultant.create({ data: { name: "Resident Consultant" } }));
+
+  // Consultant login: role + user, linked to the consultant record so the portal
+  // resolves their own bookings/availability by userId.
+  const consultantRole = await db.role.upsert({ where: { code: "consultant" }, update: {}, create: { code: "consultant", name: "Consultant" } });
+  const consultantUser = await db.user.upsert({
+    where: { email: process.env.CONSULTANT_EMAIL ?? "consultant@sarthakarts.com" },
+    update: {},
+    create: {
+      email: process.env.CONSULTANT_EMAIL ?? "consultant@sarthakarts.com",
+      name: "Resident Consultant",
+      passwordHash: await bcrypt.hash(process.env.CONSULTANT_PASSWORD ?? "change-me", 10),
+    },
+  });
+  await db.userRole.upsert({
+    where: { userId_roleId: { userId: consultantUser.id, roleId: consultantRole.id } },
+    update: {}, create: { userId: consultantUser.id, roleId: consultantRole.id },
+  });
+  if (consultant.userId !== consultantUser.id)
+    await db.consultant.update({ where: { id: consultant.id }, data: { userId: consultantUser.id } });
   for (const t of [vastu, astro])
     await db.consultantType.upsert({
       where: { consultantId_consultationTypeId: { consultantId: consultant.id, consultationTypeId: t.id } },
