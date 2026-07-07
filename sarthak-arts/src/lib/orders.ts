@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { generateCertificates } from "@/lib/certificate";
 import { sendOrderConfirmation } from "@/lib/email";
+import { getSetting } from "@/lib/settings";
 
 export async function completeIntent(gatewayOrderId: string, gatewayPaymentId: string) {
   const intent = await prisma.checkoutIntent.findUnique({ where: { gatewayOrderId } });
@@ -52,6 +53,18 @@ export async function completeIntent(gatewayOrderId: string, gatewayPaymentId: s
     if (intent.cartId) await tx.cartItem.deleteMany({ where: { cartId: intent.cartId } });
     return created;
   });
+
+  // Big-order perk: an order over the threshold grants one free Vastu placement consultation
+  // (the announcement bar promise). Threshold + granted type are settings/reference data.
+  const thresholdMinor = await getSetting<number>("consultation_credit_threshold_minor", 1500000);
+  if (order.totalMinor >= thresholdMinor) {
+    const vastu = await prisma.consultationType.findUnique({ where: { code: "vastu-placement" } });
+    if (vastu) {
+      await prisma.consultationEntitlement.create({
+        data: { customerEmail: order.email, sourceOrderId: order.id, consultationTypeId: vastu.id },
+      });
+    }
+  }
 
   await generateCertificates(order.id);
   await sendOrderConfirmation(order.id);

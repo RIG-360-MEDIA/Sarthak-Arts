@@ -189,6 +189,42 @@ async function main() {
     if (!(await db.productImage.findFirst({ where: { productId: created.id } })))
       await db.productImage.create({ data: { productId: created.id, url: `/placeholder/${p.slug}.svg`, alt: p.name, sortOrder: 0 } });
   }
+  const vastu = await db.consultationType.upsert({
+    where: { code: "vastu-placement" }, update: {},
+    create: { code: "vastu-placement", name: "Vastu placement", description: "A 20-minute call to place your pieces correctly for your specific home layout.", durationMinutes: 20, feeMinor: 99900, creditsTowardOrder: true, displayOrder: 1 },
+  });
+  const astro = await db.consultationType.upsert({
+    where: { code: "astrology" }, update: {},
+    create: { code: "astrology", name: "Astrology", description: "A 30-minute astrology consultation.", durationMinutes: 30, feeMinor: 99900, creditsTowardOrder: false, displayOrder: 2 },
+  });
+  const consultant = (await db.consultant.findFirst({ where: { name: "Resident Consultant" } }))
+    ?? (await db.consultant.create({ data: { name: "Resident Consultant" } }));
+  for (const t of [vastu, astro])
+    await db.consultantType.upsert({
+      where: { consultantId_consultationTypeId: { consultantId: consultant.id, consultationTypeId: t.id } },
+      update: {}, create: { consultantId: consultant.id, consultationTypeId: t.id },
+    });
+  if ((await db.consultantAvailability.count()) === 0) {
+    const base = new Date("2026-07-10T04:30:00.000Z"); // 10:00 IST
+    for (let day = 0; day < 5; day++)
+      for (const hourOffset of [0, 2, 5]) {
+        const slotStart = new Date(base.getTime() + day * 86400000 + hourOffset * 3600000);
+        await db.consultantAvailability.create({ data: { consultantId: consultant.id, slotStart, durationMin: 20 } });
+      }
+  }
+
+  if ((await db.auditQuestion.count()) === 0) {
+    const q1 = await db.auditQuestion.create({ data: { prompt: "Which direction does your main entrance face?", displayOrder: 1 } });
+    for (const [answerText, dir, order] of [["North", "north", 1], ["Northeast", "northeast", 2], ["East", "east", 3], ["Not sure", null, 4]] as const)
+      await db.auditAnswerRule.create({ data: { questionId: q1.id, answerText, mapsToDirection: dir, displayOrder: order } });
+    const q2 = await db.auditQuestion.create({ data: { prompt: "What would you most like to improve at home?", displayOrder: 2 } });
+    for (const [answerText, dir, order] of [["Wealth & career", "north", 1], ["Clarity & calm", "northeast", 2], ["Relationships", "southwest", 3]] as const)
+      await db.auditAnswerRule.create({ data: { questionId: q2.id, answerText, mapsToDirection: dir, displayOrder: order } });
+    const q3 = await db.auditQuestion.create({ data: { prompt: "Is your home a standard rectangular layout?", displayOrder: 3 } });
+    await db.auditAnswerRule.create({ data: { questionId: q3.id, answerText: "Yes, fairly standard", displayOrder: 1 } });
+    await db.auditAnswerRule.create({ data: { questionId: q3.id, answerText: "No — it's irregular (L-shaped, corner, multi-floor)", recommendConsult: true, displayOrder: 2 } });
+  }
+
   const stockBySlug: Record<string, number> = {
     "copper-vastu-kalash": 14,
     "brass-ashtadhatu-pyramid": 8,

@@ -340,3 +340,97 @@ model OrderCertificate {
   storageKey  String
   generatedAt DateTime  @default(now())
 }
+
+// ---------- consultations ----------
+
+model ConsultationType {
+  id                 Int                       @id @default(autoincrement())
+  code               String                    @unique
+  name               String
+  description        String
+  durationMinutes    Int
+  feeMinor           Int
+  creditsTowardOrder Boolean                   @default(false)
+  active             Boolean                   @default(true)
+  displayOrder       Int                       @default(0)
+  consultants        ConsultantType[]
+  bookings           Booking[]
+  entitlements       ConsultationEntitlement[]
+}
+
+model Consultant {
+  id           Int                      @id @default(autoincrement())
+  name         String
+  userId       Int?
+  active       Boolean                  @default(true)
+  types        ConsultantType[]
+  availability ConsultantAvailability[]
+  bookings     Booking[]
+}
+
+model ConsultantType {
+  consultantId       Int
+  consultationTypeId Int
+  consultant         Consultant       @relation(fields: [consultantId], references: [id])
+  consultationType   ConsultationType @relation(fields: [consultationTypeId], references: [id])
+
+  @@id([consultantId, consultationTypeId])
+}
+
+model ConsultantAvailability {
+  id           Int        @id @default(autoincrement())
+  consultantId Int
+  consultant   Consultant @relation(fields: [consultantId], references: [id])
+  slotStart    DateTime
+  durationMin  Int        @default(20)
+}
+
+model Booking {
+  id                 Int                      @id @default(autoincrement())
+  consultantId       Int
+  consultant         Consultant               @relation(fields: [consultantId], references: [id])
+  consultationTypeId Int
+  consultationType   ConsultationType         @relation(fields: [consultationTypeId], references: [id])
+  customerName       String
+  customerEmail      String
+  customerPhone      String
+  slotStart          DateTime
+  status             String                   @default("booked")
+  paymentStatus      String                   @default("pending")
+  feeMinorAtBooking  Int
+  videoLink          String?
+  entitlementId      Int?                     @unique
+  entitlement        ConsultationEntitlement? @relation(fields: [entitlementId], references: [id])
+  createdAt          DateTime                 @default(now())
+}
+
+model ConsultationEntitlement {
+  id                 Int              @id @default(autoincrement())
+  customerEmail      String
+  sourceOrderId      Int?
+  consultationTypeId Int
+  consultationType   ConsultationType @relation(fields: [consultationTypeId], references: [id])
+  status             String           @default("unused")
+  grantedAt          DateTime         @default(now())
+  booking            Booking?
+}
+
+// ---------- home audit ----------
+
+model AuditQuestion {
+  id           Int               @id @default(autoincrement())
+  prompt       String
+  displayOrder Int               @default(0)
+  active       Boolean           @default(true)
+  answers      AuditAnswerRule[]
+}
+
+model AuditAnswerRule {
+  id               Int           @id @default(autoincrement())
+  questionId       Int
+  question         AuditQuestion @relation(fields: [questionId], references: [id])
+  answerText       String
+  mapsToDirection  String?
+  recommendConsult Boolean       @default(false)
+  displayOrder     Int           @default(0)
+}
