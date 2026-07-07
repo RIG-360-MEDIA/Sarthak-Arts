@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { addSlot, removeSlot, markComplete } from "./actions";
+import { addSlot, removeSlot, markComplete, setConsultantAccess } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +15,7 @@ export default async function AdminConsultations({ searchParams }: { searchParam
     prisma.consultantAvailability.findMany({ include: { consultant: true }, orderBy: { slotStart: "asc" } }),
     prisma.consultant.findFirst(),
   ]);
+  const consultantLogin = consultant?.userId ? await prisma.user.findUnique({ where: { id: consultant.userId } }) : null;
 
   return (
     <div style={{ padding: "22px 26px" }}>
@@ -59,7 +60,26 @@ export default async function AdminConsultations({ searchParams }: { searchParam
           )}
         </aside>
       </div>
-      <p style={{ fontSize: 12, color: "var(--ink-faint)", marginTop: 10 }}>Types: {types.map((t) => t.name).join(", ")}. A dedicated consultant login is a later enhancement; availability is managed here for now.</p>
+      <p style={{ fontSize: 12, color: "var(--ink-faint)", marginTop: 10 }}>Types: {types.map((t) => t.name).join(", ")}.</p>
+
+      {consultant && (
+        <div style={{ border: "1px solid var(--line)", borderRadius: 8, padding: 16, marginTop: 16, maxWidth: 460 }}>
+          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "var(--brass)", fontWeight: 600, marginBottom: 8 }}>Consultant portal access</div>
+          <p style={{ fontSize: 13, color: "var(--ink-muted)", marginTop: 0 }}>
+            {consultantLogin
+              ? <>They can sign in at <a href="/portal/login">/portal/login</a> with <strong>{consultantLogin.email}</strong>. Set a new password below to reset it.</>
+              : <>Give {consultant.name} their own login for <a href="/portal/login">/portal/login</a>.</>}
+          </p>
+          <form action={setConsultantAccess}>
+            <input type="hidden" name="consultantId" value={consultant.id} />
+            <label>Login email</label>
+            <input name="email" type="email" defaultValue={consultantLogin?.email ?? ""} required />
+            <label>{consultantLogin ? "New password" : "Password"}</label>
+            <input name="password" type="text" placeholder="Set a password" required />
+            <button className="btn-ghost" style={{ marginTop: 10 }}>{consultantLogin ? "Reset access" : "Create login"}</button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
