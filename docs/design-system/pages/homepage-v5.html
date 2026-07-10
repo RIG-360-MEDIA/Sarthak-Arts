@@ -1,0 +1,1044 @@
+<title>Sarthak Arts — Homepage v5 (Editorial)</title>
+<style>
+  :root {
+    /* Restrained palette — parchment world with sanctum interlude */
+    --paper: #F0E6CE;         /* the reading ground */
+    --paper-cool: #EBE0C4;    /* alt surface */
+    --paper-warm: #F5ECD7;    /* elevated */
+    --ink: #1A0F04;           /* body text */
+    --ink-strong: #0A0400;
+    --ink-muted: rgba(26,15,4,.62);
+    --ink-faint: rgba(26,15,4,.38);
+    --line: rgba(26,15,4,.14);
+    --line-strong: rgba(26,15,4,.28);
+    --brass: #9C6D18;         /* the single accent */
+    --brass-deep: #6E4C0F;
+    --brass-lit: #C68F2C;
+    --sindoor: #A72A20;       /* rare, sacred moments */
+
+    --sanctum: #14090B;       /* the dark interludes */
+    --silk: #F3E7CB;
+    --silk-muted: rgba(243,231,203,.72);
+
+    /* Type */
+    --f-display: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    --f-body: -apple-system, "Segoe UI", system-ui, sans-serif;
+    --f-mono: "SF Mono", Menlo, Consolas, monospace;
+    --f-deva: "Sanskrit Text", "Noto Serif Devanagari", "Nirmala UI", Georgia, serif;
+
+    /* Rhythm */
+    --gutter: max(24px, 5vw);
+    --column: min(680px, 90vw);
+    --wide: min(1120px, 94vw);
+
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font: 16px/1.65 var(--f-body);
+    -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--brass); color: var(--paper); }
+
+  h1, h2, h3, h4 {
+    font-family: var(--f-display); font-weight: 400;
+    letter-spacing: -.012em; text-wrap: balance;
+  }
+  h1 { font-size: clamp(48px, 7.5vw, 88px); line-height: .98; letter-spacing: -.02em; }
+  h2 { font-size: clamp(34px, 4.5vw, 52px); line-height: 1.06; }
+  h3 { font-size: 22px; line-height: 1.25; }
+  h4 { font-size: 17px; line-height: 1.3; }
+  p { max-width: 60ch; }
+  em, i { font-style: italic; color: var(--brass); }
+  strong, b { font-weight: 600; color: var(--ink-strong); }
+  a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--brass-lit); text-decoration-thickness: 1px; text-underline-offset: 4px; transition: color .2s ease; }
+  a:hover { color: var(--brass-deep); }
+  hr { border: none; border-top: 1px solid var(--line); margin: 96px auto; max-width: var(--wide); }
+
+  .deva { font-family: var(--f-deva); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* An eyebrow, used sparingly */
+  .eyebrow {
+    display: inline-block; font-family: var(--f-body);
+    font-size: 11px; letter-spacing: .28em; text-transform: uppercase;
+    color: var(--brass); font-weight: 600;
+  }
+
+  /* One quiet moving element: the Om, breathing */
+  @keyframes om-breath {
+    0%,100% { opacity: .85; }
+    50%     { opacity: 1; }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: fade-up 1.4s var(--ease) both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 30%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  /* Announcement — the single sacred pulse */
+  .anno {
+    padding: 12px 24px; text-align: center;
+    font-size: 12px; letter-spacing: .04em; color: var(--ink-muted);
+    background: var(--paper-cool); border-bottom: 1px solid var(--line);
+  }
+  .anno b { color: var(--brass-deep); font-weight: 600; }
+
+  /* Nav */
+  header.masthead {
+    padding: 32px var(--gutter);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .masthead .logo {
+    grid-column: 2;
+    font-family: var(--f-display); font-size: 22px; color: var(--ink);
+    display: flex; align-items: center; gap: 12px;
+    letter-spacing: -.005em;
+  }
+  .masthead .logo .om {
+    font-family: var(--f-deva); font-size: 24px; color: var(--brass);
+    animation: om-breath 6s ease-in-out infinite;
+  }
+  .masthead nav {
+    grid-column: 1;
+    display: flex; gap: 32px;
+  }
+  .masthead nav a {
+    text-decoration: none; font-size: 12px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-muted); font-weight: 500;
+    transition: color .2s;
+  }
+  .masthead nav a:hover { color: var(--ink); }
+  .masthead .actions {
+    grid-column: 3;
+    display: flex; gap: 22px; justify-content: flex-end;
+    font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted);
+  }
+  .masthead .actions a { text-decoration: none; }
+  .masthead .actions .cart::before {
+    content: "◇"; margin-right: 6px; color: var(--brass);
+  }
+  @media (max-width: 720px) {
+    header.masthead { grid-template-columns: auto 1fr auto; gap: 16px; padding: 20px var(--gutter); }
+    .masthead .logo { grid-column: 2; font-size: 18px; justify-content: center; }
+    .masthead nav { display: none; }
+    .masthead .actions { gap: 12px; font-size: 11px; }
+  }
+
+  /* HERO — one composition, all typography */
+  .hero {
+    padding: 20vh var(--gutter) 18vh;
+    max-width: var(--wide); margin: 0 auto;
+    display: grid; grid-template-columns: 1fr; gap: 32px;
+    align-items: end;
+  }
+  @media (min-width: 900px) {
+    .hero { grid-template-columns: 1.6fr 1fr; gap: 80px; align-items: end; }
+  }
+  .hero .prime {
+    display: flex; flex-direction: column; gap: 32px;
+  }
+  .hero .eyebrow { align-self: flex-start; }
+  .hero h1 { color: var(--ink-strong); }
+  .hero h1 em { color: var(--brass-deep); }
+  .hero .drop {
+    font-family: var(--f-display); font-size: 21px; line-height: 1.55; color: var(--ink-muted);
+    max-width: 52ch; padding-top: 8px;
+    border-top: 1px solid var(--line);
+    padding-top: 32px;
+  }
+  .hero .drop::first-letter {
+    font-family: var(--f-display); float: left;
+    font-size: 58px; line-height: 1; padding: 4px 12px 0 0;
+    color: var(--brass-deep);
+  }
+  .hero .aside {
+    display: flex; flex-direction: column; gap: 20px;
+    padding-left: 40px;
+    border-left: 1px solid var(--line);
+  }
+  @media (max-width: 900px) { .hero .aside { padding-left: 0; border-left: none; border-top: 1px solid var(--line); padding-top: 32px; } }
+  .hero .aside .lbl {
+    font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--brass-deep); font-weight: 600;
+  }
+  .hero .aside .val {
+    font-family: var(--f-display); font-size: 17px; color: var(--ink);
+  }
+  .hero .aside p { font-size: 14px; color: var(--ink-muted); line-height: 1.65; }
+  .hero .yantra-mark {
+    align-self: flex-end; margin-top: auto;
+    color: var(--brass);
+  }
+  .hero .cta-line {
+    display: flex; gap: 32px; margin-top: 8px; flex-wrap: wrap;
+  }
+  .hero .cta-line a {
+    text-decoration: none; font-size: 12px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--ink); font-weight: 600;
+    padding: 4px 0; border-bottom: 1px solid var(--brass);
+    transition: color .3s, border-color .3s;
+  }
+  .hero .cta-line a:hover { color: var(--brass-deep); border-color: var(--ink); }
+
+  /* Manuscript rule — a hair-fine gold line, used to demark sections */
+  .rule {
+    display: block; margin: 0 auto; max-width: var(--column);
+    height: 1px; background: var(--line);
+    position: relative;
+  }
+  .rule::before {
+    content: "◇"; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--paper); padding: 0 12px;
+    color: var(--brass); font-size: 10px;
+  }
+  .rule.rule-dark::before { background: var(--sanctum); }
+
+  /* Editorial section */
+  .editorial {
+    padding: 120px var(--gutter) 100px;
+    max-width: var(--wide); margin: 0 auto;
+  }
+  .editorial .lede {
+    max-width: var(--column); margin: 0 auto;
+    display: flex; flex-direction: column; gap: 28px;
+    text-align: center;
+  }
+  .editorial .lede h2 { text-wrap: balance; }
+  .editorial .lede h2 em { color: var(--brass-deep); }
+  .editorial .lede p {
+    font-family: var(--f-display); font-size: 20px; line-height: 1.65;
+    color: var(--ink-muted); margin: 0 auto; max-width: 54ch;
+  }
+
+  /* Panchang — quiet editorial ledger */
+  .almanac {
+    padding: 96px var(--gutter); background: var(--paper-cool);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .almanac .wrap {
+    max-width: var(--wide); margin: 0 auto;
+    display: grid; grid-template-columns: 1fr; gap: 48px;
+  }
+  @media (min-width: 900px) { .almanac .wrap { grid-template-columns: 260px 1fr; gap: 96px; } }
+  .almanac .intro { }
+  .almanac .intro h3 {
+    font-size: 28px; color: var(--ink-strong); font-weight: 400; margin-bottom: 16px;
+  }
+  .almanac .intro h3 em { color: var(--brass-deep); }
+  .almanac .intro p { font-size: 14px; color: var(--ink-muted); line-height: 1.7; max-width: 40ch; }
+  .almanac .intro .cite {
+    margin-top: 20px; font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-faint);
+    letter-spacing: .04em; line-height: 1.7;
+  }
+  .almanac .intro .cite b { color: var(--brass-deep); font-weight: 600; }
+
+  .almanac .table {
+    display: grid; grid-template-columns: 1fr; gap: 0;
+  }
+  .almanac .row {
+    display: grid; grid-template-columns: 100px 1fr auto; gap: 32px; align-items: baseline;
+    padding: 22px 0; border-bottom: 1px solid var(--line);
+  }
+  .almanac .row:last-child { border-bottom: none; }
+  .almanac .row .lbl {
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink-muted); font-weight: 600;
+  }
+  .almanac .row .val {
+    font-family: var(--f-display); font-size: 22px; color: var(--ink);
+    line-height: 1.2;
+  }
+  .almanac .row .val small {
+    font-family: var(--f-body); font-size: 13px; color: var(--ink-muted);
+    display: block; margin-top: 4px; letter-spacing: .02em;
+  }
+  .almanac .row .aux {
+    font-family: var(--f-mono); font-size: 12px; color: var(--ink-faint); letter-spacing: .04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .almanac .row.now .val { color: var(--brass-deep); }
+  .almanac .row.now .val em { color: var(--brass-deep); font-style: normal; }
+  .almanac .row.now .aux { color: var(--brass); }
+  .almanac .row.avoid .val { color: var(--sindoor); }
+  .almanac .row.avoid .aux { color: var(--sindoor); }
+
+  /* Shrine — the yantra, sitting quietly */
+  .shrine {
+    padding: 140px var(--gutter);
+    max-width: var(--wide); margin: 0 auto;
+  }
+  .shrine .head {
+    max-width: var(--column); margin: 0 auto 80px; text-align: center;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .shrine .head h2 em { color: var(--brass-deep); }
+  .shrine .head p {
+    font-family: var(--f-display); font-size: 19px; line-height: 1.6;
+    color: var(--ink-muted); margin: 0 auto; max-width: 50ch;
+  }
+
+  .shrine-yantra {
+    max-width: 520px; margin: 0 auto; position: relative;
+    aspect-ratio: 1;
+  }
+  .shrine-yantra svg { display: block; width: 100%; height: 100%; }
+  .shrine-yantra .om-center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    font-family: var(--f-deva); font-size: 42px; color: var(--brass-deep);
+    animation: om-breath 6s ease-in-out infinite;
+  }
+  .shrine-yantra .brahma {
+    position: absolute; top: calc(50% + 34px); left: 50%; transform: translateX(-50%);
+    font-size: 9px; letter-spacing: .28em; text-transform: uppercase;
+    color: var(--brass); font-weight: 600;
+  }
+
+  .shrine .directions {
+    margin: 80px auto 0; max-width: var(--column);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px 32px;
+    padding-top: 40px; border-top: 1px solid var(--line);
+  }
+  .shrine .dir {
+    display: grid; grid-template-columns: 60px 1fr auto; gap: 16px; align-items: baseline;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .shrine .dir:nth-last-child(-n+2) { border-bottom: none; }
+  .shrine .dir .cardinal {
+    font-family: var(--f-display); font-size: 15px; color: var(--ink); font-weight: 500;
+  }
+  .shrine .dir .dev {
+    font-family: var(--f-display); color: var(--brass-deep); font-size: 14px;
+  }
+  .shrine .dir .elm {
+    font-family: var(--f-mono); font-size: 11px; color: var(--ink-faint); letter-spacing: .06em; text-transform: uppercase;
+  }
+  @media (max-width: 720px) {
+    .shrine .directions { grid-template-columns: 1fr; gap: 0; }
+    .shrine .dir:nth-last-child(2) { border-bottom: 1px solid var(--line); }
+  }
+
+  .shrine .cite {
+    margin-top: 60px; text-align: center;
+    font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-faint); letter-spacing: .04em;
+  }
+  .shrine .cite b { color: var(--brass-deep); font-weight: 600; }
+
+  /* Pieces — editorial vignettes, not product cards */
+  .pieces {
+    padding: 140px var(--gutter);
+    max-width: var(--wide); margin: 0 auto;
+  }
+  .pieces .head {
+    display: grid; grid-template-columns: 1fr; gap: 20px;
+    margin-bottom: 100px; align-items: end;
+  }
+  @media (min-width: 900px) {
+    .pieces .head { grid-template-columns: 2fr 1fr; gap: 80px; }
+  }
+  .pieces .head h2 em { color: var(--brass-deep); }
+  .pieces .head .note {
+    font-size: 13px; color: var(--ink-muted); line-height: 1.7; max-width: 30ch;
+    padding-left: 32px; border-left: 1px solid var(--line);
+  }
+  .pieces .head .note em { color: var(--brass-deep); }
+
+  .piece-vignette {
+    display: grid; grid-template-columns: 1fr; gap: 40px;
+    padding: 80px 0; border-top: 1px solid var(--line);
+    align-items: start;
+  }
+  .piece-vignette:last-child { border-bottom: 1px solid var(--line); }
+  @media (min-width: 900px) {
+    .piece-vignette { grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .piece-vignette:nth-child(even) .composition { order: 2; }
+    .piece-vignette:nth-child(even) .body { order: 1; }
+  }
+  .piece-vignette .composition {
+    display: flex; align-items: center; justify-content: center;
+    aspect-ratio: 5/6; background: var(--paper-cool);
+    position: relative;
+    border: 1px solid var(--line);
+  }
+  .piece-vignette .composition::before {
+    content: ""; position: absolute; inset: 24px;
+    border: 1px solid var(--brass); opacity: .3;
+    pointer-events: none;
+  }
+  .piece-vignette .composition .caption {
+    position: absolute; bottom: 14px; left: 20px; right: 20px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--f-mono); font-size: 10px; color: var(--ink-faint); letter-spacing: .08em; text-transform: uppercase;
+  }
+  .piece-vignette .composition .study {
+    color: var(--brass-deep); opacity: .7;
+    max-height: 60%; max-width: 60%;
+  }
+  .piece-vignette .body {
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .piece-vignette .body .index {
+    font-family: var(--f-display); font-size: 13px; color: var(--brass); letter-spacing: .1em;
+    padding-bottom: 8px; border-bottom: 1px solid var(--line); align-self: flex-start;
+  }
+  .piece-vignette .body .deity {
+    font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--brass-deep); font-weight: 700;
+  }
+  .piece-vignette .body h3 {
+    font-size: 28px; line-height: 1.15; color: var(--ink-strong);
+  }
+  .piece-vignette .body h3 em { color: var(--brass-deep); }
+  .piece-vignette .body .desc {
+    font-family: var(--f-display); font-size: 16px; line-height: 1.7; color: var(--ink-muted);
+    max-width: 44ch;
+  }
+  .piece-vignette .body .spec {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px;
+    padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    margin-top: 8px;
+  }
+  .piece-vignette .body .spec dt {
+    font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; margin-bottom: 4px;
+  }
+  .piece-vignette .body .spec dd {
+    font-family: var(--f-display); font-size: 15px; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .piece-vignette .body .spec dd.deva { font-family: var(--f-deva); color: var(--brass-deep); }
+  .piece-vignette .body .footer {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-top: 4px;
+  }
+  .piece-vignette .body .price {
+    font-family: var(--f-display); font-size: 26px; color: var(--ink-strong);
+  }
+  .piece-vignette .body .link {
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink); text-decoration: none; font-weight: 600;
+    padding: 4px 0; border-bottom: 1px solid var(--brass);
+  }
+  .piece-vignette .body .link:hover { color: var(--brass-deep); }
+
+  /* Craft — dark interlude */
+  .craft {
+    background: var(--sanctum); color: var(--silk);
+    padding: 160px var(--gutter);
+  }
+  .craft .wrap {
+    max-width: var(--column); margin: 0 auto;
+    display: flex; flex-direction: column; gap: 40px;
+  }
+  .craft .eyebrow { color: var(--brass-lit); align-self: center; }
+  .craft h2 { color: var(--silk); text-align: center; }
+  .craft h2 em { color: var(--brass-lit); }
+  .craft .prose {
+    font-family: var(--f-display); font-size: 20px; line-height: 1.75;
+    color: var(--silk-muted); max-width: 54ch; margin: 0 auto;
+  }
+  .craft .prose p + p { margin-top: 24px; }
+  .craft .prose em { color: var(--brass-lit); }
+  .craft .signature {
+    text-align: center; margin-top: 40px;
+    font-family: var(--f-display); font-size: 15px; letter-spacing: .06em;
+    color: var(--silk-muted);
+  }
+  .craft .signature .name { color: var(--brass-lit); font-style: italic; }
+
+  /* Consultation — an editorial invitation */
+  .consult {
+    padding: 140px var(--gutter);
+    max-width: var(--wide); margin: 0 auto;
+  }
+  .consult .wrap {
+    display: grid; grid-template-columns: 1fr; gap: 40px;
+    align-items: start;
+  }
+  @media (min-width: 900px) { .consult .wrap { grid-template-columns: 1fr 1.2fr; gap: 96px; } }
+  .consult .lede h2 em { color: var(--brass-deep); }
+  .consult .lede p {
+    font-family: var(--f-display); font-size: 19px; line-height: 1.7; color: var(--ink-muted);
+    margin-top: 20px; max-width: 40ch;
+  }
+  .consult .offerings { display: flex; flex-direction: column; gap: 0; }
+  .consult .offer {
+    padding: 40px 0; border-top: 1px solid var(--line);
+    display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end;
+  }
+  .consult .offer:last-child { border-bottom: 1px solid var(--line); }
+  .consult .offer .kind {
+    font-size: 10px; letter-spacing: .24em; text-transform: uppercase;
+    color: var(--brass); font-weight: 700; margin-bottom: 8px;
+  }
+  .consult .offer h3 {
+    font-size: 26px; line-height: 1.2; color: var(--ink-strong); font-weight: 400;
+  }
+  .consult .offer h3 em { color: var(--brass-deep); }
+  .consult .offer .about {
+    font-size: 14px; color: var(--ink-muted); line-height: 1.7; margin-top: 10px; max-width: 42ch;
+  }
+  .consult .offer .price-tag {
+    text-align: right;
+  }
+  .consult .offer .price-tag .fee {
+    font-family: var(--f-display); font-size: 22px; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .consult .offer .price-tag .dur {
+    font-size: 11px; letter-spacing: .1em; color: var(--ink-faint); text-transform: uppercase; margin-top: 4px;
+  }
+  .consult .offer .book {
+    grid-column: 1 / -1; margin-top: 20px;
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink); font-weight: 600; text-decoration: none;
+    align-self: start; padding: 4px 0; border-bottom: 1px solid var(--brass);
+  }
+  .consult .offer .book:hover { color: var(--brass-deep); }
+
+  /* Colophon — the sources section, treated as editorial */
+  .colophon {
+    padding: 120px var(--gutter) 100px; background: var(--paper-cool);
+    border-top: 1px solid var(--line);
+  }
+  .colophon .wrap {
+    max-width: var(--wide); margin: 0 auto;
+    display: grid; grid-template-columns: 1fr; gap: 40px;
+  }
+  @media (min-width: 900px) { .colophon .wrap { grid-template-columns: 240px 1fr; gap: 96px; } }
+  .colophon h3 {
+    font-size: 26px; color: var(--ink-strong); font-weight: 400; margin-bottom: 16px;
+  }
+  .colophon h3 em { color: var(--brass-deep); }
+  .colophon .intro-note {
+    font-size: 14px; color: var(--ink-muted); line-height: 1.7; max-width: 30ch;
+  }
+  .colophon dl {
+    display: flex; flex-direction: column;
+  }
+  .colophon dl > div {
+    padding: 26px 0; border-top: 1px solid var(--line);
+    display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: baseline;
+  }
+  .colophon dl > div:last-child { border-bottom: 1px solid var(--line); }
+  .colophon dt {
+    font-family: var(--f-display); font-size: 15px; color: var(--ink-strong);
+  }
+  .colophon dd {
+    font-size: 13.5px; color: var(--ink-muted); line-height: 1.75;
+  }
+  .colophon dd b { color: var(--ink-strong); font-weight: 600; }
+  .colophon dd .cite { color: var(--brass-deep); font-weight: 600; }
+  @media (max-width: 720px) {
+    .colophon dl > div { grid-template-columns: 1fr; gap: 8px; }
+  }
+
+  /* Footer — plain, restrained */
+  footer.foot {
+    padding: 100px var(--gutter) 60px;
+    text-align: center;
+    background: var(--paper);
+  }
+  footer .om-final {
+    font-family: var(--f-deva); font-size: 44px; color: var(--brass);
+    animation: om-breath 6s ease-in-out infinite;
+    display: inline-block;
+  }
+  footer .meta {
+    margin-top: 30px; font-family: var(--f-mono); font-size: 11px;
+    color: var(--ink-faint); letter-spacing: .06em;
+  }
+  footer .meta a { color: var(--ink-faint); text-decoration-color: var(--line); }
+  footer .meta a:hover { color: var(--ink); }
+
+  /* Sign-off (the doc-only meta bar at the top) */
+  .doc-bar {
+    padding: 12px 24px; background: var(--sanctum); color: var(--silk);
+    text-align: center; font-family: var(--f-mono); font-size: 11px;
+    letter-spacing: .06em;
+  }
+  .doc-bar b { color: var(--brass-lit); font-weight: 600; }
+</style>
+
+<div class="doc-bar">
+  <b>v5 · Editorial register</b> · restraint, typography, real writing · every element sourced ·
+  <a href="index.html" style="color: var(--brass-lit); text-decoration-color: var(--brass-lit);">← Design System</a>
+</div>
+
+<div class="anno">
+  <b>Labh Choghadiya</b> · auspicious to begin any ritual · until 4:11 PM · &nbsp;
+  Free consultation on orders over ₹15,000
+</div>
+
+<header class="masthead">
+  <nav>
+    <a href="#">The Collection</a>
+    <a href="#">Shop by Direction</a>
+    <a href="#">Consultations</a>
+    <a href="#">Journal</a>
+  </nav>
+  <div class="logo"><span class="om">ॐ</span> Sarthak Arts</div>
+  <div class="actions">
+    <a href="#">Search</a>
+    <a href="#">Account</a>
+    <a href="#" class="cart">Cart · 2</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="prime">
+    <span class="eyebrow">Est. 2026 · handcrafted in India</span>
+    <h1>Made by hand.<br>Placed with <em>intention.</em></h1>
+    <div class="cta-line">
+      <a href="#">Enter the shrine</a>
+      <a href="#">Two-minute audit</a>
+    </div>
+    <p class="drop">
+      Sarthak Arts makes murtis and Vastu instruments in copper, brass, and silver. Every piece is
+      hand-beaten by a single artisan, tied to a direction of the home and the deity that governs it,
+      and ships with a certificate of composition — the exact metal weight, the gemstone, the artisan's
+      name. No mould duplicates. No filler alloys called by prettier names.
+    </p>
+  </div>
+  <aside class="aside">
+    <div>
+      <div class="lbl">This piece</div>
+      <div class="val">Copper Vastu Kalash</div>
+    </div>
+    <p>
+      A hand-beaten copper vessel for the northeast corner — the Ishanya, the zone of water and clarity.
+      812 g, hand-finished, kept filled and never empty.
+    </p>
+    <div class="yantra-mark">
+      <svg width="76" height="76" viewBox="0 0 76 76" fill="none">
+        <circle cx="38" cy="38" r="36" stroke="currentColor" stroke-width=".8" opacity=".55"/>
+        <circle cx="38" cy="38" r="26" stroke="currentColor" stroke-width=".7" opacity=".45"/>
+        <polygon points="38,10 62,58 14,58" stroke="currentColor" stroke-width=".9" fill="none" opacity=".7"/>
+        <polygon points="38,66 62,18 14,18" stroke="currentColor" stroke-width=".9" fill="none" opacity=".7"/>
+        <circle cx="38" cy="38" r="2" fill="currentColor"/>
+      </svg>
+    </div>
+  </aside>
+</section>
+
+<!-- PANCHANG — the ledger -->
+<section class="almanac">
+  <div class="wrap">
+    <div class="intro">
+      <h3>Today's <em>panchang.</em></h3>
+      <p>
+        Every action — a first meeting, a signature, the placing of a new murti — sits inside a moment.
+        The panchang names that moment. Ours is computed live, from your location.
+      </p>
+      <p class="cite">
+        Computed via <b>Swiss Ephemeris</b><br>
+        Lahiri (Chitrapaksha) Ayanamsa<br>
+        New Delhi · 28.61°N 77.21°E<br>
+        Verified against <b>Drik Panchang</b>
+      </p>
+    </div>
+    <div class="table">
+      <div class="row">
+        <div class="lbl">Today</div>
+        <div class="val">Tuesday<small>Ashadha Śukla 25</small></div>
+        <div class="aux">7 Jul 2026</div>
+      </div>
+      <div class="row">
+        <div class="lbl">Tithi</div>
+        <div class="val"><em class="deva">एकादशी</em><small>Ekādaśī · Śukla Pakṣa</small></div>
+        <div class="aux">to 11:47 PM</div>
+      </div>
+      <div class="row">
+        <div class="lbl">Nakshatra</div>
+        <div class="val"><em class="deva">चित्रा</em><small>Chitrā · ruled by Tvashṭar</small></div>
+        <div class="aux">to 4:22 AM</div>
+      </div>
+      <div class="row now">
+        <div class="lbl">Now</div>
+        <div class="val">Labh Choghadiya<small>auspicious for commerce, ritual, and new beginnings</small></div>
+        <div class="aux">2:47 – 4:11 PM</div>
+      </div>
+      <div class="row avoid">
+        <div class="lbl">Avoid</div>
+        <div class="val">Rāhu Kāla<small>inauspicious for new starts</small></div>
+        <div class="aux">3:36 – 5:15 PM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHRINE -->
+<section class="shrine">
+  <div class="head">
+    <span class="eyebrow">Shop by direction</span>
+    <h2>Not a filter. <em>A shrine.</em></h2>
+    <p>
+      In Vāstu Śāstra, the home is a body, and the eight directions are its limbs. Each is guarded by
+      a Dikpāla — a directional deity — and belongs to one of the five elements. Every piece we make
+      is built for one direction.
+    </p>
+  </div>
+
+  <div class="shrine-yantra">
+    <svg viewBox="0 0 400 400" fill="none">
+      <!-- Bhupura -->
+      <rect x="12" y="12" width="376" height="376" stroke="currentColor" stroke-width=".7" opacity=".35" fill="none" style="color: var(--brass);"/>
+      <rect x="22" y="22" width="356" height="356" stroke="currentColor" stroke-width=".5" opacity=".2" fill="none" style="color: var(--brass);"/>
+      <!-- Concentric circles -->
+      <circle cx="200" cy="200" r="180" stroke="currentColor" stroke-width=".6" opacity=".35" style="color: var(--brass);"/>
+      <circle cx="200" cy="200" r="150" stroke="currentColor" stroke-width=".6" opacity=".45" style="color: var(--brass);"/>
+      <circle cx="200" cy="200" r="110" stroke="currentColor" stroke-width=".7" opacity=".55" style="color: var(--brass);"/>
+      <circle cx="200" cy="200" r="70" stroke="currentColor" stroke-width=".8" opacity=".7" style="color: var(--brass-deep);"/>
+      <!-- Interlocking triangles -->
+      <polygon points="200,110 275,255 125,255" stroke="currentColor" stroke-width=".9" fill="none" opacity=".55" style="color: var(--brass-deep);"/>
+      <polygon points="200,290 275,145 125,145" stroke="currentColor" stroke-width=".9" fill="none" opacity=".55" style="color: var(--brass-deep);"/>
+      <polygon points="200,130 255,240 145,240" stroke="currentColor" stroke-width=".7" fill="none" opacity=".45" style="color: var(--brass-deep);"/>
+      <polygon points="200,270 255,160 145,160" stroke="currentColor" stroke-width=".7" fill="none" opacity=".45" style="color: var(--brass-deep);"/>
+      <!-- 8-way spokes (very subtle) -->
+      <g stroke="currentColor" stroke-width=".4" opacity=".3" style="color: var(--brass);">
+        <line x1="200" y1="12" x2="200" y2="388"/>
+        <line x1="12" y1="200" x2="388" y2="200"/>
+        <line x1="65" y1="65" x2="335" y2="335"/>
+        <line x1="335" y1="65" x2="65" y2="335"/>
+      </g>
+      <!-- Direction labels -->
+      <g font-family="Georgia" font-size="13" fill="currentColor" style="color: var(--ink);">
+        <text x="200" y="34" text-anchor="middle">N</text>
+        <text x="200" y="376" text-anchor="middle">S</text>
+        <text x="374" y="204" text-anchor="middle">E</text>
+        <text x="26" y="204" text-anchor="middle">W</text>
+      </g>
+      <g font-family="-apple-system,sans-serif" font-size="8.5" fill="currentColor" letter-spacing="1.5" font-weight="600" style="color: var(--brass-deep);">
+        <text x="200" y="50" text-anchor="middle">KUBERA</text>
+        <text x="200" y="360" text-anchor="middle">YAMA</text>
+        <text x="374" y="220" text-anchor="middle">INDRA</text>
+        <text x="26" y="220" text-anchor="middle">VARUṆA</text>
+        <text x="335" y="55" text-anchor="middle">ĪŚĀNA</text>
+        <text x="335" y="352" text-anchor="middle">AGNI</text>
+        <text x="65" y="55" text-anchor="middle">VĀYU</text>
+        <text x="65" y="352" text-anchor="middle">NIRṚTI</text>
+      </g>
+      <!-- Bindu -->
+      <circle cx="200" cy="200" r="3" fill="currentColor" style="color: var(--brass-deep);"/>
+    </svg>
+    <div class="om-center deva">ॐ</div>
+    <div class="brahma">Brahmasthan</div>
+  </div>
+
+  <div class="directions">
+    <div class="dir"><span class="cardinal">N</span><span><span class="dev deva">कुबेर</span> Kubera</span><span class="elm">Water</span></div>
+    <div class="dir"><span class="cardinal">NE</span><span><span class="dev deva">ईशान</span> Īśāna</span><span class="elm">Water</span></div>
+    <div class="dir"><span class="cardinal">E</span><span><span class="dev deva">इन्द्र</span> Indra</span><span class="elm">Space</span></div>
+    <div class="dir"><span class="cardinal">SE</span><span><span class="dev deva">अग्नि</span> Agni</span><span class="elm">Fire</span></div>
+    <div class="dir"><span class="cardinal">S</span><span><span class="dev deva">यम</span> Yama</span><span class="elm">Earth</span></div>
+    <div class="dir"><span class="cardinal">SW</span><span><span class="dev deva">निऋ॔ति</span> Nirṛti</span><span class="elm">Earth</span></div>
+    <div class="dir"><span class="cardinal">W</span><span><span class="dev deva">वरुण</span> Varuṇa</span><span class="elm">Water</span></div>
+    <div class="dir"><span class="cardinal">NW</span><span><span class="dev deva">वायु</span> Vāyu</span><span class="elm">Air</span></div>
+  </div>
+
+  <div class="cite">
+    Positions verified per <b>Bṛhat Saṃhitā</b>, Ch. 53 · Aṣṭadikpālaka attributions per Purāṇic tradition
+  </div>
+</section>
+
+<!-- PIECES -->
+<section class="pieces">
+  <div class="head">
+    <div>
+      <span class="eyebrow" style="display:block;margin-bottom:20px;">Three pieces, this week</span>
+      <h2>From the workshop, <em>awaiting their home.</em></h2>
+    </div>
+    <div class="note">
+      A small selection. Each piece has passed through one artisan's hands from raw sheet to finished
+      form. Every weight is measured, every gemstone stated. <em>Nothing is decorated for its own sake.</em>
+    </div>
+  </div>
+
+  <!-- Piece 01 -->
+  <article class="piece-vignette">
+    <div class="composition">
+      <svg class="study" viewBox="0 0 120 160" fill="none">
+        <ellipse cx="60" cy="14" rx="12" ry="8" fill="currentColor"/>
+        <path d="M40 20 Q 36 8, 30 20" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity=".7"/>
+        <path d="M80 20 Q 84 8, 90 20" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity=".7"/>
+        <ellipse cx="60" cy="38" rx="24" ry="5" fill="currentColor" opacity=".85"/>
+        <rect x="40" y="38" width="40" height="6" fill="currentColor" opacity=".85"/>
+        <path d="M36 46 C 20 74, 20 128, 42 152 L 78 152 C 100 128, 100 74, 84 46 Z" fill="currentColor" opacity=".7"/>
+        <line x1="36" y1="90" x2="84" y2="90" stroke="var(--paper-cool)" stroke-width="1"/>
+        <line x1="38" y1="108" x2="82" y2="108" stroke="var(--paper-cool)" stroke-width=".8"/>
+        <line x1="40" y1="126" x2="80" y2="126" stroke="var(--paper-cool)" stroke-width=".6"/>
+      </svg>
+      <div class="caption">
+        <span>Study · plate 01</span>
+        <span>Cu 812 g</span>
+      </div>
+    </div>
+    <div class="body">
+      <span class="index">— 01 · Northeast · Water</span>
+      <span class="deity">Kubera Kalash</span>
+      <h3>Copper Vastu Kalash</h3>
+      <p class="desc">
+        Hand-beaten from a single sheet of pure copper by <em>Bhavesh, of the Amritsar Thatheras</em>. Meant
+        for the Ishanya corner: kept filled, kept quiet, kept honored. The natural patina is not a flaw
+        — it is the vessel remembering the air of your home.
+      </p>
+      <dl class="spec">
+        <div><dt>Metal</dt><dd>Copper · 812 g</dd></div>
+        <div><dt>Origin</dt><dd>Amritsar, Punjab</dd></div>
+        <div><dt>Mantra</dt><dd class="deva">ॐ कुबेराय नमः</dd></div>
+        <div><dt>Ships with</dt><dd>Ritual card, certificate</dd></div>
+      </dl>
+      <div class="footer">
+        <span class="price">₹18,400</span>
+        <a href="#" class="link">Read the piece →</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Piece 02 -->
+  <article class="piece-vignette">
+    <div class="composition">
+      <svg class="study" viewBox="0 0 140 140" fill="none">
+        <polygon points="70,20 20,110 120,110" stroke="currentColor" stroke-width="1.4" fill="none"/>
+        <polygon points="70,120 20,30 120,30" stroke="currentColor" stroke-width="1.4" fill="none"/>
+        <polygon points="70,40 40,90 100,90" stroke="currentColor" stroke-width="1" fill="none"/>
+        <polygon points="70,100 40,50 100,50" stroke="currentColor" stroke-width="1" fill="none"/>
+        <polygon points="70,60 55,80 85,80" stroke="currentColor" stroke-width=".8" fill="none"/>
+        <polygon points="70,80 55,60 85,60" stroke="currentColor" stroke-width=".8" fill="none"/>
+        <circle cx="70" cy="70" r="3" fill="currentColor"/>
+      </svg>
+      <div class="caption">
+        <span>Study · plate 02</span>
+        <span>Ag 265 g</span>
+      </div>
+    </div>
+    <div class="body">
+      <span class="index">— 02 · North · Wealth</span>
+      <span class="deity">Śrī Lakṣmī Yantra</span>
+      <h3>Silver Sri Yantra Plate</h3>
+      <p class="desc">
+        Solid 99.9% silver, hand-etched with the nine interlocking triangles of the sovereign yantra of
+        <em>Śrī Lalitā Tripura Sundarī.</em> One of a batch of six. Meant to be placed in the north, or on
+        the pūjā altar itself; consecrated before the day of Diwali if it is to serve as a lakṣmī āsana.
+      </p>
+      <dl class="spec">
+        <div><dt>Metal</dt><dd>Silver 99.9% · 265 g</dd></div>
+        <div><dt>Batch</dt><dd>One of six</dd></div>
+        <div><dt>Mantra</dt><dd class="deva">ॐ श्रीं महालक्ष्म्यै नमः</dd></div>
+        <div><dt>Ships with</dt><dd>Consecration guide</dd></div>
+      </dl>
+      <div class="footer">
+        <span class="price">₹31,200</span>
+        <a href="#" class="link">Read the piece →</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Piece 03 -->
+  <article class="piece-vignette">
+    <div class="composition">
+      <svg class="study" viewBox="0 0 130 130" fill="none">
+        <polygon points="65,15 20,110 110,110" stroke="currentColor" stroke-width="1.6" fill="none"/>
+        <polygon points="65,15 20,110 65,85" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity=".18"/>
+        <line x1="65" y1="15" x2="65" y2="85" stroke="currentColor" stroke-width=".8"/>
+        <line x1="65" y1="85" x2="20" y2="110" stroke="currentColor" stroke-width=".8"/>
+        <line x1="65" y1="85" x2="110" y2="110" stroke="currentColor" stroke-width=".8"/>
+      </svg>
+      <div class="caption">
+        <span>Study · plate 03</span>
+        <span>Aṣṭadhātu 540 g</span>
+      </div>
+    </div>
+    <div class="body">
+      <span class="index">— 03 · Center · Balance</span>
+      <span class="deity">Brahmasthan Pyramid</span>
+      <h3>Brass Aṣṭadhātu Pyramid</h3>
+      <p class="desc">
+        Cast in the traditional eight-metal alloy — gold, silver, copper, tin, lead, zinc, iron, and
+        mercury, each at its stated proportion. Meant for the Brahmasthan, the geometric center of the
+        home: the point Vāstu treats as the balancing core for every other zone.
+      </p>
+      <dl class="spec">
+        <div><dt>Alloy</dt><dd>Aṣṭadhātu · 540 g</dd></div>
+        <div><dt>Cast</dt><dd>Sand-cast, hand-finished</dd></div>
+        <div><dt>Mantra</dt><dd class="deva">ॐ ब्रह्मणे नमः</dd></div>
+        <div><dt>Ships with</dt><dd>Placement diagram</dd></div>
+      </dl>
+      <div class="footer">
+        <span class="price">₹9,800</span>
+        <a href="#" class="link">Read the piece →</a>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- CRAFT — dark editorial interlude -->
+<section class="craft">
+  <div class="wrap">
+    <span class="eyebrow">On the making</span>
+    <h2>The seven days a copper<br>kalash <em>takes to make.</em></h2>
+    <div class="prose">
+      <p>
+        A single sheet of copper, cut to a disc. Bhavesh sets it on the anvil and begins — four thousand
+        hammer strikes, over seven days, the metal rising into a vessel by the will of his hand alone.
+        No mould. No press. The vessel remembers every blow, and every blow is different.
+      </p>
+      <p>
+        This is not a production method. It is a discipline that Bhavesh's grandfather taught his
+        father, and that his father taught him. The Punjab Thatheras were listed by UNESCO in 2014 for
+        this reason — the technique itself is heritage. We do not modify it. We do not speed it up. We
+        pay for the days it takes.
+      </p>
+      <p>
+        Which is why <em>you cannot find a Sarthak Arts kalash at a discount.</em> There is no wholesale
+        version. There is no faster batch. There is one artisan, one week, one vessel — and then the
+        certificate that says so, in his hand.
+      </p>
+    </div>
+    <div class="signature">
+      Written by <span class="name">Anaya Ramachandran</span> · from the Amritsar workshop · Aug 2026
+    </div>
+  </div>
+</section>
+
+<!-- CONSULT -->
+<section class="consult">
+  <div class="wrap">
+    <div class="lede">
+      <span class="eyebrow">Uncertain?</span>
+      <h2>Sit with a consultant. <em>Twenty minutes.</em></h2>
+      <p>
+        If a piece calls to you but you're unsure where it belongs — or if your birth chart should
+        weigh on the decision — take a short reading with our resident consultant, or an astrologer for
+        a chart-based perspective.
+      </p>
+      <p>No pressure. No obligation. The fee for a Vāstu reading is credited toward any order.</p>
+    </div>
+    <div class="offerings">
+      <div class="offer">
+        <div>
+          <div class="kind">Placement</div>
+          <h3>Vāstu <em>consultation</em></h3>
+          <p class="about">
+            A twenty-minute call with our resident consultant. Bring a rough sketch of your home. We'll
+            place your piece correctly for its direction, element, and daily light. Credited toward any
+            order over ₹5,000.
+          </p>
+        </div>
+        <div class="price-tag">
+          <div class="fee">₹999</div>
+          <div class="dur">20 min · video</div>
+        </div>
+        <a href="#" class="book">Book a reading →</a>
+      </div>
+      <div class="offer">
+        <div>
+          <div class="kind">Birth chart</div>
+          <h3>Astrological <em>consultation</em></h3>
+          <p class="about">
+            A thirty-minute reading of your natal chart with our astrologer — Vedic method, Lahiri
+            ayanamsa. Understand the pieces most aligned to your rāśi and current daśā.
+          </p>
+        </div>
+        <div class="price-tag">
+          <div class="fee">₹1,499</div>
+          <div class="dur">30 min · video</div>
+        </div>
+        <a href="#" class="book">Book a reading →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COLOPHON -->
+<section class="colophon">
+  <div class="wrap">
+    <div>
+      <h3>The <em>colophon.</em></h3>
+      <p class="intro-note">
+        Everything on this page is sourced. If we display it, we can name where it comes from. This
+        is the discipline of the trade, and it is also the promise.
+      </p>
+    </div>
+    <dl>
+      <div>
+        <dt>Śrī Yantra</dt>
+        <dd>
+          The sovereign yantra of <b>Śrī Lalitā Tripura Sundarī.</b> Geometry per <span class="cite">Nityāṣoḍaśikārṇava</span> and
+          the <span class="cite">Śaubhāgya Bhāskara</span> commentary. Nine interlocking triangles (four Śiva upward, five
+          Śakti downward), eight-petal Aṣṭadala lotus, sixteen-petal Ṣoḍaśadala lotus, three concentric
+          circles, and the Bhūpura square with four gates.
+        </dd>
+      </div>
+      <div>
+        <dt>Panchang</dt>
+        <dd>
+          Tithi, Nakṣatra, Yoga, Karaṇa, Choghadiya, Rāhu Kāla, sunrise and sunset — all computed
+          server-side from your location using the <b>Swiss Ephemeris</b> (derived from NASA JPL DE431,
+          arcsecond precision) with <b>Chitrapaksha (Lahiri) Ayanamsa</b>, the standard of the Rāṣṭrīya
+          Pañcāṅga. Cross-verified daily against <span class="cite">Drik Panchang.</span>
+        </dd>
+      </div>
+      <div>
+        <dt>Aṣṭadikpālakas</dt>
+        <dd>
+          The eight directional guardians in their traditionally-fixed positions per <span class="cite">Bṛhat Saṃhitā</span>,
+          Ch. 53 · <span class="cite">Mayamata</span> · <span class="cite">Mānasāra</span> · and Purāṇic tradition. Elements per the Pañcamahābhūta
+          framework.
+        </dd>
+      </div>
+      <div>
+        <dt>Mantras</dt>
+        <dd>
+          Each mantra shown for a piece is the traditional short-form invocation of its associated
+          deity — from the Sahasranāma stotras and Purāṇic invocation forms. Devanagari orthography
+          verified per Aṣṭādhyāyī Saṃhitā-pāṭha conventions.
+        </dd>
+      </div>
+      <div>
+        <dt>The four-step ritual</dt>
+        <dd>
+          Saṃkalpa · Śuddhi · Sthāpanā · Pratiṣṭhā. The traditional sequence of <b>Prāṇa Pratiṣṭhā</b> —
+          the establishment of divine presence in a consecrated object. Sources: <span class="cite">Nārada
+          Pañcarātra Saṃhitā</span> and Āgama-based ritual manuals. Per-piece mantras and gestures
+          curated by our resident Vāstu consultant.
+        </dd>
+      </div>
+      <div>
+        <dt>Materials</dt>
+        <dd>
+          Every metal weight and gemstone specification is measured <b>per piece</b>, not per SKU. The
+          certificate that ships with every order carries our metallurgist's signature. Third-party
+          assay available on request for any piece above ₹50,000.
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="om-final deva">ॐ</div>
+  <div class="meta">
+    Sarthak Arts · <a href="#">The Journal</a> · <a href="#">Our Craft</a> · <a href="#">Consultations</a> · <a href="#">Care</a> · <a href="#">Terms</a><br>
+    Handcrafted in India · sarthakarts.com · <a href="#">hello@sarthakarts.com</a>
+  </div>
+</footer>
