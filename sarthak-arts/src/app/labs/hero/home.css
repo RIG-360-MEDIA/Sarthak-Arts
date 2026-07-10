@@ -146,7 +146,13 @@
   text-align: center;
   position: relative;
 }
-.sa-hero-inner { max-width: 760px; }
+.sa-hero-inner { max-width: 760px; position: relative; }
+/* Quiet dark scrim behind the hero copy — text floats calm above the scene */
+.sa-hero-inner::before {
+  content: ""; position: absolute; inset: -14% -20%; z-index: -1;
+  background: radial-gradient(ellipse 58% 52% at 50% 48%, rgba(5, 2, 15, 0.5), transparent 74%);
+  pointer-events: none;
+}
 .sa-hero-anno {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 7px 18px;

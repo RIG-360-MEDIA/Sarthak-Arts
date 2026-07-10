@@ -131,12 +131,13 @@ function SriYantra() {
     for (let i = 0; i < 4; i++) outs.push({ points: triangle(0.85 - i * 0.14, true), opacity: 0.88 - i * 0.05 });
     for (let i = 0; i < 5; i++) outs.push({ points: triangle(0.95 - i * 0.14, false), opacity: 0.88 - i * 0.05 });
 
-    // Construct real THREE.Line objects — avoids the JSX <line>/SVG ambiguity
-    const gold = new THREE.Color(2.2, 1.55, 0.5);
+    // Construct real THREE.Line objects — avoids the JSX <line>/SVG ambiguity.
+    // Line gold sits below the bloom threshold: crisp gold thread, no haze.
+    const gold = new THREE.Color(1.75, 1.28, 0.42);
     return outs.map((l) => {
       const geometry = new THREE.BufferGeometry().setFromPoints(l.points);
       const material = new THREE.LineBasicMaterial({
-        color: gold, transparent: true, opacity: l.opacity,
+        color: gold, transparent: true, opacity: l.opacity * 0.85,
       });
       material.toneMapped = false;
       return new THREE.Line(geometry, material);
@@ -181,7 +182,7 @@ function Bindu({ onReady }: { onReady: (mesh: THREE.Mesh) => void }) {
 // All motion computed on the GPU in the vertex shader from static buffers —
 // zero per-frame CPU work (only two uniform updates per frame).
 // ---------------------------------------------------------------------------
-function ParticleField({ count = 5000 }: { count?: number }) {
+function ParticleField({ count = 1800 }: { count?: number }) {
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
   const cursor = useCursor();
   const cursorWorld = useRef(new THREE.Vector2());
@@ -192,7 +193,11 @@ function ParticleField({ count = 5000 }: { count?: number }) {
     for (let i = 0; i < count; i++) {
       positions[i * 3 + 0] = (Math.random() - 0.5) * 12;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 8;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 8;
+      // Biased behind the yantra (z mostly negative) — background dust,
+      // not foreground snow. Only ~20% drift in front of it.
+      positions[i * 3 + 2] = Math.random() < 0.2
+        ? Math.random() * 1.5
+        : -Math.random() * 6.5;
       seeds[i] = Math.random();
     }
     return { positions, seeds };
@@ -239,7 +244,7 @@ function ParticleField({ count = 5000 }: { count?: number }) {
             pos.xy += toCursor * pull * 0.5;
             vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
             gl_Position = projectionMatrix * mvPos;
-            gl_PointSize = (60.0 + seed * 40.0) * (1.0 / -mvPos.z) * (1.0 + seed);
+            gl_PointSize = (32.0 + seed * 22.0) * (1.0 / -mvPos.z) * (1.0 + seed * 0.6);
           }
         `}
         fragmentShader={`
@@ -249,8 +254,9 @@ function ParticleField({ count = 5000 }: { count?: number }) {
             float d = length(c);
             if (d > 0.5) discard;
             float alpha = pow(1.0 - d * 2.0, 2.5);
-            vec3 color = mix(vec3(2.2, 1.6, 0.5), vec3(2.8, 2.3, 1.0), vSeed);
-            gl_FragColor = vec4(color, alpha * (0.35 + vSeed * 0.45));
+            // Below bloom threshold — dust glints, it does not glow
+            vec3 color = mix(vec3(1.45, 1.05, 0.38), vec3(1.85, 1.5, 0.7), vSeed);
+            gl_FragColor = vec4(color, alpha * (0.16 + vSeed * 0.22));
           }
         `}
       />
@@ -376,37 +382,41 @@ function SanctumScene({ particleCount }: { particleCount: number }) {
 
   return (
     <>
-      <color attach="background" args={["#0A0416"]} />
-      <fog attach="fog" args={["#0A0416", 6, 16]} />
+      {/* No opaque background — the canvas is transparent so the deep-indigo
+          CSS gradient behind it becomes the world. Blue is the ground; gold
+          is only the jewelry. Fog tints distant lines toward indigo. */}
+      <fog attach="fog" args={["#100833", 6, 16]} />
 
-      <ambientLight intensity={0.35} color="#4A2C6E" />
-      <directionalLight position={[3, 4, 2]} intensity={0.6} color="#E8B849" />
+      <ambientLight intensity={0.4} color="#3A2C7E" />
+      <directionalLight position={[3, 4, 2]} intensity={0.45} color="#E8B849" />
       <CursorLight />
       <Environment preset="studio" background={false} />
 
       <SriYantra />
       <Bindu onReady={setSun} />
       <ParticleField count={particleCount} />
-      <Petals count={28} />
+      <Petals count={22} />
       <CameraController />
 
       {sun && (
         <EffectComposer multisampling={0}>
-          {/* God-rays from the Bindu — consciousness radiating outward */}
+          {/* God-rays from the Bindu — felt, not blinding */}
           <GodRays
             sun={sun}
             blendFunction={BlendFunction.SCREEN}
             samples={32}
-            density={0.92}
+            density={0.9}
             decay={0.9}
-            weight={0.32}
-            exposure={0.38}
+            weight={0.22}
+            exposure={0.26}
             clampMax={1}
             blur
           />
-          <Bloom intensity={1.15} luminanceThreshold={0.85} luminanceSmoothing={0.35} mipmapBlur radius={0.8} />
-          <Vignette offset={0.25} darkness={0.5} eskil={false} blendFunction={BlendFunction.NORMAL} />
-          <Noise premultiply blendFunction={BlendFunction.OVERLAY} opacity={0.12} />
+          {/* Threshold at 1.0: only truly hot elements (the Bindu, ray core)
+              bloom — the rest of the scene stays quiet */}
+          <Bloom intensity={0.9} luminanceThreshold={1.0} luminanceSmoothing={0.4} mipmapBlur radius={0.75} />
+          <Vignette offset={0.25} darkness={0.55} eskil={false} blendFunction={BlendFunction.NORMAL} />
+          <Noise premultiply blendFunction={BlendFunction.OVERLAY} opacity={0.1} />
         </EffectComposer>
       )}
     </>
@@ -419,11 +429,11 @@ function SanctumScene({ particleCount }: { particleCount: number }) {
 export function HeroWebGL() {
   const [ready, setReady] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [particleCount, setParticleCount] = useState(5000);
+  const [particleCount, setParticleCount] = useState(1800);
 
   useEffect(() => {
     setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    if (window.innerWidth < 720) setParticleCount(1800); // mobile perf budget
+    if (window.innerWidth < 720) setParticleCount(900); // mobile perf budget
     const t = setTimeout(() => setReady(true), 60);
     return () => clearTimeout(t);
   }, []);
@@ -435,7 +445,7 @@ export function HeroWebGL() {
         aria-hidden="true"
         style={{
           position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
-          background: "radial-gradient(ellipse 80% 60% at 50% 30%, #1A0844 0%, #0A0416 60%, #05020D 100%)",
+          background: "radial-gradient(ellipse 85% 65% at 50% 32%, #221060 0%, #140A38 42%, #0A0420 68%, #05020F 100%)",
         }}
       />
     );
@@ -448,6 +458,9 @@ export function HeroWebGL() {
         position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
         opacity: ready ? 1 : 0,
         transition: "opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1)",
+        // The world is deep indigo — the transparent canvas draws gold over it
+        background:
+          "radial-gradient(ellipse 85% 65% at 50% 32%, #221060 0%, #140A38 42%, #0A0420 68%, #05020F 100%)",
       }}
     >
       <Canvas
