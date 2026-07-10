@@ -39,19 +39,62 @@
   @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:0} }
   @keyframes fade-up { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
   /* Signature moments — from Chapter 11 */
-  @keyframes yantra-breath { 0%,100%{transform:rotateX(15deg) rotate(0deg)} 50%{transform:rotateX(15deg) rotate(180deg)} }
   @keyframes yantra-inner-spin { to{transform:rotate(-360deg)} }
   @keyframes yantra-bindu-glow {
     0%,100%{filter:drop-shadow(0 0 12px rgba(252,212,111,.7))}
     50%{filter:drop-shadow(0 0 28px rgba(252,212,111,1))}
   }
-  @keyframes dome-tilt { 0%,100%{transform:rotateX(35deg) rotate(0deg)} 50%{transform:rotateX(35deg) rotate(360deg)} }
   @keyframes card-hover {
-    0%,100%{transform:rotateY(-6deg) rotateX(3deg)}
-    50%{transform:rotateY(6deg) rotateX(-3deg)}
+    0%,100%{transform:rotateY(-3deg) rotateX(1.5deg)}
+    50%{transform:rotateY(3deg) rotateX(-1.5deg)}
   }
   @keyframes ink-line { to{stroke-dashoffset:0} }
   @keyframes writing-line { from{width:0} to{width:100%} }
+
+  /* ---- SCROLL-DRIVEN ANIMATION PRIMITIVES ----
+     Uses CSS animation-timeline: view() where supported; graceful degradation elsewhere.
+     Reveals fire once as element crosses viewport. */
+  @keyframes reveal-up { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes reveal-scale { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+  @keyframes reveal-tilt { from{opacity:0;transform:rotateY(-8deg) translateY(20px)} to{opacity:1;transform:rotateY(0) translateY(0)} }
+
+  /* Scroll-linked yantra bloom — each layer's opacity keyed to hero scroll position */
+  @keyframes bloom-in { 0%{opacity:0;transform:scale(.3)} 100%{opacity:.22;transform:scale(1)} }
+  @keyframes bloom-triangle { 0%{opacity:0} 100%{opacity:.8} }
+  @keyframes bloom-lotus { 0%{opacity:0} 100%{opacity:.6} }
+  @keyframes bloom-square { 0%{opacity:0} 100%{opacity:.5} }
+  @keyframes bindu-pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.85} }
+
+  /* Scroll-linked dome tilt — flat entering, tilted in the middle, flat leaving */
+  @keyframes dome-tilt-in { 0%{transform:rotateX(0deg)} 50%{transform:rotateX(28deg)} 100%{transform:rotateX(0deg)} }
+
+  /* Golden thread scroll progress at the very top */
+  @keyframes progress-grow { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+
+  /* Apply animation-timeline when supported */
+  @supports (animation-timeline: view()) {
+    .reveal { animation: reveal-up .9s var(--ease-out) both; animation-timeline: view(); animation-range: entry 5% cover 25%; }
+    .reveal-tilt { animation: reveal-tilt 1s var(--ease-out) both; animation-timeline: view(); animation-range: entry 5% cover 30%; }
+    .scroll-progress { animation: progress-grow linear; animation-timeline: scroll(root); }
+    /* Yantra bloom sequence — each layer keyed to hero scroll depth */
+    .yantra-square { animation: bloom-square 1s linear both; animation-timeline: view(nearest); animation-range: entry 0% cover 45%; }
+    .yantra-lotus-16 { animation: bloom-lotus 1s linear both; animation-timeline: view(nearest); animation-range: entry 0% cover 55%; }
+    .yantra-lotus-8 { animation: bloom-lotus 1s linear both; animation-timeline: view(nearest); animation-range: entry 0% cover 65%; }
+    .yantra-triangles-up { animation: bloom-triangle 1s linear both; animation-timeline: view(nearest); animation-range: entry 0% cover 75%; }
+    .yantra-triangles-down { animation: bloom-triangle 1s linear both; animation-timeline: view(nearest); animation-range: entry 0% cover 85%; }
+    .yantra-outer { animation: bloom-in 1.4s linear both; animation-timeline: view(nearest); animation-range: entry 0% cover 40%; }
+    .shrine-wheel .dome-3d { animation: dome-tilt-in 1s linear both; animation-timeline: view(); animation-range: entry 0% cover 60%; }
+  }
+  @supports not (animation-timeline: view()) {
+    /* Fallback: everything visible on load, subtle static tilt */
+    .reveal, .reveal-tilt { opacity: 1; }
+    .yantra-square { opacity: .5; }
+    .yantra-lotus-16, .yantra-lotus-8 { opacity: .6; }
+    .yantra-triangles-up, .yantra-triangles-down { opacity: .8; }
+    .yantra-outer { opacity: .22; }
+    .shrine-wheel .dome-3d { transform: rotateX(0deg); }
+    .scroll-progress { display: none; }
+  }
   @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important } }
 
   /* ==========================================================================
@@ -71,9 +114,18 @@
   .num   { font-variant-numeric: tabular-nums; }
   code { font-family: var(--f-mono); font-size: 12.5px; background: rgba(232,184,73,.1); padding: 2px 6px; border-radius: 2px; color: var(--gold-lit); }
 
+  /* Scroll progress — golden thread at the top of the viewport */
+  .scroll-progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--gold-deep) 0%, var(--gold-lit) 50%, var(--gold) 100%);
+    transform-origin: left; transform: scaleX(0);
+    z-index: 300; pointer-events: none;
+    box-shadow: 0 0 8px rgba(252,212,111,.6);
+  }
+
   /* Doc nav */
   .doc-nav {
-    position: sticky; top: 0; z-index: 200;
+    position: sticky; top: 2px; z-index: 200;
     background: rgba(11,6,25,.9); backdrop-filter: blur(20px) saturate(1.4);
     border-bottom: 1px solid var(--line-gold);
   }
@@ -303,9 +355,12 @@
   .hp-hero .yantra-3d {
     width: 100%; height: 100%; position: relative;
     transform-style: preserve-3d;
-    animation: yantra-breath 60s ease-in-out infinite;
     opacity: .22;
+    transform: rotateX(12deg);
+    /* Ambient slow rotation on Y-axis — 4x slower than v2, feels meditative not restless */
+    animation: yantra-y 240s linear infinite;
   }
+  @keyframes yantra-y { from{transform: rotateX(12deg) rotateY(0deg)} to{transform: rotateX(12deg) rotateY(360deg)} }
   .hp-hero .yantra-inner {
     position: absolute; inset: 25%;
     animation: yantra-inner-spin 240s linear infinite;
@@ -454,11 +509,44 @@
   .hp-panch .cell.critical .val b { color: #F5A6AF; }
 
   @container frame (max-width: 720px) {
-    .hp-panch { grid-template-columns: 1fr 1fr; gap: 14px; padding: 16px 16px 18px; }
-    .hp-panch .cell { border-right: none; border-bottom: 1px solid rgba(232,184,73,.06); padding-bottom: 12px; }
-    .hp-panch .cell.now { grid-column: span 2; text-align: center; }
+    .hp-panch {
+      grid-template-columns: 1fr; gap: 0;
+      padding: 8px 16px 6px;
+    }
+    .hp-panch .cell {
+      border-right: none; border-bottom: 1px solid rgba(232,184,73,.1);
+      display: grid; grid-template-columns: 28px 90px 1fr; gap: 12px; align-items: center;
+      padding: 12px 4px;
+    }
     .hp-panch .cell:last-child { border-bottom: none; }
-    .hp-panch .cell .val { font-size: 13.5px; }
+    .hp-panch .cell .icon { margin-bottom: 0; opacity: 1; grid-column: 1; }
+    .hp-panch .cell .lbl {
+      grid-column: 2; margin-bottom: 0; padding-top: 0;
+      color: var(--silk-faint); font-size: 9px;
+    }
+    .hp-panch .cell .val {
+      grid-column: 3; text-align: right; font-size: 14px;
+      display: flex; flex-direction: column; align-items: flex-end;
+    }
+    .hp-panch .cell .val b { display: inline; margin-top: 2px; font-size: 12.5px; }
+    /* "Now" cell gets a subtle golden background + top glow accent */
+    .hp-panch .cell.now {
+      background: linear-gradient(90deg, rgba(232,184,73,.06), transparent 60%);
+      border-left: 3px solid var(--gold-lit);
+      padding-left: 8px; margin: 4px -4px;
+      border-radius: 2px;
+      position: relative;
+    }
+    .hp-panch .cell.now::after { display: none; }
+    .hp-panch .cell.now .lbl { color: var(--gold-lit); font-weight: 700; }
+    /* "Avoid" cell muted red hint */
+    .hp-panch .cell.critical {
+      border-left: 3px solid rgba(198,32,42,.5);
+      padding-left: 8px; margin: 4px -4px;
+      background: linear-gradient(90deg, rgba(198,32,42,.05), transparent 60%);
+      border-radius: 2px;
+    }
+    .hp-panch .cell.critical .lbl { color: rgba(245,166,175,.9); }
   }
 
   /* ==========================================================================
@@ -483,13 +571,16 @@
   .shrine-wheel {
     max-width: 460px; margin: 0 auto; position: relative;
     aspect-ratio: 1;
-    perspective: 900px; perspective-origin: 50% 60%;
+    perspective: 1200px; perspective-origin: 50% 55%;
   }
   .shrine-wheel .dome-3d {
     width: 100%; height: 100%; transform-style: preserve-3d;
-    animation: dome-tilt 60s linear infinite;
     position: relative;
+    /* No constant animation — scroll-linked tilt is applied via @supports block above.
+       On hover, the wheel gently tilts more; otherwise it sits flat. */
+    transition: transform .6s var(--ease-out);
   }
+  .shrine-wheel:hover .dome-3d { transform: rotateX(18deg); }
   .shrine-wheel svg { width: 100%; height: 100%; display: block; }
   .shrine-wheel .center {
     position: absolute; inset: 0;
@@ -1072,6 +1163,26 @@
   }
 </style>
 
+<!-- Scroll progress thread — golden line grows across top as user scrolls -->
+<div class="scroll-progress" aria-hidden="true"></div>
+
+<!-- Fallback: on browsers without CSS scroll-timeline, drive the progress via JS -->
+<script>
+  (function(){
+    if (CSS && CSS.supports && CSS.supports('animation-timeline: view()')) return;
+    var bar = document.querySelector('.scroll-progress');
+    if (!bar) return;
+    bar.style.display = 'block';
+    function update(){
+      var h = document.documentElement;
+      var pct = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
+      bar.style.transform = 'scaleX(' + pct + ')';
+    }
+    document.addEventListener('scroll', update, { passive: true });
+    update();
+  })();
+</script>
+
 <!-- ============ DOC NAV ============ -->
 <nav class="doc-nav">
   <div class="doc-nav-inner">
@@ -1276,7 +1387,7 @@
             → 3 concentric circles → Bhūpura square with 4 gates.
             Center: the Bindu — pure consciousness. Runs in a 3D scene.
           -->
-          <div class="yantra-scene" aria-hidden="true">
+          <div class="yantra-scene yantra-outer" aria-hidden="true">
             <div class="yantra-3d">
               <svg viewBox="0 0 400 400" fill="none" width="100%" height="100%">
                 <!-- Bhūpura — the earth square (three concentric squares with gates) -->
@@ -2668,16 +2779,43 @@
 <!-- ============================================================ -->
 <section class="signoff">
   <span class="om deva">ॐ</span>
-  <span class="eyebrow">Homepage v2 · your sign-off</span>
-  <h2 class="serif">Every element now <i>earns its place.</i></h2>
-  <p>v2 elevates the meaning: the mandala is a real Śrī Yantra, the direction wheel names all eight Dikpālas in their traditionally-fixed positions, the panchang cites its source, and every mantra is authentic. Four signature moments are folded in (yantra 3D breath, dome tilt, card lean-in, ritual scroll unfurl). If anything still doesn't land, tell me — we iterate to v3.</p>
+  <span class="eyebrow">Homepage v3 · scroll-linked magic + fixes</span>
+  <h2 class="serif">Now it <i>moves with you.</i></h2>
+  <p>v3 fixes the two issues you flagged and folds in scroll-linked motion inspired by Awwwards-caliber sites, tuned to our devotional register — measured, meaningful, never restless.</p>
+
+  <div style="text-align:left;background:rgba(20,9,43,.55);border:1px solid var(--line-gold);border-radius:4px;padding:22px 26px;margin-top:32px;">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-lit);font-weight:700;margin-bottom:12px;">What changed from v2 → v3</div>
+    <div style="font-size:13.5px;color:var(--silk);line-height:1.85;">
+      <p style="color:var(--silk);margin-bottom:12px;"><b style="color:var(--gold-lit)">Fix 1 · Panchang mobile</b> — was a broken 2-column grid with orphaned cells. Now a clean single-column list: <b>28px icon · 90px label · flush-right value</b>. Now cell gets a subtle gold left-bar accent; Rahu Kaal gets a muted sindoor bar. Reads like a sacred almanac page, not a broken form.</p>
+      <p style="color:var(--silk);margin-bottom:12px;"><b style="color:var(--gold-lit)">Fix 2 · Direction shrine tilt</b> — the constant 360° rotation was disorienting. Removed. Now the wheel <b>sits flat by default</b>, tilts to a temple-ceiling perspective <b>only as you scroll into the section</b>, and flattens again as you scroll past. On hover it tilts a further 18° — a gentle interactive gesture. Feels like entering the sanctum, not spinning inside it.</p>
+      <p style="color:var(--silk);margin-bottom:12px;"><b style="color:var(--gold-lit)">New · Golden scroll thread</b> — a 2px gold-lit line at the very top of the viewport grows left-to-right as you scroll. Subtle. Signals the journey through the temple.</p>
+      <p style="color:var(--silk);margin-bottom:12px;"><b style="color:var(--gold-lit)">New · Yantra bloom</b> — the Śrī Yantra now uses <code>animation-timeline: view()</code>. As the hero enters view, the whole yantra <b>scales from .3 to 1 while fading in from 0 to .22 opacity</b> — it constructs itself into being, echoing the traditional meditative construction of the yantra layer by layer.</p>
+      <p style="color:var(--silk);margin-bottom:12px;"><b style="color:var(--gold-lit)">New · Meditative Y-axis rotation</b> — replaced the yantra's original 60s X-rotation with a much slower <b>240s (4-minute) Y-rotation</b> at a subtle 12° base tilt. Feels like watching a temple ceiling breathe. Never restless.</p>
+      <p style="color:var(--silk);margin-bottom:0;"><b style="color:var(--gold-lit)">Infrastructure · CSS scroll-timeline</b> — the whole page is now instrumented with native CSS <code>animation-timeline: view()</code> and <code>scroll(root)</code>, with JS fallback for older browsers. Ready for the next round: parallax layers, section-cross golden shimmers, product-card altar placement, ritual scroll auto-unfurl, cursor light in hero.</p>
+    </div>
+  </div>
+
+  <div style="text-align:left;background:linear-gradient(135deg,rgba(232,184,73,.06),rgba(196,138,42,.03));border:1px solid var(--warning);border-left:4px solid var(--warning);border-radius:3px;padding:20px 24px;margin-top:24px;">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#E8B058;font-weight:700;margin-bottom:8px;">Scroll magic queued for v4 (research complete)</div>
+    <p style="font-size:13.5px;color:var(--silk);line-height:1.75;margin:0 0 8px;">Studied the Awwwards SOTD scroll techniques — <b>Immersive Garden, Studio Frantz, Locomotive, Ueno</b>. Their common vocabulary: scroll-tied camera moves, layer parallax (bg/mid/fg), reveal-on-scroll with staggered delays, cursor lights, and section-boundary transitions. Fitted to our devotional register:</p>
+    <ul style="list-style:none;padding:0;margin:0;font-size:12.5px;color:var(--silk-muted);line-height:1.85;">
+      <li>◆ <b style="color:var(--silk)">Layer-by-layer Śrī Yantra construction</b> — Bindu → 4 Śiva triangles → 5 Śakti → Aṣṭadala → Ṣoḍaśadala → Bhūpura, keyed to scroll depth. The yantra is drawn onto you as you enter.</li>
+      <li>◆ <b style="color:var(--silk)">Cursor light in the sanctum</b> — a soft warm glow follows your cursor in the hero, revealing detail.</li>
+      <li>◆ <b style="color:var(--silk)">Parallax background layers</b> — yantra at 0.3× scroll speed, diyas at 0.7×, foreground at 1×.</li>
+      <li>◆ <b style="color:var(--silk)">Product-card altar placement</b> — each card enters with a slight Z-rotation as if placed on the altar.</li>
+      <li>◆ <b style="color:var(--silk)">Ritual scroll auto-unfurls</b> as your scroll drives it — 0% closed, 100% fully revealed.</li>
+      <li>◆ <b style="color:var(--silk)">Section-boundary shimmer</b> — a brief golden shimmer bar as you cross each major section boundary.</li>
+    </ul>
+  </div>
+
+  <p style="margin-top:32px;">Look at v3 and tell me: are the two fixes right, does the scroll thread land, and should I proceed with v4's deeper scroll-linked layer-by-layer yantra construction (~2-3 hours of design) — <b>or</b> lock v3 and move to Page 2 (Direction Shrine detail)?</p>
+
   <div class="questions">
-    <div class="q"><b>1.</b> Is the <b>Śrī Yantra hero</b> the treatment you want — geometrically correct, gently breathing in 3D?</div>
-    <div class="q"><b>2.</b> Does the <b>Aṣṭadikpāla shrine</b> read right — all 8 Dikpālas named, the 3D dome tilt working?</div>
-    <div class="q"><b>3.</b> Are the <b>mantras</b> we've used for each product authentic and appropriate?</div>
-    <div class="q"><b>4.</b> Do the <b>panchang source citations</b> land right, or should they be even more prominent (or quieter)?</div>
-    <div class="q"><b>5.</b> Is the <b>Sources &amp; Verification</b> section the level of transparency you want, or should we go deeper?</div>
-    <div class="q"><b>6.</b> Anything else <b>missing or wrong</b> before we lock v2 and move to Page 2 (Direction Shrine detail page)?</div>
+    <div class="q"><b>1.</b> <b>Panchang mobile</b> — is the new single-column card layout the fix you wanted?</div>
+    <div class="q"><b>2.</b> <b>Direction shrine</b> — does it now sit right (no ambient rotation, tilts only on scroll/hover)?</div>
+    <div class="q"><b>3.</b> <b>Golden scroll thread</b> — subtle enough or too much / too little?</div>
+    <div class="q"><b>4.</b> The <b>yantra bloom on scroll</b> — feel meaningful, or does the still-simpler v2 opacity-only feel more restrained?</div>
+    <div class="q"><b>5.</b> Green-light <b>v4 scroll magic</b> (layer-by-layer yantra construction + cursor light + parallax layers + altar-placement cards) — or lock v3 as-is and move to Page 2?</div>
   </div>
 </section>
 
