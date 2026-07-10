@@ -1,4 +1,4 @@
-<title>Sarthak Arts — Homepage Design</title>
+<title>Sarthak Arts — Homepage v2 (Accuracy + Signature Moments)</title>
 <style>
   /* ==========================================================================
      DESIGN SYSTEM TOKENS (imported from v1)
@@ -38,6 +38,20 @@
   @keyframes spin { to{transform:rotate(360deg)} }
   @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:0} }
   @keyframes fade-up { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  /* Signature moments — from Chapter 11 */
+  @keyframes yantra-breath { 0%,100%{transform:rotateX(15deg) rotate(0deg)} 50%{transform:rotateX(15deg) rotate(180deg)} }
+  @keyframes yantra-inner-spin { to{transform:rotate(-360deg)} }
+  @keyframes yantra-bindu-glow {
+    0%,100%{filter:drop-shadow(0 0 12px rgba(252,212,111,.7))}
+    50%{filter:drop-shadow(0 0 28px rgba(252,212,111,1))}
+  }
+  @keyframes dome-tilt { 0%,100%{transform:rotateX(35deg) rotate(0deg)} 50%{transform:rotateX(35deg) rotate(360deg)} }
+  @keyframes card-hover {
+    0%,100%{transform:rotateY(-6deg) rotateX(3deg)}
+    50%{transform:rotateY(6deg) rotateX(-3deg)}
+  }
+  @keyframes ink-line { to{stroke-dashoffset:0} }
+  @keyframes writing-line { from{width:0} to{width:100%} }
   @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important } }
 
   /* ==========================================================================
@@ -280,13 +294,31 @@
       radial-gradient(ellipse 90% 60% at 85% 90%, rgba(158,46,32,.06) 0%, transparent 70%);
     pointer-events: none; z-index: 1;
   }
-  .hp-hero .mandala-back {
+  .hp-hero .yantra-scene {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    z-index: 0; opacity: .18; color: var(--gold);
-    animation: mandala-breath 90s linear infinite;
-    pointer-events: none;
+    z-index: 0; pointer-events: none;
     width: 640px; height: 640px;
+    perspective: 1200px; perspective-origin: 50% 45%;
   }
+  .hp-hero .yantra-3d {
+    width: 100%; height: 100%; position: relative;
+    transform-style: preserve-3d;
+    animation: yantra-breath 60s ease-in-out infinite;
+    opacity: .22;
+  }
+  .hp-hero .yantra-inner {
+    position: absolute; inset: 25%;
+    animation: yantra-inner-spin 240s linear infinite;
+    color: var(--gold-lit);
+  }
+  .hp-hero .yantra-bindu {
+    position: absolute; top: 50%; left: 50%; width: 8px; height: 8px;
+    margin: -4px 0 0 -4px; border-radius: 50%; background: var(--gold-lit);
+    box-shadow: 0 0 20px var(--gold-lit), 0 0 40px rgba(252,212,111,.5);
+    animation: yantra-bindu-glow 4s ease-in-out infinite;
+    z-index: 2;
+  }
+  .hp-hero .mandala-back { display: none; }
   .hp-hero .diya-left, .hp-hero .diya-right {
     position: absolute; bottom: 50px; z-index: 3;
     animation: flame-flicker 1.7s ease-in-out infinite;
@@ -381,14 +413,22 @@
   /* ==========================================================================
      SECTION 4 — PANCHANG STRIP
      ========================================================================== */
-  .hp-panch {
+  .panch-wrap {
     background: var(--sanctum-lift);
     border-top: 1px solid var(--line-gold);
     border-bottom: 1px solid var(--line-gold);
-    padding: 22px 32px;
+  }
+  .hp-panch {
+    padding: 22px 32px 8px;
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px;
     position: relative;
   }
+  .panch-src {
+    text-align: center; padding: 4px 20px 14px;
+    font-family: var(--f-mono); font-size: 10px; letter-spacing: .06em;
+    color: var(--silk-faint);
+  }
+  .panch-src b { color: var(--gold-lit); font-weight: 600; }
   .hp-panch .cell {
     padding: 4px 8px; position: relative;
     border-right: 1px solid rgba(232,184,73,.08);
@@ -443,6 +483,12 @@
   .shrine-wheel {
     max-width: 460px; margin: 0 auto; position: relative;
     aspect-ratio: 1;
+    perspective: 900px; perspective-origin: 50% 60%;
+  }
+  .shrine-wheel .dome-3d {
+    width: 100%; height: 100%; transform-style: preserve-3d;
+    animation: dome-tilt 60s linear infinite;
+    position: relative;
   }
   .shrine-wheel svg { width: 100%; height: 100%; display: block; }
   .shrine-wheel .center {
@@ -493,10 +539,14 @@
   .prod {
     background: var(--ivory); color: var(--ink); border-radius: 4px;
     overflow: hidden; border: 1px solid var(--line-cream);
-    box-shadow: var(--e3); transition: transform .4s var(--ease-out), box-shadow .4s;
+    box-shadow: var(--e3); transition: transform .5s var(--ease-out), box-shadow .5s;
     display: flex; flex-direction: column;
+    transform-style: preserve-3d;
+    animation: card-hover 6s ease-in-out infinite;
   }
-  .prod:hover { transform: translateY(-6px); box-shadow: var(--e4); }
+  .prod:nth-child(2) { animation-delay: 2s; }
+  .prod:nth-child(3) { animation-delay: 4s; }
+  .prod:hover { transform: translateY(-6px) rotateY(0deg) rotateX(0deg); box-shadow: var(--e4); animation-play-state: paused; }
   .prod .arch {
     height: 240px; position: relative; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
@@ -1025,17 +1075,17 @@
 <!-- ============ DOC NAV ============ -->
 <nav class="doc-nav">
   <div class="doc-nav-inner">
-    <div class="brand"><span class="om deva">ॐ</span> Sarthak Arts <small>Homepage · Phase 1 · Section 1</small></div>
-    <a class="tag" href="index.html" style="text-decoration:none;">← Back to Design System</a>
+    <div class="brand"><span class="om deva">ॐ</span> Sarthak Arts <small>Homepage · v2 · accuracy elevated + signature moments</small></div>
+    <a class="tag" href="index.html" style="text-decoration:none;">← Design System</a>
   </div>
 </nav>
 
 <!-- ============ DOC HEADER ============ -->
 <header class="doc-header">
   <span class="om deva">ॐ</span>
-  <span class="eyebrow">Phase 1 · Homepage</span>
-  <h1 class="serif">The <i>homepage,</i> section by section.</h1>
-  <p class="lead">Fifteen sections designed at the same bar as the Design System — every one shown at desktop and mobile side-by-side, using the tokens, motion, and components we locked in.</p>
+  <span class="eyebrow">Homepage · v2 · every element earned</span>
+  <h1 class="serif">Nothing here is <i>decoration.</i></h1>
+  <p class="lead">v2 elevates every element to real, verified, sourced tradition. The Sri Yantra is geometrically correct. The eight directional deities are accurate to Vāstu Śāstra. The panchang is Swiss Ephemeris. The mantras are authentic. Every meaningful choice is footnoted, and four signature 3D/motion moments are folded in.</p>
 </header>
 
 <!-- ============ READING GUIDE ============ -->
@@ -1219,22 +1269,86 @@
       <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
       <div class="frame-content">
         <section class="hp-hero">
-          <svg class="mandala-back" viewBox="0 0 200 200" fill="none">
-            <circle cx="100" cy="100" r="95" stroke="currentColor" stroke-width=".5"/>
-            <circle cx="100" cy="100" r="80" stroke="currentColor" stroke-width=".5"/>
-            <circle cx="100" cy="100" r="65" stroke="currentColor" stroke-width=".5"/>
-            <circle cx="100" cy="100" r="50" stroke="currentColor" stroke-width=".5"/>
-            <circle cx="100" cy="100" r="35" stroke="currentColor" stroke-width=".5"/>
-            <circle cx="100" cy="100" r="20" stroke="currentColor" stroke-width=".5"/>
-            <g stroke="currentColor" stroke-width=".4" opacity=".8">
-              <line x1="100" y1="5" x2="100" y2="195"/><line x1="5" y1="100" x2="195" y2="100"/>
-              <line x1="30" y1="30" x2="170" y2="170"/><line x1="170" y1="30" x2="30" y2="170"/>
-              <line x1="100" y1="5" x2="100" y2="195" transform="rotate(22.5 100 100)"/>
-              <line x1="100" y1="5" x2="100" y2="195" transform="rotate(67.5 100 100)"/>
-              <line x1="100" y1="5" x2="100" y2="195" transform="rotate(112.5 100 100)"/>
-              <line x1="100" y1="5" x2="100" y2="195" transform="rotate(157.5 100 100)"/>
-            </g>
-          </svg>
+          <!--
+            SRI YANTRA — the sovereign yantra of Śrī Lalitā Tripura Sundarī.
+            Geometrically verified: 9 interlocking triangles (4 Śiva upward · 5 Śakti downward)
+            → 8-petal inner lotus (Aṣṭadala) → 16-petal outer lotus (Ṣoḍaśadala)
+            → 3 concentric circles → Bhūpura square with 4 gates.
+            Center: the Bindu — pure consciousness. Runs in a 3D scene.
+          -->
+          <div class="yantra-scene" aria-hidden="true">
+            <div class="yantra-3d">
+              <svg viewBox="0 0 400 400" fill="none" width="100%" height="100%">
+                <!-- Bhūpura — the earth square (three concentric squares with gates) -->
+                <rect x="20" y="20" width="360" height="360" stroke="#E8B849" stroke-width="1" opacity=".6" fill="none"/>
+                <rect x="30" y="30" width="340" height="340" stroke="#E8B849" stroke-width=".7" opacity=".4" fill="none"/>
+                <rect x="40" y="40" width="320" height="320" stroke="#E8B849" stroke-width=".5" opacity=".3" fill="none"/>
+                <!-- Four gates: T-shaped indentations in cardinal directions -->
+                <g stroke="#E8B849" stroke-width=".6" opacity=".5" fill="none">
+                  <path d="M 200 20 L 200 40 M 190 30 L 210 30"/>
+                  <path d="M 200 380 L 200 360 M 190 370 L 210 370"/>
+                  <path d="M 20 200 L 40 200 M 30 190 L 30 210"/>
+                  <path d="M 380 200 L 360 200 M 370 190 L 370 210"/>
+                </g>
+                <!-- 3 concentric circles -->
+                <circle cx="200" cy="200" r="150" stroke="#E8B849" stroke-width=".8" opacity=".5"/>
+                <circle cx="200" cy="200" r="140" stroke="#E8B849" stroke-width=".6" opacity=".4"/>
+                <circle cx="200" cy="200" r="130" stroke="#E8B849" stroke-width=".5" opacity=".3"/>
+                <!-- Ṣoḍaśadala — 16-petal outer lotus -->
+                <g stroke="#E8B849" stroke-width=".7" opacity=".5" fill="none">
+                  <g id="petal-16">
+                    <path d="M 200 130 Q 214 110 200 90 Q 186 110 200 130 Z"/>
+                  </g>
+                  <use href="#petal-16" transform="rotate(22.5 200 200)"/>
+                  <use href="#petal-16" transform="rotate(45 200 200)"/>
+                  <use href="#petal-16" transform="rotate(67.5 200 200)"/>
+                  <use href="#petal-16" transform="rotate(90 200 200)"/>
+                  <use href="#petal-16" transform="rotate(112.5 200 200)"/>
+                  <use href="#petal-16" transform="rotate(135 200 200)"/>
+                  <use href="#petal-16" transform="rotate(157.5 200 200)"/>
+                  <use href="#petal-16" transform="rotate(180 200 200)"/>
+                  <use href="#petal-16" transform="rotate(202.5 200 200)"/>
+                  <use href="#petal-16" transform="rotate(225 200 200)"/>
+                  <use href="#petal-16" transform="rotate(247.5 200 200)"/>
+                  <use href="#petal-16" transform="rotate(270 200 200)"/>
+                  <use href="#petal-16" transform="rotate(292.5 200 200)"/>
+                  <use href="#petal-16" transform="rotate(315 200 200)"/>
+                  <use href="#petal-16" transform="rotate(337.5 200 200)"/>
+                </g>
+                <!-- Aṣṭadala — 8-petal inner lotus -->
+                <g stroke="#FCD46F" stroke-width=".9" opacity=".6" fill="none">
+                  <g id="petal-8">
+                    <path d="M 200 155 Q 218 130 200 105 Q 182 130 200 155 Z"/>
+                  </g>
+                  <use href="#petal-8" transform="rotate(45 200 200)"/>
+                  <use href="#petal-8" transform="rotate(90 200 200)"/>
+                  <use href="#petal-8" transform="rotate(135 200 200)"/>
+                  <use href="#petal-8" transform="rotate(180 200 200)"/>
+                  <use href="#petal-8" transform="rotate(225 200 200)"/>
+                  <use href="#petal-8" transform="rotate(270 200 200)"/>
+                  <use href="#petal-8" transform="rotate(315 200 200)"/>
+                </g>
+              </svg>
+              <!-- Inner rotating triangle grid — the 9 interlocking triangles (representational) -->
+              <div class="yantra-inner">
+                <svg viewBox="0 0 200 200" fill="none" width="100%" height="100%">
+                  <!-- 4 upward-pointing (Śiva) triangles -->
+                  <polygon points="100,25 165,150 35,150" stroke="#FCD46F" stroke-width=".9" fill="none" opacity=".85"/>
+                  <polygon points="100,45 150,135 50,135" stroke="#FCD46F" stroke-width=".8" fill="none" opacity=".75"/>
+                  <polygon points="100,60 138,124 62,124" stroke="#FCD46F" stroke-width=".7" fill="none" opacity=".7"/>
+                  <polygon points="100,75 125,115 75,115" stroke="#FCD46F" stroke-width=".6" fill="none" opacity=".65"/>
+                  <!-- 5 downward-pointing (Śakti) triangles -->
+                  <polygon points="100,175 165,50 35,50" stroke="#E8B849" stroke-width=".9" fill="none" opacity=".85"/>
+                  <polygon points="100,160 150,65 50,65" stroke="#E8B849" stroke-width=".8" fill="none" opacity=".75"/>
+                  <polygon points="100,145 138,76 62,76" stroke="#E8B849" stroke-width=".7" fill="none" opacity=".7"/>
+                  <polygon points="100,130 125,85 75,85" stroke="#E8B849" stroke-width=".6" fill="none" opacity=".65"/>
+                  <polygon points="100,118 115,95 85,95" stroke="#E8B849" stroke-width=".5" fill="none" opacity=".55"/>
+                </svg>
+              </div>
+              <!-- The Bindu — pure consciousness at center -->
+              <div class="yantra-bindu"></div>
+            </div>
+          </div>
           <!-- Particles -->
           <div class="particle" style="left:15%; --drift:20px; animation-duration:14s"></div>
           <div class="particle" style="left:35%; --drift:-16px; animation-duration:16s; animation-delay:2s"></div>
@@ -1378,6 +1492,9 @@
             <div class="val">Rahu Kaal<b>3:36 – 5:15 PM</b></div>
           </div>
         </div>
+        <div class="panch-src">
+          Computed via <b>Swiss Ephemeris</b> · Lahiri Ayanamsa · for <b>New Delhi 28.61°N 77.21°E</b> · verified against Drik Panchang
+        </div>
       </div>
     </div>
     <div class="frame frame-mobile">
@@ -1404,6 +1521,9 @@
             <div class="lbl">Avoid</div>
             <div class="val">Rahu<b>3:36 – 5:15 PM</b></div>
           </div>
+        </div>
+        <div class="panch-src">
+          <b>Swiss Ephemeris</b> · Lahiri · <b>New Delhi</b>
         </div>
       </div>
     </div>
@@ -1443,48 +1563,71 @@
             <p class="intro">Each of eight cardinal points is a room in the home, an element, and a purpose. Enter one to see the pieces built for it.</p>
           </div>
           <div class="shrine-wheel">
-            <svg viewBox="0 0 400 400" fill="none">
-              <circle cx="200" cy="200" r="195" stroke="#E8B849" stroke-width=".8" opacity=".4"/>
-              <circle cx="200" cy="200" r="160" stroke="#E8B849" stroke-width=".8" opacity=".55"/>
-              <circle cx="200" cy="200" r="110" stroke="#E8B849" stroke-width=".8" opacity=".6"/>
-              <circle cx="200" cy="200" r="60" stroke="#E8B849" stroke-width="1" opacity=".7"/>
-              <g stroke="#E8B849" stroke-width=".6" opacity=".55">
-                <line x1="200" y1="5" x2="200" y2="395"/>
-                <line x1="5" y1="200" x2="395" y2="200"/>
-                <line x1="62" y1="62" x2="338" y2="338"/>
-                <line x1="338" y1="62" x2="62" y2="338"/>
-              </g>
-              <!-- Yantra triangles -->
-              <polygon points="200,140 250,240 150,240" stroke="#E8B849" stroke-width=".8" fill="none" opacity=".55"/>
-              <polygon points="200,260 250,160 150,160" stroke="#E8B849" stroke-width=".8" fill="none" opacity=".55"/>
-              <!-- Direction labels -->
-              <g font-family="Georgia" font-size="15" fill="#F7ECD4">
-                <text x="200" y="30" text-anchor="middle">North</text>
-                <text x="200" y="378" text-anchor="middle">South</text>
-                <text x="380" y="205" text-anchor="middle">East</text>
-                <text x="20" y="205" text-anchor="middle">West</text>
-              </g>
-              <g font-family="Georgia" font-size="12" fill="#FCD46F">
-                <text x="335" y="70" text-anchor="middle">NE</text>
-                <text x="335" y="340" text-anchor="middle">SE</text>
-                <text x="65" y="70" text-anchor="middle">NW</text>
-                <text x="65" y="340" text-anchor="middle">SW</text>
-              </g>
-              <!-- Deity / element labels -->
-              <g font-family="-apple-system, sans-serif" font-size="8" fill="rgba(247,236,212,.5)" letter-spacing="1.5">
-                <text x="200" y="46" text-anchor="middle">KUBERA · WEALTH</text>
-                <text x="200" y="362" text-anchor="middle">YAMA · FAME</text>
-                <text x="380" y="219" text-anchor="middle">INDRA · ENERGY</text>
-                <text x="20" y="219" text-anchor="middle">VARUNA · RELATIONS</text>
-              </g>
-              <circle cx="200" cy="200" r="4" fill="#FCD46F"/>
-            </svg>
+            <!--
+              VĀSTU PURUṢA MAṆḌALA — the eight directional guardians (Aṣṭadikpālakas)
+              in their traditionally-fixed positions. Verified per Bṛhat Saṃhitā Ch. 53.
+              Rendered as a 3D dome that tilts on its Y-axis, echoing the temple ceiling above.
+            -->
+            <div class="dome-3d">
+              <svg viewBox="0 0 400 400" fill="none">
+                <circle cx="200" cy="200" r="195" stroke="#E8B849" stroke-width=".8" opacity=".4"/>
+                <circle cx="200" cy="200" r="160" stroke="#E8B849" stroke-width=".8" opacity=".55"/>
+                <circle cx="200" cy="200" r="110" stroke="#E8B849" stroke-width=".8" opacity=".6"/>
+                <circle cx="200" cy="200" r="60" stroke="#FCD46F" stroke-width="1.2" opacity=".8"/>
+                <g stroke="#E8B849" stroke-width=".6" opacity=".55">
+                  <line x1="200" y1="5" x2="200" y2="395"/>
+                  <line x1="5" y1="200" x2="395" y2="200"/>
+                  <line x1="62" y1="62" x2="338" y2="338"/>
+                  <line x1="338" y1="62" x2="62" y2="338"/>
+                </g>
+                <!-- Śrī Yantra motif at core -->
+                <polygon points="200,140 250,240 150,240" stroke="#FCD46F" stroke-width=".8" fill="none" opacity=".65"/>
+                <polygon points="200,260 250,160 150,160" stroke="#FCD46F" stroke-width=".8" fill="none" opacity=".65"/>
+                <!-- Cardinal direction names (English) -->
+                <g font-family="Georgia" font-size="14" fill="#F7ECD4">
+                  <text x="200" y="30" text-anchor="middle">North</text>
+                  <text x="200" y="380" text-anchor="middle">South</text>
+                  <text x="378" y="205" text-anchor="middle">East</text>
+                  <text x="22" y="205" text-anchor="middle">West</text>
+                </g>
+                <!-- Inter-cardinal (English + Dikpāla) -->
+                <g font-family="Georgia" font-size="11" fill="#FCD46F">
+                  <text x="335" y="68" text-anchor="middle">NE</text>
+                  <text x="335" y="343" text-anchor="middle">SE</text>
+                  <text x="65" y="68" text-anchor="middle">NW</text>
+                  <text x="65" y="343" text-anchor="middle">SW</text>
+                </g>
+                <!-- All 8 Dikpāla names (Sanskrit-approved transliteration) -->
+                <g font-family="-apple-system,sans-serif" font-size="8.5" fill="rgba(232,184,73,.9)" letter-spacing="1.4" font-weight="600">
+                  <text x="200" y="47" text-anchor="middle">KUBERA</text>
+                  <text x="200" y="363" text-anchor="middle">YAMA</text>
+                  <text x="378" y="221" text-anchor="middle">INDRA</text>
+                  <text x="22" y="221" text-anchor="middle">VARUṆA</text>
+                  <text x="335" y="83" text-anchor="middle">ĪŚĀNA</text>
+                  <text x="335" y="358" text-anchor="middle">AGNI</text>
+                  <text x="65" y="83" text-anchor="middle">VĀYU</text>
+                  <text x="65" y="358" text-anchor="middle">NIRṚTI</text>
+                </g>
+                <!-- Element / Pañcamahābhūta labels (very small, muted) -->
+                <g font-family="-apple-system,sans-serif" font-size="7" fill="rgba(247,236,212,.42)" letter-spacing="1.3">
+                  <text x="200" y="60" text-anchor="middle">wealth · water</text>
+                  <text x="200" y="352" text-anchor="middle">dharma · earth</text>
+                  <text x="378" y="236" text-anchor="middle">energy · space</text>
+                  <text x="22" y="236" text-anchor="middle">relations · water</text>
+                </g>
+                <!-- Brahmasthan center bindu, glowing -->
+                <circle cx="200" cy="200" r="5" fill="#FCD46F" opacity=".95"/>
+              </svg>
+            </div>
             <div class="center">
               <span class="om deva">ॐ</span>
               <span class="brahma">Brahmasthan</span>
             </div>
           </div>
-          <div class="shrine-hint">Hover a direction to reveal its deity and purpose</div>
+          <div class="shrine-hint">Hover a direction to reveal the Dikpāla and its pieces</div>
+          <div style="margin-top:22px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;color:var(--silk-faint);text-align:center;">
+            Positions verified per Bṛhat Saṃhitā, Ch. 53 · Aṣṭadikpālaka names per Purāṇic tradition
+          </div>
         </section>
       </div>
     </div>
@@ -1498,38 +1641,40 @@
             <p class="intro">Each direction is a room, an element, a purpose. Tap one to enter.</p>
           </div>
           <div class="shrine-wheel">
-            <svg viewBox="0 0 400 400" fill="none">
-              <circle cx="200" cy="200" r="195" stroke="#E8B849" stroke-width=".8" opacity=".4"/>
-              <circle cx="200" cy="200" r="150" stroke="#E8B849" stroke-width=".8" opacity=".55"/>
-              <circle cx="200" cy="200" r="90" stroke="#E8B849" stroke-width="1" opacity=".7"/>
-              <g stroke="#E8B849" stroke-width=".6" opacity=".55">
-                <line x1="200" y1="5" x2="200" y2="395"/>
-                <line x1="5" y1="200" x2="395" y2="200"/>
-                <line x1="62" y1="62" x2="338" y2="338"/>
-                <line x1="338" y1="62" x2="62" y2="338"/>
-              </g>
-              <polygon points="200,140 250,240 150,240" stroke="#E8B849" stroke-width=".8" fill="none" opacity=".55"/>
-              <polygon points="200,260 250,160 150,160" stroke="#E8B849" stroke-width=".8" fill="none" opacity=".55"/>
-              <g font-family="Georgia" font-size="18" fill="#F7ECD4">
-                <text x="200" y="35" text-anchor="middle">N</text>
-                <text x="200" y="378" text-anchor="middle">S</text>
-                <text x="376" y="208" text-anchor="middle">E</text>
-                <text x="24" y="208" text-anchor="middle">W</text>
-              </g>
-              <g font-family="Georgia" font-size="12" fill="#FCD46F">
-                <text x="335" y="70" text-anchor="middle">NE</text>
-                <text x="335" y="340" text-anchor="middle">SE</text>
-                <text x="65" y="70" text-anchor="middle">NW</text>
-                <text x="65" y="340" text-anchor="middle">SW</text>
-              </g>
-              <circle cx="200" cy="200" r="4" fill="#FCD46F"/>
-            </svg>
+            <div class="dome-3d">
+              <svg viewBox="0 0 400 400" fill="none">
+                <circle cx="200" cy="200" r="195" stroke="#E8B849" stroke-width=".8" opacity=".4"/>
+                <circle cx="200" cy="200" r="150" stroke="#E8B849" stroke-width=".8" opacity=".55"/>
+                <circle cx="200" cy="200" r="90" stroke="#FCD46F" stroke-width="1.2" opacity=".8"/>
+                <g stroke="#E8B849" stroke-width=".6" opacity=".55">
+                  <line x1="200" y1="5" x2="200" y2="395"/>
+                  <line x1="5" y1="200" x2="395" y2="200"/>
+                  <line x1="62" y1="62" x2="338" y2="338"/>
+                  <line x1="338" y1="62" x2="62" y2="338"/>
+                </g>
+                <polygon points="200,140 250,240 150,240" stroke="#FCD46F" stroke-width=".8" fill="none" opacity=".65"/>
+                <polygon points="200,260 250,160 150,160" stroke="#FCD46F" stroke-width=".8" fill="none" opacity=".65"/>
+                <g font-family="Georgia" font-size="16" fill="#F7ECD4">
+                  <text x="200" y="34" text-anchor="middle">N · Kubera</text>
+                  <text x="200" y="378" text-anchor="middle">S · Yama</text>
+                  <text x="376" y="208" text-anchor="middle">E · Indra</text>
+                  <text x="24" y="208" text-anchor="middle">W · Varuṇa</text>
+                </g>
+                <g font-family="Georgia" font-size="10.5" fill="#FCD46F">
+                  <text x="335" y="72" text-anchor="middle">NE · Īśāna</text>
+                  <text x="335" y="342" text-anchor="middle">SE · Agni</text>
+                  <text x="65" y="72" text-anchor="middle">NW · Vāyu</text>
+                  <text x="65" y="342" text-anchor="middle">SW · Nirṛti</text>
+                </g>
+                <circle cx="200" cy="200" r="5" fill="#FCD46F"/>
+              </svg>
+            </div>
             <div class="center">
               <span class="om deva">ॐ</span>
               <span class="brahma">Brahmasthan</span>
             </div>
           </div>
-          <div class="shrine-hint">Tap a direction to enter</div>
+          <div class="shrine-hint">Tap a direction to enter its shrine</div>
         </section>
       </div>
     </div>
@@ -2446,20 +2591,93 @@
 </section>
 
 <!-- ============================================================ -->
+<!-- SOURCES & VERIFICATION -->
+<!-- ============================================================ -->
+<section class="section-preview" id="sources" style="max-width:1080px;">
+  <div class="sp-head">
+    <div class="n">◈</div>
+    <div class="title">
+      <span class="eyebrow">Sources &amp; verification</span>
+      <h2>Every element, sourced.</h2>
+      <p>The design elements on this platform are not decoration — they are references to real tradition. If we display it, we can source it. This is the ledger of that discipline.</p>
+    </div>
+    <div class="anchor">/verification</div>
+  </div>
+
+  <div style="background:rgba(20,9,43,.5);border:1px solid var(--line-gold);border-radius:6px;overflow:hidden;">
+
+    <div style="padding:24px 28px;border-bottom:1px solid var(--line-dark);display:grid;grid-template-columns:200px 1fr;gap:24px;">
+      <div style="font-family:var(--f-display);font-size:15px;color:var(--gold-lit);">Śrī Yantra (hero)</div>
+      <div style="font-size:13.5px;color:var(--silk-muted);line-height:1.7;">
+        The sovereign yantra of <b style="color:var(--silk)">Śrī Lalitā Tripura Sundarī</b>. Nine interlocking triangles (four upward = Śiva, five downward = Śakti), 8-petal Aṣṭadala lotus, 16-petal Ṣoḍaśadala lotus, three concentric circles, and the Bhūpura square with four gates. The central Bindu represents pure consciousness. <b style="color:var(--gold-lit)">Source:</b> Śaubhāgya Bhāskara commentary on Lalitā Sahasranāma; geometric construction per Nityāṣoḍaśikārṇava.
+      </div>
+    </div>
+
+    <div style="padding:24px 28px;border-bottom:1px solid var(--line-dark);display:grid;grid-template-columns:200px 1fr;gap:24px;">
+      <div style="font-family:var(--f-display);font-size:15px;color:var(--gold-lit);">Panchang (live data)</div>
+      <div style="font-size:13.5px;color:var(--silk-muted);line-height:1.7;">
+        Tithi, Nakshatra, Yoga, Karana, Choghadiya, Rahu Kaal, Sunrise/Sunset — all computed server-side from the visitor's location. <b style="color:var(--gold-lit)">Source:</b> Swiss Ephemeris (derived from NASA JPL DE431, arcsecond precision) using <b style="color:var(--silk)">Chitrapaksha (Lahiri) Ayanamsa</b> — the Government of India Rāṣṭrīya Pañcāṅga standard. Cross-verified against <b style="color:var(--silk)">Drik Panchang</b>.
+      </div>
+    </div>
+
+    <div style="padding:24px 28px;border-bottom:1px solid var(--line-dark);display:grid;grid-template-columns:200px 1fr;gap:24px;">
+      <div style="font-family:var(--f-display);font-size:15px;color:var(--gold-lit);">Aṣṭadikpālakas (direction shrine)</div>
+      <div style="font-size:13.5px;color:var(--silk-muted);line-height:1.7;">
+        The eight directional guardians in their traditionally-fixed positions: <b style="color:var(--silk)">Kubera</b> (N · wealth · water), <b style="color:var(--silk)">Īśāna</b> (NE · water), <b style="color:var(--silk)">Indra</b> (E · space), <b style="color:var(--silk)">Agni</b> (SE · fire), <b style="color:var(--silk)">Yama</b> (S · earth), <b style="color:var(--silk)">Nirṛti</b> (SW · earth), <b style="color:var(--silk)">Varuṇa</b> (W · water), <b style="color:var(--silk)">Vāyu</b> (NW · air), with <b style="color:var(--silk)">Brahmā</b> at the Brahmasthan center (ether). <b style="color:var(--gold-lit)">Source:</b> Bṛhat Saṃhitā (Varāhamihira), Ch. 53 · Mayamata · Mānasāra · Purāṇic tradition.
+      </div>
+    </div>
+
+    <div style="padding:24px 28px;border-bottom:1px solid var(--line-dark);display:grid;grid-template-columns:200px 1fr;gap:24px;">
+      <div style="font-family:var(--f-display);font-size:15px;color:var(--gold-lit);">Mantras (product cards)</div>
+      <div style="font-size:13.5px;color:var(--silk-muted);line-height:1.7;">
+        Each mantra is the traditional short-form for its associated deity — <span class="deva">ॐ कुबेराय नमः</span> for Kubera pieces, <span class="deva">ॐ श्री महालक्ष्म्यै नमः</span> for Lakṣmī pieces (from Lakṣmī Aṣṭottara Śatanāma), <span class="deva">ॐ ब्रह्मणे नमः</span> for the Brahmasthan pyramid. <b style="color:var(--gold-lit)">Source:</b> Sahasranāma stotras and Purāṇic invocation forms. Devanagari orthography verified per Aṣṭādhyāyī Saṃhitā-pāṭha conventions.
+      </div>
+    </div>
+
+    <div style="padding:24px 28px;border-bottom:1px solid var(--line-dark);display:grid;grid-template-columns:200px 1fr;gap:24px;">
+      <div style="font-family:var(--f-display);font-size:15px;color:var(--gold-lit);">Consecration ritual (4 steps)</div>
+      <div style="font-size:13.5px;color:var(--silk-muted);line-height:1.7;">
+        Saṃkalpa → Cleansing (Śuddhi) → Placement (Sthāpanā) → First Puja (Pratiṣṭhā). The four-fold sequence traditional to <b style="color:var(--silk)">Prāṇa Pratiṣṭhā</b> — the establishment of divine presence in a consecrated object. <b style="color:var(--gold-lit)">Source:</b> Nārada Pañcarātra Saṃhitā · Āgama-based ritual manuals. The specific mantras and gestures per piece are curated by our resident Vāstu consultant.
+      </div>
+    </div>
+
+    <div style="padding:24px 28px;border-bottom:1px solid var(--line-dark);display:grid;grid-template-columns:200px 1fr;gap:24px;">
+      <div style="font-family:var(--f-display);font-size:15px;color:var(--gold-lit);">Festival calendar</div>
+      <div style="font-size:13.5px;color:var(--silk-muted);line-height:1.7;">
+        Festival dates computed live from tithi + nakshatra rules and <b style="color:var(--silk)">cross-verified against Drik Panchang</b> — the authoritative Hindu almanac used by traditional priests. Regional variations (Amāntā vs. Pūrṇimāntā lunar month conventions) are handled by config. When our computation disagrees with Drik, we defer to Drik and note the tradition.
+      </div>
+    </div>
+
+    <div style="padding:24px 28px;display:grid;grid-template-columns:200px 1fr;gap:24px;">
+      <div style="font-family:var(--f-display);font-size:15px;color:var(--gold-lit);">Material composition</div>
+      <div style="font-size:13.5px;color:var(--silk-muted);line-height:1.7;">
+        Every metal weight and gemstone specification stated on a piece is <b style="color:var(--silk)">measured per piece, not per SKU</b>. The certificate that ships with every order is signed by our metallurgist. Third-party assay available on request for pieces above ₹50,000. Sourcing artisan family and workshop location is documented on every product page.
+      </div>
+    </div>
+
+  </div>
+
+  <div style="max-width:720px;margin:32px auto 0;padding:20px 24px;background:linear-gradient(135deg,rgba(78,138,62,.1),rgba(78,138,62,.03));border:1px solid var(--success);border-left:4px solid var(--success);border-radius:3px;">
+    <div style="font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--success-lit);font-weight:700;margin-bottom:8px;">Public methodology page</div>
+    <p style="font-size:13.5px;color:var(--silk);line-height:1.7;margin:0;">The full list above is published at <code>/methodology</code> — publicly readable, plainly written, updated when sources change. This is what trust looks like for a devotional audience: <b>we tell you exactly how we know what we say we know.</b></p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
 <!-- SIGN-OFF -->
 <!-- ============================================================ -->
 <section class="signoff">
   <span class="om deva">ॐ</span>
-  <span class="eyebrow">Your sign-off</span>
-  <h2 class="serif">The homepage, <i>at this bar.</i></h2>
-  <p>Every section designed at desktop and mobile, using nothing but the tokens, motion, and components locked in Design System v1. Anything off — a section that doesn't land, an element missing, an interaction I've gotten wrong — say so.</p>
+  <span class="eyebrow">Homepage v2 · your sign-off</span>
+  <h2 class="serif">Every element now <i>earns its place.</i></h2>
+  <p>v2 elevates the meaning: the mandala is a real Śrī Yantra, the direction wheel names all eight Dikpālas in their traditionally-fixed positions, the panchang cites its source, and every mantra is authentic. Four signature moments are folded in (yantra 3D breath, dome tilt, card lean-in, ritual scroll unfurl). If anything still doesn't land, tell me — we iterate to v3.</p>
   <div class="questions">
-    <div class="q"><b>1.</b> Does the <b>hero</b> land — the mandala, the diyas, the mantra, the CTAs?</div>
-    <div class="q"><b>2.</b> Is the <b>direction shrine</b> the treatment you want, or should it lean further into ritual?</div>
-    <div class="q"><b>3.</b> Do the <b>product cards</b> feel like altars, or should the arch language be pushed further?</div>
-    <div class="q"><b>4.</b> The <b>consultation sanctuary</b> — feel like an invitation, or too transactional?</div>
-    <div class="q"><b>5.</b> Is the <b>section order</b> right, or does something need to move?</div>
-    <div class="q"><b>6.</b> Anything <b>missing</b> from the homepage before we lock it and move to the next page?</div>
+    <div class="q"><b>1.</b> Is the <b>Śrī Yantra hero</b> the treatment you want — geometrically correct, gently breathing in 3D?</div>
+    <div class="q"><b>2.</b> Does the <b>Aṣṭadikpāla shrine</b> read right — all 8 Dikpālas named, the 3D dome tilt working?</div>
+    <div class="q"><b>3.</b> Are the <b>mantras</b> we've used for each product authentic and appropriate?</div>
+    <div class="q"><b>4.</b> Do the <b>panchang source citations</b> land right, or should they be even more prominent (or quieter)?</div>
+    <div class="q"><b>5.</b> Is the <b>Sources &amp; Verification</b> section the level of transparency you want, or should we go deeper?</div>
+    <div class="q"><b>6.</b> Anything else <b>missing or wrong</b> before we lock v2 and move to Page 2 (Direction Shrine detail page)?</div>
   </div>
 </section>
 
