@@ -9,7 +9,6 @@
  *   - The Bindu: an emissive gold sphere that doubles as the god-rays light source
  *   - God-rays radiating from the Bindu — consciousness radiating outward
  *   - ~5,000 golden dust motes with cursor gravity
- *   - ~30 marigold & rose petals falling gently through the scene
  *   - Cursor-tracked warm point light
  *   - Scroll-driven camera dolly (flies into the yantra)
  *   - Post: god-rays, bloom (tuned 1.15), vignette, film grain
@@ -265,69 +264,6 @@ function ParticleField({ count = 1800 }: { count?: number }) {
 }
 
 // ---------------------------------------------------------------------------
-// Petals — marigold & rose, falling gently, swaying; sparse and slow
-// ---------------------------------------------------------------------------
-function Petals({ count = 28 }: { count?: number }) {
-  const meshRef = useRef<THREE.InstancedMesh>(null!);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-
-  const state = useMemo(() => {
-    return Array.from({ length: count }, () => ({
-      x: (Math.random() - 0.5) * 10,
-      y: Math.random() * 10 - 4,
-      z: (Math.random() - 0.5) * 5,
-      fall: 0.15 + Math.random() * 0.2,       // units / second — slow
-      swayPhase: Math.random() * Math.PI * 2,
-      swayAmp: 0.3 + Math.random() * 0.4,
-      rotX: Math.random() * Math.PI * 2,
-      rotY: Math.random() * Math.PI * 2,
-      rotSpeed: 0.2 + Math.random() * 0.4,
-      scale: 0.7 + Math.random() * 0.5,
-    }));
-  }, [count]);
-
-  useEffect(() => {
-    if (!meshRef.current) return;
-    // Marigold (70%) and rose (30%) petal colors
-    const marigold = new THREE.Color("#F5A82A");
-    const rose = new THREE.Color("#F26B7E");
-    for (let i = 0; i < count; i++) {
-      meshRef.current.setColorAt(i, Math.random() < 0.7 ? marigold : rose);
-    }
-    if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
-  }, [count]);
-
-  useFrame((_, dt) => {
-    if (!meshRef.current) return;
-    const t = performance.now() * 0.001;
-    for (let i = 0; i < count; i++) {
-      const p = state[i];
-      p.y -= p.fall * dt;
-      p.rotX += p.rotSpeed * dt;
-      p.rotY += p.rotSpeed * 0.7 * dt;
-      if (p.y < -5) { // respawn at top
-        p.y = 5 + Math.random() * 2;
-        p.x = (Math.random() - 0.5) * 10;
-      }
-      const swayX = Math.sin(t * 0.5 + p.swayPhase) * p.swayAmp;
-      dummy.position.set(p.x + swayX, p.y, p.z);
-      dummy.rotation.set(p.rotX, p.rotY, 0);
-      dummy.scale.setScalar(p.scale);
-      dummy.updateMatrix();
-      meshRef.current.setMatrixAt(i, dummy.matrix);
-    }
-    meshRef.current.instanceMatrix.needsUpdate = true;
-  });
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
-      <planeGeometry args={[0.09, 0.14]} />
-      <meshBasicMaterial side={THREE.DoubleSide} transparent opacity={0.85} toneMapped={false} />
-    </instancedMesh>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Cursor-tracked warm point light
 // ---------------------------------------------------------------------------
 function CursorLight() {
@@ -395,7 +331,6 @@ function SanctumScene({ particleCount }: { particleCount: number }) {
       <SriYantra />
       <Bindu onReady={setSun} />
       <ParticleField count={particleCount} />
-      <Petals count={22} />
       <CameraController />
 
       {sun && (

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { HeroWebGL } from "@/components/hero/HeroWebGL";
 import { SmoothScroll } from "@/components/hero/SmoothScroll";
 import { Product3D } from "@/components/hero/Product3D";
+import { DirectionWheel } from "@/components/hero/DirectionWheel";
 import "./home.css";
 
 export const metadata: Metadata = {
@@ -114,46 +115,8 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="sa-wheel sa-reveal">
-            <svg viewBox="0 0 400 400" fill="none" role="img" aria-label="Vastu direction wheel with the eight Dikpālas">
-              <circle cx="200" cy="200" r="195" stroke="#E8B849" strokeWidth=".8" opacity=".4" />
-              <circle cx="200" cy="200" r="160" stroke="#E8B849" strokeWidth=".8" opacity=".55" />
-              <circle cx="200" cy="200" r="110" stroke="#E8B849" strokeWidth=".8" opacity=".65" />
-              <circle cx="200" cy="200" r="60" stroke="#FCD46F" strokeWidth="1.2" opacity=".85" />
-              <g stroke="#E8B849" strokeWidth=".6" opacity=".55">
-                <line x1="200" y1="5" x2="200" y2="395" />
-                <line x1="5" y1="200" x2="395" y2="200" />
-                <line x1="62" y1="62" x2="338" y2="338" />
-                <line x1="338" y1="62" x2="62" y2="338" />
-              </g>
-              <polygon points="200,140 250,240 150,240" stroke="#FCD46F" strokeWidth=".8" fill="none" opacity=".65" />
-              <polygon points="200,260 250,160 150,160" stroke="#FCD46F" strokeWidth=".8" fill="none" opacity=".65" />
-              <g fontFamily="Georgia, serif" fontSize="14" fill="#F7ECD4">
-                <text x="200" y="30" textAnchor="middle">North</text>
-                <text x="200" y="380" textAnchor="middle">South</text>
-                <text x="378" y="205" textAnchor="middle">East</text>
-                <text x="22" y="205" textAnchor="middle">West</text>
-              </g>
-              <g fontFamily="Georgia, serif" fontSize="11" fill="#FCD46F">
-                <text x="335" y="68" textAnchor="middle">NE</text>
-                <text x="335" y="343" textAnchor="middle">SE</text>
-                <text x="65" y="68" textAnchor="middle">NW</text>
-                <text x="65" y="343" textAnchor="middle">SW</text>
-              </g>
-              <g fontFamily="system-ui, sans-serif" fontSize="8.5" fill="rgba(232,184,73,.9)" letterSpacing="1.4" fontWeight="600">
-                <text x="200" y="47" textAnchor="middle">KUBERA</text>
-                <text x="200" y="363" textAnchor="middle">YAMA</text>
-                <text x="378" y="221" textAnchor="middle">INDRA</text>
-                <text x="22" y="221" textAnchor="middle">VARUṆA</text>
-                <text x="335" y="83" textAnchor="middle">ĪŚĀNA</text>
-                <text x="335" y="358" textAnchor="middle">AGNI</text>
-                <text x="65" y="83" textAnchor="middle">VĀYU</text>
-                <text x="65" y="358" textAnchor="middle">NIRṚTI</text>
-              </g>
-              <circle cx="200" cy="200" r="5" fill="#FCD46F" opacity=".95" />
-            </svg>
-            <div className="sa-wheel-om" aria-hidden="true">ॐ</div>
-            <div className="sa-wheel-brahma">Brahmasthan</div>
+          <div className="sa-reveal">
+            <DirectionWheel />
           </div>
 
           <div className="sa-dir-index sa-reveal">

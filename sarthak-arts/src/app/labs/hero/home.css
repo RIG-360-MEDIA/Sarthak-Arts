@@ -328,23 +328,50 @@
   max-width: 480px; margin: 0 auto; aspect-ratio: 1; position: relative;
   perspective: 1200px;
 }
+.sa-wheel.is-pointing { cursor: pointer; }
+.sa-wheel-tilt {
+  width: 100%; height: 100%; position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
 .sa-wheel svg {
   width: 100%; height: 100%; display: block;
-  transition: transform 0.7s var(--ease);
   filter: drop-shadow(0 0 26px rgba(252, 212, 111, 0.12));
 }
-.sa-wheel:hover svg { transform: rotateX(16deg) scale(1.015); }
+/* Center caption — the Brahmasthan at rest; the pointed Dikpāla in motion */
+.sa-wheel-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  text-align: center; pointer-events: none;
+  max-width: 150px;
+}
 .sa-wheel-om {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -52%);
   font-family: var(--f-deva); font-size: 42px; color: var(--gold-lit);
   text-shadow: 0 0 28px rgba(252, 212, 111, 0.6);
   animation: sa-breath 5.4s ease-in-out infinite;
-  pointer-events: none;
+  line-height: 1;
 }
 .sa-wheel-brahma {
-  position: absolute; top: calc(50% + 30px); left: 50%; transform: translateX(-50%);
   font-size: 8.5px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: var(--gold); font-weight: 600; pointer-events: none;
+  color: var(--gold); font-weight: 600; margin-top: 6px;
+}
+.sa-wheel-deva {
+  font-family: var(--f-deva); font-size: 26px; color: var(--gold-lit);
+  text-shadow: 0 0 22px rgba(252, 212, 111, 0.55);
+  line-height: 1.15;
+}
+.sa-wheel-name {
+  font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--silk); font-weight: 700; margin-top: 4px;
+}
+.sa-wheel-elm {
+  font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--silk-faint); font-weight: 600;
+}
+.sa-wheel-enter {
+  font-size: 8.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold-lit); font-weight: 700; margin-top: 7px;
+  animation: sa-breath 2.4s ease-in-out infinite;
 }
 .sa-dir-index {
   max-width: 640px; margin: 64px auto 0;
