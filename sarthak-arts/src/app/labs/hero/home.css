@@ -193,7 +193,9 @@
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
 }
-.sa-hero-lead {
+/* Scoped under .sa-home so this beats the `.sa-home p { margin: 0 }` reset —
+   a lone class loses to class+element and the auto-centering silently dies */
+.sa-home .sa-hero-lead {
   font-size: 16.5px; color: var(--silk-muted); line-height: 1.75;
   max-width: 480px; margin: 0 auto;
 }
