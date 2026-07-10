@@ -1,0 +1,2468 @@
+<title>Sarthak Arts — Homepage Design</title>
+<style>
+  /* ==========================================================================
+     DESIGN SYSTEM TOKENS (imported from v1)
+     ========================================================================== */
+  :root {
+    --sanctum:#0B0619; --sanctum-lift:#14092B; --sanctum-2:#1D1136; --midnight:#100822;
+    --ivory:#F7ECD4; --parchment:#EFE0BE; --sandstone:#E3C89A; --alabaster:#FAF3E1;
+    --ink:#1A0F04; --ink-strong:#0D0700; --ink-muted:rgba(26,15,4,.66); --ink-faint:rgba(26,15,4,.42);
+    --silk:#F7ECD4; --silk-muted:rgba(247,236,212,.72); --silk-faint:rgba(247,236,212,.46);
+    --gold:#E8B849; --gold-lit:#FCD46F; --gold-deep:#A67816; --gold-dark:#7A5510;
+    --saffron:#F58A2A; --marigold:#F5A82A; --sindoor:#C6202A; --sindoor-deep:#9E1720;
+    --lotus:#F26B7E; --lapis:#2A2270;
+    --success:#4E8A3E; --success-lit:#6BB05A; --warning:#C48A2A; --critical:#B62F3A; --info:#4A6DA8;
+    --line-gold:rgba(232,184,73,.24); --line-cream:#D8C296; --line-warm:#E4CFA1; --line-dark:rgba(232,184,73,.14);
+    --e1:0 1px 2px rgba(0,0,0,.10); --e2:0 8px 20px -10px rgba(30,20,10,.20); --e3:0 20px 60px -25px rgba(30,20,10,.35);
+    --e4:0 30px 80px -20px rgba(0,0,0,.50); --glow-gold:0 0 24px rgba(252,212,111,.5);
+    --r-1:2px; --r-2:4px; --r-3:8px; --r-4:14px; --r-full:999px;
+    --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:80px; --s-10:120px;
+    --f-display:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+    --f-body:-apple-system,"Segoe UI",system-ui,sans-serif;
+    --f-mono:"SF Mono",Menlo,Consolas,monospace;
+    --f-deva:"Sanskrit Text","Noto Serif Devanagari","Nirmala UI","Mangal",Georgia,serif;
+    --ease-out:cubic-bezier(0,0,.2,1); --ease-sacred:cubic-bezier(.25,.1,.25,1);
+  }
+
+  /* ==========================================================================
+     ANIMATIONS (from design system)
+     ========================================================================== */
+  @keyframes om-breathe { 0%,100%{opacity:.85;filter:drop-shadow(0 0 24px rgba(252,212,111,.45))} 50%{opacity:1;filter:drop-shadow(0 0 42px rgba(252,212,111,.85))} }
+  @keyframes mandala-breath { to{transform:rotate(360deg)} }
+  @keyframes flame-flicker { 0%,100%{transform:scale(1) translateY(0);opacity:.95} 25%{transform:scale(1.05,.95) translateY(-1px);opacity:1} 50%{transform:scale(.95,1.06) translateY(1px);opacity:.9} 75%{transform:scale(1.02,.98) translateY(-1px);opacity:1} }
+  @keyframes particle-fall { 0%{transform:translateY(-30px) translateX(0) rotate(0);opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translateY(360px) translateX(var(--drift,20px)) rotate(180deg);opacity:0} }
+  @keyframes petal-drift { 0%{transform:translateY(-20px) rotate(0);opacity:0} 15%{opacity:1} 100%{transform:translateY(300px) translateX(var(--drift,40px)) rotate(360deg);opacity:0} }
+  @keyframes smoke-rise { 0%{transform:translateY(0) scale(1);opacity:0} 30%{opacity:.35} 100%{transform:translateY(-120px) scale(1.6);opacity:0} }
+  @keyframes shimmer { 0%{background-position:-200% 50%} 100%{background-position:200% 50%} }
+  @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:0} }
+  @keyframes fade-up { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important } }
+
+  /* ==========================================================================
+     DOC CHROME
+     ========================================================================== */
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; scroll-padding-top:80px; }
+  body {
+    background: var(--sanctum); color: var(--silk);
+    font: 15px/1.65 var(--f-body); -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: var(--gold-lit); text-decoration: none; }
+  h1,h2,h3,h4,h5 { font-family: var(--f-display); font-weight: 500; letter-spacing: -.005em; }
+  .serif { font-family: var(--f-display); }
+  .deva  { font-family: var(--f-deva); }
+  .num   { font-variant-numeric: tabular-nums; }
+  code { font-family: var(--f-mono); font-size: 12.5px; background: rgba(232,184,73,.1); padding: 2px 6px; border-radius: 2px; color: var(--gold-lit); }
+
+  /* Doc nav */
+  .doc-nav {
+    position: sticky; top: 0; z-index: 200;
+    background: rgba(11,6,25,.9); backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid var(--line-gold);
+  }
+  .doc-nav-inner {
+    max-width: 1400px; margin: 0 auto; padding: 12px 24px;
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  }
+  .doc-nav .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--f-display); font-size: 15px; color: var(--gold-lit);
+  }
+  .doc-nav .brand .om { font-family: var(--f-deva); font-size: 20px; text-shadow: var(--glow-gold); }
+  .doc-nav .brand small { font-family: var(--f-body); color: var(--silk-faint); font-weight: 400; margin-left: 6px; font-size: 11px; letter-spacing: .04em; }
+  .doc-nav .tag {
+    margin-left: auto; font-size: 11px; color: var(--gold-lit);
+    padding: 4px 10px; border: 1px solid var(--line-gold); border-radius: 999px; letter-spacing: .06em;
+  }
+
+  /* Doc header */
+  .doc-header {
+    padding: 120px 24px 100px; text-align: center; position: relative; overflow: hidden;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 30%, rgba(58,25,110,.5) 0%, transparent 70%),
+      radial-gradient(circle at 20% 90%, rgba(245,168,42,.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(245,168,42,.08) 0%, transparent 40%);
+    border-bottom: 1px solid var(--line-gold);
+  }
+  .doc-header .om { font-family: var(--f-deva); font-size: 78px; color: var(--gold-lit); display: block; margin-bottom: 16px; animation: om-breathe 4.6s ease-in-out infinite; text-shadow: 0 0 40px rgba(252,212,111,.6); }
+  .doc-header .eyebrow { font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase; font-weight: 600; color: var(--gold-lit); }
+  .doc-header h1 { font-size: clamp(38px,5vw,54px); color: var(--silk); font-weight: 400; margin-top: 12px; line-height: 1.05; }
+  .doc-header h1 i { color: var(--gold-lit); font-style: italic; }
+  .doc-header .lead { margin: 24px auto 0; max-width: 560px; color: var(--silk-muted); font-size: 16px; line-height: 1.75; }
+
+  /* Reading guide */
+  .reading-guide { max-width: 900px; margin: 60px auto; padding: 0 24px; }
+  .reading-guide-inner {
+    background: rgba(20,9,43,.55); border: 1px solid var(--line-gold); border-radius: 4px;
+    padding: 24px 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px;
+  }
+  .reading-guide h5 { font-size: 13px; color: var(--gold-lit); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+  .reading-guide p { font-size: 13px; color: var(--silk-muted); margin: 0; }
+  .reading-guide code { font-size: 11px; }
+
+  /* Table of contents */
+  .toc { max-width: 900px; margin: 0 auto 80px; padding: 0 24px; }
+  .toc h4 { color: var(--gold-lit); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; margin-bottom: 16px; text-align: center; font-weight: 700; font-family: var(--f-body); }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+  .toc-item {
+    display: flex; align-items: baseline; gap: 8px; padding: 10px 14px;
+    border: 1px solid var(--line-dark); border-radius: 3px;
+    background: rgba(20,9,43,.4); font-size: 13px; color: var(--silk-muted);
+    transition: all .25s;
+  }
+  .toc-item:hover { border-color: var(--gold); color: var(--gold-lit); }
+  .toc-item .n { font-variant-numeric: tabular-nums; color: var(--gold-lit); font-size: 11px; font-family: var(--f-mono); }
+
+  /* ==========================================================================
+     SECTION PREVIEW WRAPPER
+     ========================================================================== */
+  .section-preview {
+    max-width: 1400px; margin: 0 auto 100px; padding: 0 24px;
+    scroll-margin-top: 80px;
+  }
+  .section-preview .sp-head {
+    padding: 40px 0 30px; border-top: 1px solid var(--line-dark);
+    display: grid; grid-template-columns: 60px 1fr auto; gap: 24px; align-items: baseline;
+  }
+  .section-preview .sp-head .n {
+    font-family: var(--f-display); font-size: 44px; color: var(--gold-lit);
+    font-variant-numeric: tabular-nums; line-height: 1;
+    text-shadow: 0 0 20px rgba(252,212,111,.3);
+  }
+  .section-preview .sp-head .title h2 {
+    font-family: var(--f-display); font-size: 26px; color: var(--silk); font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .section-preview .sp-head .title .eyebrow {
+    display: inline-block; font-size: 10.5px; letter-spacing: .3em;
+    text-transform: uppercase; color: var(--gold-lit); font-weight: 600; margin-bottom: 6px;
+  }
+  .section-preview .sp-head .title p { font-size: 13.5px; color: var(--silk-muted); max-width: 60ch; margin: 0; }
+  .section-preview .sp-head .anchor {
+    font-family: var(--f-mono); font-size: 11px; color: var(--silk-faint);
+    padding-top: 12px;
+  }
+
+  /* Frame layout — side by side */
+  .layouts {
+    display: grid; grid-template-columns: 1fr 400px; gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 1100px) {
+    .layouts { grid-template-columns: 1fr; }
+    .layouts .frame-mobile { margin: 0 auto; }
+  }
+
+  .frame {
+    background: rgba(0,0,0,.25); border: 1px solid var(--line-dark);
+    border-radius: 6px; overflow: hidden;
+    position: relative;
+  }
+  .frame-label {
+    padding: 8px 14px; background: rgba(11,6,25,.85);
+    border-bottom: 1px solid var(--line-dark);
+    font-family: var(--f-mono); font-size: 10.5px; color: var(--silk-faint);
+    letter-spacing: .1em; text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .frame-label .dots { display: flex; gap: 4px; }
+  .frame-label .dots span { width: 8px; height: 8px; border-radius: 50%; background: rgba(232,184,73,.25); }
+  .frame-content {
+    container-type: inline-size;
+    container-name: frame;
+    background: var(--sanctum);
+    color: var(--silk);
+    overflow: hidden;
+  }
+  .frame-mobile { width: 380px; }
+  .frame-mobile .frame-content { min-height: 200px; }
+
+  /* Notes below each preview */
+  .sp-notes {
+    margin-top: 20px; padding: 20px 24px;
+    background: rgba(20,9,43,.4); border-left: 3px solid var(--gold-deep);
+    border-radius: 0 4px 4px 0;
+  }
+  .sp-notes h5 { font-size: 11px; color: var(--gold-lit); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 10px; font-weight: 700; font-family: var(--f-body); }
+  .sp-notes ul { list-style: none; margin: 0; padding: 0; }
+  .sp-notes ul li { font-size: 12.5px; color: var(--silk-muted); padding: 4px 0; padding-left: 16px; position: relative; line-height: 1.6; }
+  .sp-notes ul li::before { content: "◆"; position: absolute; left: 0; color: var(--gold); font-size: 8px; top: 8px; }
+  .sp-notes ul li b { color: var(--silk); font-weight: 600; }
+
+  /* ==========================================================================
+     SECTION 1 — ANNOUNCEMENT BAR
+     ========================================================================== */
+  .hp-ann {
+    background: linear-gradient(90deg, rgba(20,9,43,.9) 0%, rgba(29,17,54,.95) 50%, rgba(20,9,43,.9) 100%);
+    border-bottom: 1px solid var(--line-gold);
+    padding: 9px 20px; text-align: center;
+    font-size: 12px; letter-spacing: .04em; color: var(--silk-muted);
+    display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  }
+  .hp-ann b { color: var(--gold-lit); font-weight: 700; }
+  .hp-ann .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--gold-lit);
+    box-shadow: 0 0 6px var(--gold-lit); animation: pulse-dot 1.6s ease-in-out infinite;
+    display: inline-block;
+  }
+  .hp-ann .sep { color: var(--gold); opacity: .5; margin: 0 4px; }
+  @container frame (max-width: 480px) {
+    .hp-ann { font-size: 11px; padding: 8px 12px; gap: 6px; }
+    .hp-ann .sep.desk-only { display: none; }
+    .hp-ann .desk-only { display: none; }
+  }
+
+  /* ==========================================================================
+     SECTION 2 — HEADER
+     ========================================================================== */
+  .hp-header {
+    padding: 18px 32px; display: flex; align-items: center; gap: 28px;
+    background: rgba(11,6,25,.6);
+    border-bottom: 1px solid var(--line-dark);
+    position: relative;
+  }
+  .hp-header .logo {
+    font-family: var(--f-display); font-size: 20px; color: var(--gold-lit);
+    display: flex; align-items: center; gap: 8px; letter-spacing: .01em;
+  }
+  .hp-header .logo .om { font-family: var(--f-deva); font-size: 22px; text-shadow: 0 0 12px rgba(252,212,111,.4); }
+  .hp-header nav { display: flex; gap: 26px; }
+  .hp-header nav a {
+    font-size: 12px; color: var(--silk-muted); letter-spacing: .16em;
+    text-transform: uppercase; font-weight: 600; padding: 6px 0; position: relative;
+  }
+  .hp-header nav a:hover { color: var(--gold-lit); }
+  .hp-header nav a::after {
+    content: ""; position: absolute; bottom: 0; left: 50%; width: 0; height: 1px;
+    background: var(--gold-lit); transition: all .3s; transform: translateX(-50%);
+  }
+  .hp-header nav a:hover::after { width: 20px; }
+  .hp-header .actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .hp-header .icon-btn {
+    width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid transparent; border-radius: 3px; color: var(--silk-muted);
+    background: transparent; cursor: pointer; transition: all .25s; position: relative;
+  }
+  .hp-header .icon-btn:hover { color: var(--gold-lit); border-color: var(--line-gold); background: rgba(232,184,73,.06); }
+  .hp-header .cart-count {
+    position: absolute; top: 2px; right: 2px; width: 16px; height: 16px;
+    background: var(--sindoor); color: #fff; border-radius: 50%;
+    font-size: 9.5px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    letter-spacing: 0;
+  }
+  .hp-header .mobile-hamburger { display: none; }
+
+  @container frame (max-width: 640px) {
+    .hp-header { padding: 14px 16px; gap: 12px; }
+    .hp-header nav { display: none; }
+    .hp-header .logo { font-size: 17px; }
+    .hp-header .mobile-hamburger { display: inline-flex; }
+    .hp-header .actions { gap: 6px; }
+    .hp-header .icon-btn { width: 34px; height: 34px; }
+    .hp-header .icon-btn.desk-only { display: none; }
+  }
+
+  /* ==========================================================================
+     SECTION 3 — CINEMATIC HERO
+     ========================================================================== */
+  .hp-hero {
+    background: var(--sanctum); position: relative; overflow: hidden;
+    padding: 80px 32px 100px; text-align: center; min-height: 520px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .hp-hero::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 45% at 50% 32%, rgba(214,154,59,.16) 0%, transparent 70%),
+      radial-gradient(ellipse 90% 60% at 85% 90%, rgba(158,46,32,.06) 0%, transparent 70%);
+    pointer-events: none; z-index: 1;
+  }
+  .hp-hero .mandala-back {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    z-index: 0; opacity: .18; color: var(--gold);
+    animation: mandala-breath 90s linear infinite;
+    pointer-events: none;
+    width: 640px; height: 640px;
+  }
+  .hp-hero .diya-left, .hp-hero .diya-right {
+    position: absolute; bottom: 50px; z-index: 3;
+    animation: flame-flicker 1.7s ease-in-out infinite;
+    transform-origin: bottom center;
+    filter: drop-shadow(0 -8px 16px rgba(252,212,111,.5));
+  }
+  .hp-hero .diya-left { left: 80px; }
+  .hp-hero .diya-right { right: 80px; animation-delay: .7s; }
+  .hp-hero .smoke-l, .hp-hero .smoke-r {
+    position: absolute; bottom: 90px; z-index: 2;
+    width: 6px; height: 40px;
+  }
+  .hp-hero .smoke-l { left: 100px; }
+  .hp-hero .smoke-r { right: 100px; }
+  .hp-hero .smoke-puff {
+    width: 12px; height: 12px; border-radius: 50%; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(247,236,212,.35) 0%, transparent 70%);
+    animation: smoke-rise 5s ease-out infinite;
+  }
+  .hp-hero .smoke-puff.d2 { animation-delay: 1.6s; }
+  .hp-hero .smoke-puff.d3 { animation-delay: 3.2s; }
+  .hp-hero .particle {
+    position: absolute; width: 3px; height: 3px; border-radius: 50%;
+    background: var(--gold-lit); box-shadow: 0 0 6px var(--gold-lit);
+    animation: particle-fall linear infinite;
+    z-index: 2;
+  }
+  .hp-hero .petal {
+    position: absolute; z-index: 2;
+    animation: petal-drift linear infinite;
+  }
+  .hp-hero .content { position: relative; z-index: 4; max-width: 640px; }
+  .hp-hero .eyebrow {
+    display: inline-block; font-size: 10.5px; letter-spacing: .32em; text-transform: uppercase;
+    color: var(--gold-lit); font-weight: 600;
+    padding: 6px 0; position: relative;
+  }
+  .hp-hero .eyebrow::before, .hp-hero .eyebrow::after {
+    content: ""; position: absolute; top: 50%; width: 30px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-lit), transparent);
+    opacity: .6;
+  }
+  .hp-hero .eyebrow::before { right: calc(100% + 10px); }
+  .hp-hero .eyebrow::after { left: calc(100% + 10px); }
+  .hp-hero h1 {
+    font-family: var(--f-display); font-size: 60px; font-weight: 400;
+    color: var(--silk); line-height: 1.05; margin: 26px 0 20px;
+    letter-spacing: -.015em; text-wrap: balance;
+  }
+  .hp-hero h1 i { color: var(--gold-lit); font-style: italic; text-shadow: 0 0 30px rgba(252,212,111,.4); }
+  .hp-hero .lead {
+    max-width: 460px; margin: 0 auto; color: var(--silk-muted);
+    font-size: 16px; line-height: 1.75;
+  }
+  .hp-hero .mantra {
+    font-family: var(--f-deva); font-size: 20px; color: var(--gold); margin-top: 20px;
+    letter-spacing: .04em; opacity: .8;
+  }
+  .hp-hero .cta-row { display: flex; gap: 16px; justify-content: center; margin-top: 34px; flex-wrap: wrap; }
+  .btn {
+    padding: 14px 28px; font-family: var(--f-body); font-size: 12px; letter-spacing: .18em;
+    text-transform: uppercase; font-weight: 700; text-decoration: none;
+    border-radius: 2px; border: 1px solid transparent;
+    display: inline-flex; align-items: center; gap: 8px; transition: all .3s;
+    cursor: pointer; line-height: 1;
+  }
+  .btn.primary {
+    background: linear-gradient(90deg, var(--gold-deep) 0%, var(--gold-lit) 50%, var(--gold-deep) 100%);
+    background-size: 200% 100%; color: var(--sanctum);
+    animation: shimmer 6s linear infinite;
+  }
+  .btn.primary:hover { box-shadow: var(--glow-gold); }
+  .btn.secondary {
+    background: transparent; border-color: var(--gold);
+    color: var(--gold-lit);
+  }
+  .btn.secondary:hover { background: rgba(232,184,73,.1); box-shadow: 0 0 14px rgba(232,184,73,.3); }
+
+  @container frame (max-width: 640px) {
+    .hp-hero { padding: 50px 20px 70px; min-height: 480px; }
+    .hp-hero .mandala-back { width: 380px; height: 380px; opacity: .15; }
+    .hp-hero .diya-left { left: 20px; bottom: 30px; }
+    .hp-hero .diya-right { right: 20px; bottom: 30px; }
+    .hp-hero .smoke-l { left: 32px; bottom: 65px; }
+    .hp-hero .smoke-r { right: 32px; bottom: 65px; }
+    .hp-hero h1 { font-size: 34px; line-height: 1.1; }
+    .hp-hero .lead { font-size: 14px; }
+    .hp-hero .cta-row { flex-direction: column; align-items: stretch; margin-top: 26px; }
+    .hp-hero .btn { justify-content: center; }
+  }
+
+  /* ==========================================================================
+     SECTION 4 — PANCHANG STRIP
+     ========================================================================== */
+  .hp-panch {
+    background: var(--sanctum-lift);
+    border-top: 1px solid var(--line-gold);
+    border-bottom: 1px solid var(--line-gold);
+    padding: 22px 32px;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px;
+    position: relative;
+  }
+  .hp-panch .cell {
+    padding: 4px 8px; position: relative;
+    border-right: 1px solid rgba(232,184,73,.08);
+  }
+  .hp-panch .cell:last-child { border-right: none; }
+  .hp-panch .cell .icon { color: var(--gold); margin-bottom: 8px; opacity: .8; }
+  .hp-panch .cell .lbl {
+    font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--silk-faint); margin-bottom: 6px; font-weight: 600;
+  }
+  .hp-panch .cell .val {
+    font-family: var(--f-display); font-size: 15px; color: var(--silk); line-height: 1.25;
+  }
+  .hp-panch .cell .val b {
+    display: block; color: var(--gold-lit); font-family: var(--f-deva); font-weight: 600;
+    margin-top: 2px;
+  }
+  .hp-panch .cell.now::after {
+    content: ""; position: absolute; top: -22px; left: 12px; right: 12px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-lit), transparent);
+    box-shadow: 0 0 12px var(--gold-lit);
+  }
+  .hp-panch .cell.critical .val b { color: #F5A6AF; }
+
+  @container frame (max-width: 720px) {
+    .hp-panch { grid-template-columns: 1fr 1fr; gap: 14px; padding: 16px 16px 18px; }
+    .hp-panch .cell { border-right: none; border-bottom: 1px solid rgba(232,184,73,.06); padding-bottom: 12px; }
+    .hp-panch .cell.now { grid-column: span 2; text-align: center; }
+    .hp-panch .cell:last-child { border-bottom: none; }
+    .hp-panch .cell .val { font-size: 13.5px; }
+  }
+
+  /* ==========================================================================
+     SECTION 5 — DIRECTION SHRINE
+     ========================================================================== */
+  .hp-shrine {
+    background: var(--sanctum); padding: 100px 32px 80px; text-align: center;
+    position: relative;
+  }
+  .hp-shrine .head { margin-bottom: 50px; }
+  .hp-shrine .eyebrow {
+    display: inline-block; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold-lit); font-weight: 600; margin-bottom: 14px;
+  }
+  .hp-shrine h2 {
+    font-family: var(--f-display); font-size: 40px; color: var(--silk); font-weight: 400;
+    line-height: 1.1; text-wrap: balance; margin-bottom: 14px;
+  }
+  .hp-shrine h2 i { color: var(--gold-lit); font-style: italic; }
+  .hp-shrine .intro { max-width: 460px; margin: 0 auto; color: var(--silk-muted); font-size: 14.5px; line-height: 1.7; }
+
+  .shrine-wheel {
+    max-width: 460px; margin: 0 auto; position: relative;
+    aspect-ratio: 1;
+  }
+  .shrine-wheel svg { width: 100%; height: 100%; display: block; }
+  .shrine-wheel .center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .shrine-wheel .center .om {
+    font-family: var(--f-deva); font-size: 44px; color: var(--gold-lit);
+    text-shadow: 0 0 20px rgba(252,212,111,.6);
+    animation: om-breathe 5s ease-in-out infinite;
+  }
+  .shrine-wheel .center .brahma {
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold); margin-top: 6px; font-weight: 600;
+  }
+  .shrine-hint {
+    margin-top: 32px; display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--silk-faint);
+  }
+
+  @container frame (max-width: 640px) {
+    .hp-shrine { padding: 60px 20px 60px; }
+    .hp-shrine h2 { font-size: 26px; }
+    .shrine-wheel { max-width: 320px; }
+    .shrine-wheel .center .om { font-size: 34px; }
+  }
+
+  /* ==========================================================================
+     SECTION 6 — FEATURED PRODUCTS
+     ========================================================================== */
+  .hp-feat {
+    background: var(--midnight); padding: 80px 32px;
+  }
+  .hp-feat .head { text-align: center; margin-bottom: 50px; }
+  .hp-feat .head .eyebrow {
+    display: inline-block; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold-lit); font-weight: 600; margin-bottom: 12px;
+  }
+  .hp-feat h2 {
+    font-family: var(--f-display); font-size: 36px; color: var(--silk); font-weight: 400;
+    line-height: 1.1;
+  }
+  .hp-feat h2 i { color: var(--gold-lit); font-style: italic; }
+  .hp-feat .products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; max-width: 1000px; margin: 0 auto; }
+
+  .prod {
+    background: var(--ivory); color: var(--ink); border-radius: 4px;
+    overflow: hidden; border: 1px solid var(--line-cream);
+    box-shadow: var(--e3); transition: transform .4s var(--ease-out), box-shadow .4s;
+    display: flex; flex-direction: column;
+  }
+  .prod:hover { transform: translateY(-6px); box-shadow: var(--e4); }
+  .prod .arch {
+    height: 240px; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .prod.copper .arch { background: linear-gradient(180deg, #B96D2F 0%, #D18B5A 45%, #6A3D18 100%); }
+  .prod.silver .arch { background: linear-gradient(180deg, #B4B6BC 0%, #E1E3E7 45%, #6F7078 100%); }
+  .prod.brass  .arch { background: linear-gradient(180deg, #C68F2C 0%, #E5B857 45%, #7C561A 100%); }
+  .prod .arch::before {
+    content: ""; position: absolute; inset: 12px 12px 0 12px;
+    border: 2px solid var(--gold); border-radius: 100px 100px 0 0; pointer-events: none;
+  }
+  .prod .arch::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 50% 25%, rgba(252,212,111,.35), transparent 55%),
+                radial-gradient(circle at 50% 100%, rgba(0,0,0,.4), transparent 60%);
+  }
+  .prod .glyph { position: relative; z-index: 2; color: #FFF3E5; filter: drop-shadow(0 6px 12px rgba(0,0,0,.45)); }
+  .prod .badges {
+    position: absolute; top: 14px; left: 14px; right: 14px; z-index: 3;
+    display: flex; justify-content: space-between;
+  }
+  .prod .badge {
+    background: rgba(11,6,25,.65); backdrop-filter: blur(6px);
+    color: var(--gold-lit); font-size: 9.5px; letter-spacing: .2em; padding: 4px 10px;
+    border-radius: 2px; text-transform: uppercase;
+    border: 1px solid rgba(232,184,73,.3); font-weight: 700;
+  }
+  .prod .body { padding: 20px 22px 22px; flex: 1; display: flex; flex-direction: column; }
+  .prod .deity { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); margin-bottom: 6px; }
+  .prod .name { font-family: var(--f-display); font-size: 18px; color: var(--ink); line-height: 1.25; }
+  .prod .comp { font-size: 12.5px; color: var(--ink-faint); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .prod .foot {
+    margin-top: auto; padding-top: 14px; border-top: 1px dashed var(--line-cream);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .prod .amt { font-family: var(--f-display); font-size: 20px; color: var(--ink); }
+  .prod .mantra { font-family: var(--f-deva); font-size: 13px; color: var(--gold-deep); opacity: .9; }
+
+  .hp-feat .view-all { text-align: center; margin-top: 40px; }
+  .hp-feat .view-all a {
+    font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--gold-lit); font-weight: 600;
+    padding-bottom: 4px; border-bottom: 1px solid var(--gold);
+  }
+
+  @container frame (max-width: 720px) {
+    .hp-feat { padding: 60px 16px; }
+    .hp-feat h2 { font-size: 26px; }
+    .hp-feat .products { grid-template-columns: 1fr; gap: 16px; max-width: 320px; }
+    .prod .arch { height: 220px; }
+  }
+
+  /* ==========================================================================
+     SECTION 7 — HOME AUDIT CTA
+     ========================================================================== */
+  .hp-audit {
+    background: linear-gradient(135deg, #14092B 0%, #2A1B4A 55%, #7A5510 130%);
+    padding: 80px 32px; position: relative; overflow: hidden;
+  }
+  .hp-audit::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 80% 40%, rgba(214,154,59,.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hp-audit .inner {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr auto; gap: 60px; align-items: center;
+    position: relative; z-index: 2;
+  }
+  .hp-audit .copy .eyebrow {
+    display: inline-block; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold-lit); font-weight: 600; margin-bottom: 14px;
+  }
+  .hp-audit h2 {
+    font-family: var(--f-display); font-size: 34px; color: var(--silk); font-weight: 400;
+    line-height: 1.1; text-wrap: balance; margin-bottom: 14px;
+  }
+  .hp-audit h2 i { color: var(--gold-lit); font-style: italic; }
+  .hp-audit p { color: var(--silk-muted); font-size: 14.5px; line-height: 1.75; max-width: 460px; margin-bottom: 24px; }
+  .hp-audit .quiz-preview {
+    background: rgba(11,6,25,.55); border: 1px solid var(--line-gold);
+    padding: 26px; border-radius: 4px; min-width: 260px;
+  }
+  .hp-audit .quiz-preview .q-lbl { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold-lit); font-weight: 700; }
+  .hp-audit .quiz-preview .q-txt { font-family: var(--f-display); font-size: 17px; color: var(--silk); margin: 10px 0 18px; line-height: 1.3; }
+  .hp-audit .quiz-preview .q-options { display: grid; gap: 8px; }
+  .hp-audit .quiz-preview .q-opt {
+    padding: 10px 14px; border: 1px solid var(--line-gold); border-radius: 2px;
+    color: var(--silk); font-size: 13px; cursor: pointer; transition: all .25s;
+  }
+  .hp-audit .quiz-preview .q-opt:hover, .hp-audit .quiz-preview .q-opt.active { background: rgba(232,184,73,.1); border-color: var(--gold); color: var(--gold-lit); }
+  .hp-audit .quiz-preview .step { margin-top: 16px; font-size: 10.5px; letter-spacing: .2em; color: var(--silk-faint); text-align: center; text-transform: uppercase; }
+
+  @container frame (max-width: 780px) {
+    .hp-audit { padding: 50px 20px; }
+    .hp-audit .inner { grid-template-columns: 1fr; gap: 30px; }
+    .hp-audit h2 { font-size: 24px; }
+    .hp-audit .quiz-preview { min-width: 0; }
+  }
+
+  /* ==========================================================================
+     SECTION 8 — RITUAL GUIDANCE PREVIEW
+     ========================================================================== */
+  .hp-ritual { background: var(--ivory); color: var(--ink); padding: 80px 32px; text-align: center; }
+  .hp-ritual .eyebrow {
+    display: inline-block; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold-deep); font-weight: 600; margin-bottom: 14px;
+  }
+  .hp-ritual h2 {
+    font-family: var(--f-display); font-size: 34px; color: var(--ink); font-weight: 400;
+    margin-bottom: 12px;
+  }
+  .hp-ritual h2 i { color: var(--gold-deep); font-style: italic; }
+  .hp-ritual .intro { color: var(--ink-muted); font-size: 14.5px; max-width: 500px; margin: 0 auto 50px; line-height: 1.7; }
+  .hp-ritual .steps {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+    max-width: 900px; margin: 0 auto; position: relative;
+  }
+  .hp-ritual .steps::before {
+    content: ""; position: absolute; top: 32px; left: 11%; right: 11%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-deep), var(--gold-deep), transparent);
+    opacity: .4; z-index: 0;
+  }
+  .hp-ritual .step { padding: 0 12px; position: relative; z-index: 1; }
+  .hp-ritual .step .circle {
+    width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 14px;
+    background: var(--ivory); border: 1px solid var(--gold-deep);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 16px rgba(166,120,22,.1), 0 4px 20px -6px rgba(166,120,22,.35);
+    color: var(--gold-deep);
+  }
+  .hp-ritual .step .num {
+    font-family: var(--f-display); font-size: 16px; color: var(--gold-deep); font-weight: 700;
+    letter-spacing: .04em;
+  }
+  .hp-ritual .step h3 { font-size: 15px; margin-bottom: 6px; color: var(--ink); font-weight: 500; }
+  .hp-ritual .step p { font-size: 12.5px; color: var(--ink-muted); margin: 0; line-height: 1.5; }
+
+  @container frame (max-width: 640px) {
+    .hp-ritual { padding: 60px 20px; }
+    .hp-ritual h2 { font-size: 24px; }
+    .hp-ritual .steps { grid-template-columns: 1fr 1fr; gap: 24px 8px; }
+    .hp-ritual .steps::before { display: none; }
+  }
+
+  /* ==========================================================================
+     SECTION 9 — CONSULTATION SANCTUARY
+     ========================================================================== */
+  .hp-consult {
+    background: var(--sanctum); padding: 100px 32px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .hp-consult::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 50% 40%, rgba(214,154,59,.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hp-consult .content { position: relative; z-index: 2; }
+  .hp-consult .eyebrow {
+    display: inline-block; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold-lit); font-weight: 600; margin-bottom: 14px;
+  }
+  .hp-consult h2 {
+    font-family: var(--f-display); font-size: 40px; color: var(--silk); font-weight: 400;
+    line-height: 1.15; text-wrap: balance; margin-bottom: 20px; max-width: 640px; margin-left: auto; margin-right: auto;
+  }
+  .hp-consult h2 i { color: var(--gold-lit); font-style: italic; }
+  .hp-consult .lead {
+    max-width: 500px; margin: 0 auto 44px; color: var(--silk-muted); font-size: 15px; line-height: 1.75;
+  }
+  .hp-consult .cards {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    max-width: 720px; margin: 0 auto;
+  }
+  .hp-consult .card {
+    background: rgba(20,9,43,.6); border: 1px solid var(--line-gold);
+    padding: 32px 26px; text-align: left; position: relative;
+    transition: all .35s;
+  }
+  .hp-consult .card:hover { border-color: var(--gold-lit); box-shadow: 0 0 30px rgba(232,184,73,.15); }
+  .hp-consult .card .kind {
+    font-size: 10px; letter-spacing: .25em; color: var(--gold-lit); text-transform: uppercase;
+    font-weight: 700;
+  }
+  .hp-consult .card h3 {
+    font-family: var(--f-display); font-size: 22px; color: var(--silk); font-weight: 400;
+    margin: 10px 0 12px;
+  }
+  .hp-consult .card p { font-size: 13.5px; color: var(--silk-muted); line-height: 1.65; margin-bottom: 20px; }
+  .hp-consult .card .fee {
+    font-family: var(--f-display); font-size: 20px; color: var(--gold-lit);
+    padding: 12px 0; border-top: 1px dashed var(--line-gold);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .hp-consult .card .fee .dur { font-family: var(--f-body); font-size: 11px; color: var(--silk-faint); letter-spacing: .1em; text-transform: uppercase; }
+  .hp-consult .card .btn-line {
+    margin-top: 6px; font-size: 11px; letter-spacing: .18em; color: var(--gold-lit);
+    text-transform: uppercase; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+
+  @container frame (max-width: 640px) {
+    .hp-consult { padding: 60px 20px; }
+    .hp-consult h2 { font-size: 28px; }
+    .hp-consult .cards { grid-template-columns: 1fr; }
+  }
+
+  /* ==========================================================================
+     SECTION 10 — BHAKTAS' HOMES
+     ========================================================================== */
+  .hp-bhak { background: var(--midnight); padding: 80px 32px; }
+  .hp-bhak .head { text-align: center; margin-bottom: 44px; }
+  .hp-bhak .eyebrow {
+    display: inline-block; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold-lit); font-weight: 600; margin-bottom: 12px;
+  }
+  .hp-bhak h2 { font-family: var(--f-display); font-size: 34px; color: var(--silk); font-weight: 400; margin-bottom: 12px; line-height: 1.15; }
+  .hp-bhak h2 i { color: var(--gold-lit); font-style: italic; }
+  .hp-bhak .head p { color: var(--silk-muted); font-size: 14px; max-width: 480px; margin: 0 auto; line-height: 1.7; }
+  .hp-bhak .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 1100px; margin: 0 auto; }
+  .bhak {
+    aspect-ratio: 4 / 3; position: relative; overflow: hidden; border-radius: 3px;
+    border: 1px solid var(--line-gold);
+    cursor: pointer;
+  }
+  .bhak .fill {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,243,229,.5);
+    transition: transform .5s var(--ease-out);
+  }
+  .bhak:hover .fill { transform: scale(1.06); }
+  .bhak.f1 .fill { background: linear-gradient(135deg, #4A2818 0%, #B96D2F 55%, #2A1610 100%); }
+  .bhak.f2 .fill { background: linear-gradient(135deg, #1D2818 0%, #4E7A3E 55%, #14181A 100%); }
+  .bhak.f3 .fill { background: linear-gradient(135deg, #401830 0%, #7A2A5A 55%, #200818 100%); }
+  .bhak.f4 .fill { background: linear-gradient(135deg, #201D40 0%, #4A4A7A 55%, #101018 100%); }
+  .bhak.f5 .fill { background: linear-gradient(135deg, #4A2818 0%, #A67816 55%, #2A1E10 100%); }
+  .bhak.f6 .fill { background: linear-gradient(135deg, #4A3418 0%, #C68F2C 55%, #2A1E10 100%); }
+  .bhak::after {
+    content: ""; position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.75) 100%);
+    pointer-events: none;
+  }
+  .bhak .info {
+    position: absolute; bottom: 14px; left: 16px; right: 16px; z-index: 3;
+    color: var(--silk);
+  }
+  .bhak .info .name { font-family: var(--f-display); font-size: 14px; font-weight: 500; }
+  .bhak .info .place { font-size: 10.5px; color: var(--silk-muted); letter-spacing: .06em; margin-top: 2px; }
+  .bhak .piece {
+    position: absolute; top: 12px; right: 12px; z-index: 3;
+    background: rgba(11,6,25,.7); backdrop-filter: blur(8px);
+    color: var(--gold-lit); font-size: 9.5px; padding: 3px 8px; border-radius: 2px;
+    letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
+    border: 1px solid rgba(232,184,73,.3);
+  }
+  .hp-bhak .cta { text-align: center; margin-top: 30px; }
+  .hp-bhak .cta a { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-lit); font-weight: 600; padding-bottom: 4px; border-bottom: 1px solid var(--gold); }
+
+  @container frame (max-width: 720px) {
+    .hp-bhak { padding: 60px 16px; }
+    .hp-bhak h2 { font-size: 24px; }
+    .hp-bhak .grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  }
+
+  /* ==========================================================================
+     SECTION 11 — RITUAL CALENDAR
+     ========================================================================== */
+  .hp-cal {
+    background: var(--sanctum); padding: 80px 32px; position: relative; overflow: hidden;
+  }
+  .hp-cal::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 15% 50%, rgba(198,32,42,.06) 0%, transparent 40%);
+  }
+  .hp-cal .inner {
+    max-width: 1000px; margin: 0 auto; position: relative;
+    display: grid; grid-template-columns: 320px 1fr; gap: 40px; align-items: center;
+  }
+  .hp-cal .festival {
+    background: linear-gradient(135deg, rgba(158,23,32,.35) 0%, rgba(20,9,43,.7) 100%);
+    border: 1px solid var(--sindoor); border-radius: 4px;
+    padding: 28px; text-align: center; position: relative;
+  }
+  .hp-cal .festival::before {
+    content: ""; position: absolute; top: -1px; left: 20px; right: 20px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--sindoor), transparent);
+    box-shadow: 0 0 8px rgba(198,32,42,.6);
+  }
+  .hp-cal .festival .eyebrow { font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--sindoor); font-weight: 700; }
+  .hp-cal .festival .date { font-family: var(--f-display); font-size: 32px; color: var(--silk); margin: 8px 0 4px; }
+  .hp-cal .festival .name { font-family: var(--f-deva); font-size: 22px; color: var(--gold-lit); margin-bottom: 4px; }
+  .hp-cal .festival .subname { font-size: 12px; letter-spacing: .1em; color: var(--silk-muted); text-transform: uppercase; }
+  .hp-cal .festival .in {
+    margin-top: 18px; padding-top: 16px; border-top: 1px dashed rgba(198,32,42,.25);
+    font-size: 12.5px; color: var(--silk-muted);
+  }
+  .hp-cal .festival .in b { color: var(--gold-lit); }
+
+  .hp-cal .picks h3 {
+    font-family: var(--f-display); font-size: 24px; color: var(--silk); font-weight: 400;
+    margin-bottom: 6px;
+  }
+  .hp-cal .picks h3 i { color: var(--gold-lit); font-style: italic; }
+  .hp-cal .picks .desc { color: var(--silk-muted); font-size: 13.5px; margin-bottom: 20px; line-height: 1.65; }
+  .hp-cal .picks .items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .hp-cal .pick {
+    background: rgba(20,9,43,.6); border: 1px solid var(--line-gold);
+    padding: 14px 14px; border-radius: 2px;
+  }
+  .hp-cal .pick .glyph { color: var(--gold-lit); margin-bottom: 6px; }
+  .hp-cal .pick .n { font-family: var(--f-display); font-size: 13px; color: var(--silk); line-height: 1.2; margin-bottom: 4px; }
+  .hp-cal .pick .p { font-size: 11px; color: var(--gold-lit); font-family: var(--f-display); font-variant-numeric: tabular-nums; }
+
+  @container frame (max-width: 780px) {
+    .hp-cal { padding: 60px 16px; }
+    .hp-cal .inner { grid-template-columns: 1fr; gap: 24px; }
+    .hp-cal .picks .items { grid-template-columns: 1fr; }
+  }
+
+  /* ==========================================================================
+     SECTION 12 — WORKSHOP JOURNAL
+     ========================================================================== */
+  .hp-work { background: var(--midnight); padding: 80px 32px; }
+  .hp-work .head { text-align: center; margin-bottom: 44px; }
+  .hp-work .eyebrow { display: inline-block; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-lit); font-weight: 600; margin-bottom: 12px; }
+  .hp-work h2 { font-family: var(--f-display); font-size: 32px; color: var(--silk); font-weight: 400; }
+  .hp-work h2 i { color: var(--gold-lit); font-style: italic; }
+  .hp-work .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 30px; max-width: 1100px; margin: 0 auto; }
+
+  .journal-feat {
+    background: linear-gradient(135deg, #6A3D18 0%, #4A2818 65%, #B96D2F 130%);
+    border-radius: 4px; padding: 40px; position: relative; overflow: hidden;
+    min-height: 340px; color: var(--silk);
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .journal-feat::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.75) 100%);
+    pointer-events: none;
+  }
+  .journal-feat .meta { position: relative; z-index: 2; margin-bottom: 8px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold-lit); font-weight: 600; }
+  .journal-feat h3 { position: relative; z-index: 2; font-family: var(--f-display); font-size: 24px; font-weight: 400; color: var(--silk); line-height: 1.2; margin-bottom: 8px; }
+  .journal-feat h3 i { color: var(--gold-lit); font-style: italic; }
+  .journal-feat p { position: relative; z-index: 2; font-size: 13px; color: var(--silk-muted); line-height: 1.6; margin-bottom: 14px; }
+  .journal-feat .read { position: relative; z-index: 2; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-lit); font-weight: 600; }
+
+  .ig-grid {
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px;
+  }
+  .ig-post {
+    aspect-ratio: 1; position: relative; border-radius: 3px; overflow: hidden;
+    border: 1px solid var(--line-gold);
+  }
+  .ig-post .fill { position: absolute; inset: 0; }
+  .ig-post.p1 .fill { background: linear-gradient(135deg, #B96D2F, #6A3D18); }
+  .ig-post.p2 .fill { background: linear-gradient(135deg, #C68F2C, #7C561A); }
+  .ig-post.p3 .fill { background: linear-gradient(135deg, #B4B6BC, #6F7078); }
+  .ig-post.p4 .fill { background: linear-gradient(135deg, #4A3418, #A67816); }
+  .ig-post::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,.5) 100%);
+  }
+  .ig-post .icon { position: absolute; bottom: 8px; right: 8px; z-index: 2; color: rgba(255,255,255,.7); }
+
+  @container frame (max-width: 780px) {
+    .hp-work { padding: 60px 16px; }
+    .hp-work .grid { grid-template-columns: 1fr; }
+    .hp-work h2 { font-size: 24px; }
+    .journal-feat { padding: 24px; min-height: 260px; }
+    .journal-feat h3 { font-size: 20px; }
+  }
+
+  /* ==========================================================================
+     SECTION 13 — TRUST BAR
+     ========================================================================== */
+  .hp-trust {
+    background: var(--ivory); color: var(--ink); padding: 40px 32px;
+    border-top: 1px solid var(--line-cream); border-bottom: 1px solid var(--line-cream);
+  }
+  .hp-trust .row {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .hp-trust .cell {
+    display: flex; align-items: center; gap: 12px; padding: 8px 0;
+  }
+  .hp-trust .cell .icon { color: var(--gold-deep); flex-shrink: 0; }
+  .hp-trust .cell .txt { font-size: 12.5px; line-height: 1.35; color: var(--ink-muted); }
+  .hp-trust .cell .txt b { color: var(--ink); font-weight: 600; }
+
+  @container frame (max-width: 720px) {
+    .hp-trust .row { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .hp-trust { padding: 28px 16px; }
+    .hp-trust .cell .txt { font-size: 11.5px; }
+  }
+
+  /* ==========================================================================
+     SECTION 14 — NEWSLETTER
+     ========================================================================== */
+  .hp-nl {
+    background: linear-gradient(180deg, var(--sanctum) 0%, var(--midnight) 100%);
+    padding: 80px 32px; text-align: center;
+  }
+  .hp-nl .eyebrow { display: inline-block; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-lit); font-weight: 600; margin-bottom: 14px; }
+  .hp-nl h2 { font-family: var(--f-display); font-size: 34px; color: var(--silk); font-weight: 400; line-height: 1.1; margin-bottom: 12px; max-width: 480px; margin-left: auto; margin-right: auto; text-wrap: balance; }
+  .hp-nl h2 i { color: var(--gold-lit); font-style: italic; }
+  .hp-nl p { max-width: 400px; margin: 0 auto 28px; color: var(--silk-muted); font-size: 14px; line-height: 1.6; }
+  .hp-nl form { max-width: 460px; margin: 0 auto; display: flex; gap: 8px; }
+  .hp-nl input[type=email] {
+    flex: 1; padding: 14px 16px; background: rgba(11,6,25,.6);
+    border: 1px solid var(--line-gold); color: var(--silk); font-family: var(--f-body); font-size: 14px;
+    border-radius: 2px;
+  }
+  .hp-nl input[type=email]::placeholder { color: var(--silk-faint); }
+  .hp-nl input[type=email]:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(232,184,73,.2); }
+  .hp-nl button {
+    padding: 14px 24px;
+    background: linear-gradient(90deg, var(--gold-deep) 0%, var(--gold-lit) 50%, var(--gold-deep) 100%);
+    background-size: 200% 100%; animation: shimmer 6s linear infinite;
+    color: var(--sanctum); font-family: var(--f-body); font-weight: 700; font-size: 11.5px;
+    letter-spacing: .18em; text-transform: uppercase;
+    border: none; border-radius: 2px; cursor: pointer;
+  }
+  .hp-nl .fine { margin-top: 16px; font-size: 11px; color: var(--silk-faint); letter-spacing: .06em; }
+
+  @container frame (max-width: 640px) {
+    .hp-nl { padding: 50px 20px; }
+    .hp-nl h2 { font-size: 24px; }
+    .hp-nl form { flex-direction: column; }
+  }
+
+  /* ==========================================================================
+     SECTION 15 — FOOTER
+     ========================================================================== */
+  .hp-foot {
+    background: #05020F; color: var(--silk); padding: 60px 32px 30px;
+    border-top: 1px solid var(--line-dark);
+  }
+  .hp-foot .top {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1.4fr; gap: 40px;
+    padding-bottom: 40px; border-bottom: 1px solid var(--line-dark);
+  }
+  .hp-foot .brand {
+    font-family: var(--f-display); font-size: 20px; color: var(--gold-lit);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .hp-foot .brand .om { font-family: var(--f-deva); font-size: 24px; text-shadow: 0 0 12px rgba(252,212,111,.4); }
+  .hp-foot .about { font-size: 13px; color: var(--silk-muted); line-height: 1.7; max-width: 260px; margin-bottom: 16px; }
+  .hp-foot .social { display: flex; gap: 10px; }
+  .hp-foot .social a {
+    width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line-gold); border-radius: 50%; color: var(--gold-lit);
+    transition: all .25s;
+  }
+  .hp-foot .social a:hover { background: rgba(232,184,73,.1); border-color: var(--gold); }
+  .hp-foot .col h5 { font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-lit); margin-bottom: 14px; font-weight: 700; font-family: var(--f-body); }
+  .hp-foot .col ul { list-style: none; padding: 0; margin: 0; }
+  .hp-foot .col ul li { padding: 5px 0; }
+  .hp-foot .col ul a { font-size: 13px; color: var(--silk-muted); }
+  .hp-foot .col ul a:hover { color: var(--gold-lit); }
+  .hp-foot .ig-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .hp-foot .ig-cell { aspect-ratio: 1; border-radius: 2px; border: 1px solid var(--line-dark); }
+  .hp-foot .ig-cell.i1 { background: linear-gradient(135deg, #B96D2F, #6A3D18); }
+  .hp-foot .ig-cell.i2 { background: linear-gradient(135deg, #C68F2C, #7C561A); }
+  .hp-foot .ig-cell.i3 { background: linear-gradient(135deg, #B4B6BC, #6F7078); }
+  .hp-foot .ig-cell.i4 { background: linear-gradient(135deg, #4A2818, #A67816); }
+  .hp-foot .ig-cell.i5 { background: linear-gradient(135deg, #401830, #7A2A5A); }
+  .hp-foot .ig-cell.i6 { background: linear-gradient(135deg, #1D2818, #4E7A3E); }
+
+  .hp-foot .bottom {
+    max-width: 1100px; margin: 30px auto 0;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+  }
+  .hp-foot .bottom .copy { font-size: 11.5px; color: var(--silk-faint); }
+  .hp-foot .bottom .legal { display: flex; gap: 20px; }
+  .hp-foot .bottom .legal a { font-size: 11.5px; color: var(--silk-faint); letter-spacing: .06em; }
+  .hp-foot .bottom .pay { display: flex; gap: 10px; align-items: center; }
+  .hp-foot .bottom .pay span { font-size: 10px; color: var(--silk-faint); letter-spacing: .1em; text-transform: uppercase; }
+  .hp-foot .pay-chip {
+    padding: 3px 8px; background: rgba(232,184,73,.06); border: 1px solid var(--line-dark);
+    border-radius: 2px; font-family: var(--f-mono); font-size: 10px; color: var(--silk-muted); letter-spacing: .06em;
+  }
+
+  @container frame (max-width: 780px) {
+    .hp-foot { padding: 40px 20px 24px; }
+    .hp-foot .top { grid-template-columns: 1fr; gap: 32px; padding-bottom: 30px; }
+    .hp-foot .bottom { flex-direction: column; text-align: center; }
+    .hp-foot .bottom .legal { justify-content: center; flex-wrap: wrap; }
+  }
+
+  /* ==========================================================================
+     SIGN-OFF
+     ========================================================================== */
+  .signoff {
+    padding: 100px 24px; text-align: center; max-width: 720px; margin: 0 auto;
+  }
+  .signoff .om {
+    font-family: var(--f-deva); font-size: 70px; color: var(--gold-lit);
+    text-shadow: 0 0 30px rgba(252,212,111,.5); display: block;
+    animation: om-breathe 4.6s ease-in-out infinite;
+  }
+  .signoff .eyebrow { font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase; font-weight: 600; color: var(--gold-lit); margin-top: 24px; display: inline-block; }
+  .signoff h2 { font-family: var(--f-display); font-size: 34px; color: var(--silk); font-weight: 400; margin-top: 14px; }
+  .signoff h2 i { color: var(--gold-lit); font-style: italic; }
+  .signoff p { max-width: 480px; margin: 20px auto 0; color: var(--silk-muted); font-size: 14.5px; line-height: 1.75; }
+  .signoff .questions {
+    margin-top: 40px; text-align: left; background: rgba(20,9,43,.55);
+    border: 1px solid var(--line-gold); border-radius: 4px; padding: 24px;
+  }
+  .signoff .questions .q {
+    padding: 10px 0; border-bottom: 1px dashed rgba(232,184,73,.2);
+    font-size: 13.5px; color: var(--silk);
+  }
+  .signoff .questions .q:last-child { border-bottom: none; }
+  .signoff .questions .q b { color: var(--gold-lit); font-weight: 700; margin-right: 8px; }
+
+  footer.doc-footer {
+    background: #05020F; padding: 32px 24px; text-align: center;
+    font-size: 11.5px; color: var(--silk-faint); letter-spacing: .06em;
+    border-top: 1px solid var(--line-dark);
+  }
+</style>
+
+<!-- ============ DOC NAV ============ -->
+<nav class="doc-nav">
+  <div class="doc-nav-inner">
+    <div class="brand"><span class="om deva">ॐ</span> Sarthak Arts <small>Homepage · Phase 1 · Section 1</small></div>
+    <a class="tag" href="index.html" style="text-decoration:none;">← Back to Design System</a>
+  </div>
+</nav>
+
+<!-- ============ DOC HEADER ============ -->
+<header class="doc-header">
+  <span class="om deva">ॐ</span>
+  <span class="eyebrow">Phase 1 · Homepage</span>
+  <h1 class="serif">The <i>homepage,</i> section by section.</h1>
+  <p class="lead">Fifteen sections designed at the same bar as the Design System — every one shown at desktop and mobile side-by-side, using the tokens, motion, and components we locked in.</p>
+</header>
+
+<!-- ============ READING GUIDE ============ -->
+<div class="reading-guide">
+  <div class="reading-guide-inner">
+    <div>
+      <h5>How to read</h5>
+      <p>Each section shows the actual rendered design at two widths — <b>desktop</b> (fluid) and <b>mobile</b> (380px). Both are live, container-queried, animating.</p>
+    </div>
+    <div>
+      <h5>What's under the hood</h5>
+      <p>Every colour, animation, icon and component is from <code>Design System v1</code>. No new tokens introduced.</p>
+    </div>
+    <div>
+      <h5>Notes below each</h5>
+      <p>The design decisions and mobile adaptations for each section are called out in the gold-lined notes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOC ============ -->
+<div class="toc">
+  <h4>Sections</h4>
+  <div class="toc-grid">
+    <a class="toc-item" href="#s01"><span class="n">01</span><span>Announcement bar</span></a>
+    <a class="toc-item" href="#s02"><span class="n">02</span><span>Header</span></a>
+    <a class="toc-item" href="#s03"><span class="n">03</span><span>Cinematic hero</span></a>
+    <a class="toc-item" href="#s04"><span class="n">04</span><span>Live panchang</span></a>
+    <a class="toc-item" href="#s05"><span class="n">05</span><span>Direction shrine</span></a>
+    <a class="toc-item" href="#s06"><span class="n">06</span><span>Featured pieces</span></a>
+    <a class="toc-item" href="#s07"><span class="n">07</span><span>Home audit</span></a>
+    <a class="toc-item" href="#s08"><span class="n">08</span><span>Ritual guidance</span></a>
+    <a class="toc-item" href="#s09"><span class="n">09</span><span>Consultation sanctuary</span></a>
+    <a class="toc-item" href="#s10"><span class="n">10</span><span>Bhaktas' homes</span></a>
+    <a class="toc-item" href="#s11"><span class="n">11</span><span>Ritual calendar</span></a>
+    <a class="toc-item" href="#s12"><span class="n">12</span><span>Workshop journal</span></a>
+    <a class="toc-item" href="#s13"><span class="n">13</span><span>Trust bar</span></a>
+    <a class="toc-item" href="#s14"><span class="n">14</span><span>Newsletter</span></a>
+    <a class="toc-item" href="#s15"><span class="n">15</span><span>Footer</span></a>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 01 — ANNOUNCEMENT BAR -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s01">
+  <div class="sp-head">
+    <div class="n">01</div>
+    <div class="title">
+      <span class="eyebrow">Announcement bar</span>
+      <h2>Live Choghadiya at the top of the page.</h2>
+      <p>A quiet strip above the header. Runs live from the panchang engine — tells the visitor what auspicious window they're currently inside. On mobile, condenses to the essential.</p>
+    </div>
+    <div class="anchor">/section 01</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <div class="hp-ann">
+          <span class="dot"></span>
+          <span><b>Labh Choghadiya</b> · auspicious to begin any ritual</span>
+          <span class="sep desk-only">◆</span>
+          <span class="desk-only">2:47 PM to 4:11 PM</span>
+          <span class="sep desk-only">◆</span>
+          <span class="desk-only">Free consultation on orders over ₹15,000</span>
+        </div>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <div class="hp-ann">
+          <span class="dot"></span>
+          <span><b>Labh Choghadiya</b> · until 4:11 PM</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Golden pulse dot</b> uses <code>pulse-dot</code> primitive from the system to signal <b>live</b>.</li>
+      <li><b>Choghadiya name</b> is bolded in gold-lit; the rest is muted silk so the eye lands on the ritual name first.</li>
+      <li><b>Mobile adaptation</b> — drops the free-consultation notice and the time-range detail; keeps the ritual name + end time (rotates through announcements when there are multiple).</li>
+      <li><b>Data source</b> — computed from the panchang engine at page-load, refreshes every 15 minutes.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 02 — HEADER -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s02">
+  <div class="sp-head">
+    <div class="n">02</div>
+    <div class="title">
+      <span class="eyebrow">Header</span>
+      <h2>Serif logo, whispered nav, cart drawer trigger.</h2>
+      <p>The primary navigation. Logo left, five nav links center-left, and the account/wishlist/cart trigger cluster right. Gold hover underline. On mobile, nav collapses behind a hamburger.</p>
+    </div>
+    <div class="anchor">/section 02</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <header class="hp-header">
+          <div class="logo"><span class="om">ॐ</span> Sarthak Arts</div>
+          <nav>
+            <a href="#">The Collection</a>
+            <a href="#">Shop by Direction</a>
+            <a href="#">Consultations</a>
+            <a href="#">Journal</a>
+          </nav>
+          <div class="actions">
+            <button class="icon-btn desk-only" title="Search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><line x1="17" y1="17" x2="21" y2="21" stroke="currentColor" stroke-width="1.6"/></svg>
+            </button>
+            <button class="icon-btn" title="Wishlist">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 4 L 14 10 L 20 10 L 15 14 L 17 20 L 12 16 L 7 20 L 9 14 L 4 10 L 10 10 Z" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+            </button>
+            <button class="icon-btn" title="Account">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M4 21 C 4 16, 8 14, 12 14 C 16 14, 20 16, 20 21" stroke="currentColor" stroke-width="1.6"/></svg>
+            </button>
+            <button class="icon-btn" title="Cart">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 8 L 4 4 L 2 4 M 6 8 L 20 8 L 18 16 L 8 16 L 6 8" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+              <span class="cart-count">2</span>
+            </button>
+          </div>
+        </header>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <header class="hp-header">
+          <button class="icon-btn mobile-hamburger" title="Menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><line x1="4" y1="7" x2="20" y2="7" stroke="currentColor" stroke-width="1.6"/><line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1.6"/><line x1="4" y1="17" x2="20" y2="17" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+          <div class="logo"><span class="om">ॐ</span> Sarthak Arts</div>
+          <div class="actions">
+            <button class="icon-btn" title="Search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><line x1="17" y1="17" x2="21" y2="21" stroke="currentColor" stroke-width="1.6"/></svg>
+            </button>
+            <button class="icon-btn" title="Cart">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 8 L 4 4 L 2 4 M 6 8 L 20 8 L 18 16 L 8 16 L 6 8" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+              <span class="cart-count">2</span>
+            </button>
+          </div>
+        </header>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Nav underline</b> — grows from center on hover to 20px, gold-lit. Never a heavy pill; whispered.</li>
+      <li><b>Cart count</b> uses sindoor as its background — the sacred red claims attention without shouting.</li>
+      <li><b>Mobile</b> — hamburger appears left, nav slides in as a full-screen sheet on tap. Wishlist + account move inside the sheet to keep the top bar clean.</li>
+      <li><b>Sticky behavior</b> — on scroll, the header shrinks by 4px and background darkens to <code>rgba(11,6,25,.9)</code> with blur.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 03 — CINEMATIC HERO -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s03">
+  <div class="sp-head">
+    <div class="n">03</div>
+    <div class="title">
+      <span class="eyebrow">Cinematic hero</span>
+      <h2>The temple threshold you cross.</h2>
+      <p>Full-bleed sanctum panel — a mandala breathes silently at 90s per rotation, two diyas flicker independently, incense smoke rises, gold particles descend. In the center: the thesis of the store.</p>
+    </div>
+    <div class="anchor">/section 03</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-hero">
+          <svg class="mandala-back" viewBox="0 0 200 200" fill="none">
+            <circle cx="100" cy="100" r="95" stroke="currentColor" stroke-width=".5"/>
+            <circle cx="100" cy="100" r="80" stroke="currentColor" stroke-width=".5"/>
+            <circle cx="100" cy="100" r="65" stroke="currentColor" stroke-width=".5"/>
+            <circle cx="100" cy="100" r="50" stroke="currentColor" stroke-width=".5"/>
+            <circle cx="100" cy="100" r="35" stroke="currentColor" stroke-width=".5"/>
+            <circle cx="100" cy="100" r="20" stroke="currentColor" stroke-width=".5"/>
+            <g stroke="currentColor" stroke-width=".4" opacity=".8">
+              <line x1="100" y1="5" x2="100" y2="195"/><line x1="5" y1="100" x2="195" y2="100"/>
+              <line x1="30" y1="30" x2="170" y2="170"/><line x1="170" y1="30" x2="30" y2="170"/>
+              <line x1="100" y1="5" x2="100" y2="195" transform="rotate(22.5 100 100)"/>
+              <line x1="100" y1="5" x2="100" y2="195" transform="rotate(67.5 100 100)"/>
+              <line x1="100" y1="5" x2="100" y2="195" transform="rotate(112.5 100 100)"/>
+              <line x1="100" y1="5" x2="100" y2="195" transform="rotate(157.5 100 100)"/>
+            </g>
+          </svg>
+          <!-- Particles -->
+          <div class="particle" style="left:15%; --drift:20px; animation-duration:14s"></div>
+          <div class="particle" style="left:35%; --drift:-16px; animation-duration:16s; animation-delay:2s"></div>
+          <div class="particle" style="left:55%; --drift:14px; animation-duration:12s; animation-delay:4s"></div>
+          <div class="particle" style="left:75%; --drift:-20px; animation-duration:18s; animation-delay:6s"></div>
+          <div class="particle" style="left:88%; --drift:-14px; animation-duration:15s; animation-delay:8s"></div>
+          <!-- Petals -->
+          <div class="petal" style="left:22%; --drift:35px; animation-duration:22s"><svg width="16" height="16" viewBox="0 0 20 20"><ellipse cx="10" cy="10" rx="5" ry="9" fill="#F26B7E" opacity=".8"/></svg></div>
+          <div class="petal" style="left:60%; --drift:-40px; animation-duration:26s; animation-delay:8s"><svg width="18" height="18" viewBox="0 0 20 20"><ellipse cx="10" cy="10" rx="5" ry="9" fill="#F5A82A" opacity=".85" transform="rotate(30 10 10)"/></svg></div>
+          <!-- Diyas -->
+          <div class="diya-left">
+            <svg width="40" height="58" viewBox="0 0 40 60" fill="none">
+              <defs><radialGradient id="fld-l" cx="50%" cy="65%" r="60%"><stop offset="0%" stop-color="#FFF3C4"/><stop offset="40%" stop-color="#FCD46F"/><stop offset="70%" stop-color="#F58A2A"/><stop offset="100%" stop-color="#C6202A" stop-opacity=".7"/></radialGradient></defs>
+              <path d="M20 40 C 10 34, 8 20, 15 10 C 17 16, 19 14, 19 6 C 25 10, 31 20, 27 32 C 25 38, 23 40, 20 40 Z" fill="url(#fld-l)"/>
+              <path d="M4 44 Q 20 40, 36 44 L 32 54 Q 20 58, 8 54 Z" fill="#A67816"/>
+              <ellipse cx="20" cy="44" rx="14" ry="2" fill="rgba(0,0,0,.4)"/>
+            </svg>
+          </div>
+          <div class="diya-right">
+            <svg width="40" height="58" viewBox="0 0 40 60" fill="none">
+              <defs><radialGradient id="fld-r" cx="50%" cy="65%" r="60%"><stop offset="0%" stop-color="#FFF3C4"/><stop offset="40%" stop-color="#FCD46F"/><stop offset="70%" stop-color="#F58A2A"/><stop offset="100%" stop-color="#C6202A" stop-opacity=".7"/></radialGradient></defs>
+              <path d="M20 40 C 10 34, 8 20, 15 10 C 17 16, 19 14, 19 6 C 25 10, 31 20, 27 32 C 25 38, 23 40, 20 40 Z" fill="url(#fld-r)"/>
+              <path d="M4 44 Q 20 40, 36 44 L 32 54 Q 20 58, 8 54 Z" fill="#A67816"/>
+              <ellipse cx="20" cy="44" rx="14" ry="2" fill="rgba(0,0,0,.4)"/>
+            </svg>
+          </div>
+          <!-- Smoke -->
+          <div class="smoke-l">
+            <div class="smoke-puff"></div><div class="smoke-puff d2"></div><div class="smoke-puff d3"></div>
+          </div>
+          <div class="smoke-r">
+            <div class="smoke-puff"></div><div class="smoke-puff d2"></div><div class="smoke-puff d3"></div>
+          </div>
+          <div class="content">
+            <span class="eyebrow">Handcrafted for the eight directions</span>
+            <h1>Made by hand.<br><i>Placed with intention.</i></h1>
+            <p class="lead">Murtis and Vastu instruments in copper, brass and silver — each piece built for one direction, one purpose, one home.</p>
+            <div class="mantra deva">॥ शुभं भवतु ॥</div>
+            <div class="cta-row">
+              <a href="#" class="btn primary">Enter the shrine</a>
+              <a href="#" class="btn secondary">Two-minute audit</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-hero">
+          <svg class="mandala-back" viewBox="0 0 200 200" fill="none">
+            <circle cx="100" cy="100" r="95" stroke="currentColor" stroke-width=".5"/>
+            <circle cx="100" cy="100" r="65" stroke="currentColor" stroke-width=".5"/>
+            <circle cx="100" cy="100" r="35" stroke="currentColor" stroke-width=".5"/>
+            <g stroke="currentColor" stroke-width=".4" opacity=".8">
+              <line x1="100" y1="5" x2="100" y2="195"/><line x1="5" y1="100" x2="195" y2="100"/>
+              <line x1="30" y1="30" x2="170" y2="170"/><line x1="170" y1="30" x2="30" y2="170"/>
+            </g>
+          </svg>
+          <div class="particle" style="left:25%; --drift:10px; animation-duration:12s"></div>
+          <div class="particle" style="left:75%; --drift:-10px; animation-duration:14s; animation-delay:4s"></div>
+          <div class="diya-left">
+            <svg width="30" height="46" viewBox="0 0 40 60" fill="none">
+              <path d="M20 40 C 10 34, 8 20, 15 10 C 17 16, 19 14, 19 6 C 25 10, 31 20, 27 32 C 25 38, 23 40, 20 40 Z" fill="#FCD46F"/>
+              <path d="M4 44 Q 20 40, 36 44 L 32 54 Q 20 58, 8 54 Z" fill="#A67816"/>
+            </svg>
+          </div>
+          <div class="diya-right">
+            <svg width="30" height="46" viewBox="0 0 40 60" fill="none">
+              <path d="M20 40 C 10 34, 8 20, 15 10 C 17 16, 19 14, 19 6 C 25 10, 31 20, 27 32 C 25 38, 23 40, 20 40 Z" fill="#FCD46F"/>
+              <path d="M4 44 Q 20 40, 36 44 L 32 54 Q 20 58, 8 54 Z" fill="#A67816"/>
+            </svg>
+          </div>
+          <div class="content">
+            <span class="eyebrow">The eight directions</span>
+            <h1>Made by hand.<br><i>Placed with intention.</i></h1>
+            <p class="lead">Murtis and Vastu instruments crafted for one home, one direction.</p>
+            <div class="mantra deva">॥ शुभं भवतु ॥</div>
+            <div class="cta-row">
+              <a href="#" class="btn primary">Enter the shrine</a>
+              <a href="#" class="btn secondary">Take the audit</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Ambient life, not restless</b> — five sacred animations running at once (mandala breath, two flames, particles, petals, smoke) but each so slow it's felt not seen.</li>
+      <li><b>The <code>i</code> in "intention"</b> uses italic + gold-lit with a soft text-shadow glow — the sacred word receives sacred emphasis.</li>
+      <li><b>Sanskrit mantra</b> — a single line of Devanagari sits below the lead as a benediction. Never translated inline — it lives in its own space.</li>
+      <li><b>Mobile</b> — mandala is smaller, particles reduced from 5 to 2, petals removed entirely (motion budget). Diyas shrink but stay.</li>
+      <li><b>CTAs</b> — primary is the golden shimmer (enter the shrine); secondary is the outlined audit trigger.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 04 — PANCHANG STRIP -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s04">
+  <div class="sp-head">
+    <div class="n">04</div>
+    <div class="title">
+      <span class="eyebrow">Live panchang</span>
+      <h2>The five-cell almanac, live-computed.</h2>
+      <p>The moment the hero ends, the visitor sees today's tithi, nakshatra, current Choghadiya, and Rahu Kaal to avoid. Data pulled from the panchang engine at page-load, refreshed every 15 minutes.</p>
+    </div>
+    <div class="anchor">/section 04</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <div class="hp-panch">
+          <div class="cell">
+            <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="14" stroke="currentColor" stroke-width="1.4" rx="1.5"/><line x1="4" y1="10" x2="20" y2="10" stroke="currentColor" stroke-width="1.4"/><line x1="8" y1="4" x2="8" y2="8" stroke="currentColor" stroke-width="1.4"/><line x1="16" y1="4" x2="16" y2="8" stroke="currentColor" stroke-width="1.4"/></svg>
+            <div class="lbl">Today</div>
+            <div class="val">Tuesday<b>Ashadha 25</b></div>
+          </div>
+          <div class="cell">
+            <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4 C 7 4, 4 8, 4 12 C 4 16, 7 20, 12 20 C 12 20, 12 16, 12 12 C 12 8, 12 4, 12 4 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity=".2"/></svg>
+            <div class="lbl">Tithi</div>
+            <div class="val">Shukla<b class="deva">एकादशी</b></div>
+          </div>
+          <div class="cell">
+            <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 L 14 10 L 21 10 L 15 14 L 17 21 L 12 17 L 7 21 L 9 14 L 3 10 L 10 10 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity=".2"/></svg>
+            <div class="lbl">Nakshatra</div>
+            <div class="val">Chitra<b class="deva">चित्रा</b></div>
+          </div>
+          <div class="cell now">
+            <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/><line x1="12" y1="7" x2="12" y2="12" stroke="currentColor" stroke-width="1.4"/><line x1="12" y1="12" x2="16" y2="14" stroke="currentColor" stroke-width="1.4"/></svg>
+            <div class="lbl">Now · Choghadiya</div>
+            <div class="val">Auspicious<b class="deva">लाभ · Labh</b></div>
+          </div>
+          <div class="cell critical">
+            <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/><line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.4"/></svg>
+            <div class="lbl">Avoid</div>
+            <div class="val">Rahu Kaal<b>3:36 – 5:15 PM</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <div class="hp-panch">
+          <div class="cell">
+            <div class="lbl">Today</div>
+            <div class="val">Tue<b>Ashadha 25</b></div>
+          </div>
+          <div class="cell">
+            <div class="lbl">Tithi</div>
+            <div class="val">Shukla<b class="deva">एकादशी</b></div>
+          </div>
+          <div class="cell now">
+            <div class="lbl">Now · Choghadiya</div>
+            <div class="val">Auspicious<b class="deva">लाभ · Labh</b></div>
+          </div>
+          <div class="cell">
+            <div class="lbl">Nakshatra</div>
+            <div class="val">Chitra<b class="deva">चित्रा</b></div>
+          </div>
+          <div class="cell critical">
+            <div class="lbl">Avoid</div>
+            <div class="val">Rahu<b>3:36 – 5:15 PM</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Live cell glow</b> — the "Now" cell has a top-side gold shimmer bar, marking it as the current auspicious window at a glance.</li>
+      <li><b>Rahu Kaal in soft red</b> — the semantic critical color, but muted (F5A6AF instead of B62F3A) — a caution, not an alarm.</li>
+      <li><b>Devanagari on the same line</b> — every panchang term shows Sanskrit + Roman transliteration where relevant. Both audiences read it naturally.</li>
+      <li><b>Mobile</b> — reflows to 2 columns with the "Now" cell spanning full width (it's the most-important reading).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 05 — DIRECTION SHRINE -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s05">
+  <div class="sp-head">
+    <div class="n">05</div>
+    <div class="title">
+      <span class="eyebrow">Direction shrine</span>
+      <h2>The yantra you enter, not filter by.</h2>
+      <p>Not a category chip. A ritual wheel — each of eight directions is a page unto itself. Hover reveals the direction's deity, element, and purpose. Click enters that direction's shrine.</p>
+    </div>
+    <div class="anchor">/section 05</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-shrine">
+          <div class="head">
+            <span class="eyebrow">Shop by direction</span>
+            <h2>Not a filter. <i>A shrine.</i></h2>
+            <p class="intro">Each of eight cardinal points is a room in the home, an element, and a purpose. Enter one to see the pieces built for it.</p>
+          </div>
+          <div class="shrine-wheel">
+            <svg viewBox="0 0 400 400" fill="none">
+              <circle cx="200" cy="200" r="195" stroke="#E8B849" stroke-width=".8" opacity=".4"/>
+              <circle cx="200" cy="200" r="160" stroke="#E8B849" stroke-width=".8" opacity=".55"/>
+              <circle cx="200" cy="200" r="110" stroke="#E8B849" stroke-width=".8" opacity=".6"/>
+              <circle cx="200" cy="200" r="60" stroke="#E8B849" stroke-width="1" opacity=".7"/>
+              <g stroke="#E8B849" stroke-width=".6" opacity=".55">
+                <line x1="200" y1="5" x2="200" y2="395"/>
+                <line x1="5" y1="200" x2="395" y2="200"/>
+                <line x1="62" y1="62" x2="338" y2="338"/>
+                <line x1="338" y1="62" x2="62" y2="338"/>
+              </g>
+              <!-- Yantra triangles -->
+              <polygon points="200,140 250,240 150,240" stroke="#E8B849" stroke-width=".8" fill="none" opacity=".55"/>
+              <polygon points="200,260 250,160 150,160" stroke="#E8B849" stroke-width=".8" fill="none" opacity=".55"/>
+              <!-- Direction labels -->
+              <g font-family="Georgia" font-size="15" fill="#F7ECD4">
+                <text x="200" y="30" text-anchor="middle">North</text>
+                <text x="200" y="378" text-anchor="middle">South</text>
+                <text x="380" y="205" text-anchor="middle">East</text>
+                <text x="20" y="205" text-anchor="middle">West</text>
+              </g>
+              <g font-family="Georgia" font-size="12" fill="#FCD46F">
+                <text x="335" y="70" text-anchor="middle">NE</text>
+                <text x="335" y="340" text-anchor="middle">SE</text>
+                <text x="65" y="70" text-anchor="middle">NW</text>
+                <text x="65" y="340" text-anchor="middle">SW</text>
+              </g>
+              <!-- Deity / element labels -->
+              <g font-family="-apple-system, sans-serif" font-size="8" fill="rgba(247,236,212,.5)" letter-spacing="1.5">
+                <text x="200" y="46" text-anchor="middle">KUBERA · WEALTH</text>
+                <text x="200" y="362" text-anchor="middle">YAMA · FAME</text>
+                <text x="380" y="219" text-anchor="middle">INDRA · ENERGY</text>
+                <text x="20" y="219" text-anchor="middle">VARUNA · RELATIONS</text>
+              </g>
+              <circle cx="200" cy="200" r="4" fill="#FCD46F"/>
+            </svg>
+            <div class="center">
+              <span class="om deva">ॐ</span>
+              <span class="brahma">Brahmasthan</span>
+            </div>
+          </div>
+          <div class="shrine-hint">Hover a direction to reveal its deity and purpose</div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-shrine">
+          <div class="head">
+            <span class="eyebrow">Shop by direction</span>
+            <h2>Not a filter. <i>A shrine.</i></h2>
+            <p class="intro">Each direction is a room, an element, a purpose. Tap one to enter.</p>
+          </div>
+          <div class="shrine-wheel">
+            <svg viewBox="0 0 400 400" fill="none">
+              <circle cx="200" cy="200" r="195" stroke="#E8B849" stroke-width=".8" opacity=".4"/>
+              <circle cx="200" cy="200" r="150" stroke="#E8B849" stroke-width=".8" opacity=".55"/>
+              <circle cx="200" cy="200" r="90" stroke="#E8B849" stroke-width="1" opacity=".7"/>
+              <g stroke="#E8B849" stroke-width=".6" opacity=".55">
+                <line x1="200" y1="5" x2="200" y2="395"/>
+                <line x1="5" y1="200" x2="395" y2="200"/>
+                <line x1="62" y1="62" x2="338" y2="338"/>
+                <line x1="338" y1="62" x2="62" y2="338"/>
+              </g>
+              <polygon points="200,140 250,240 150,240" stroke="#E8B849" stroke-width=".8" fill="none" opacity=".55"/>
+              <polygon points="200,260 250,160 150,160" stroke="#E8B849" stroke-width=".8" fill="none" opacity=".55"/>
+              <g font-family="Georgia" font-size="18" fill="#F7ECD4">
+                <text x="200" y="35" text-anchor="middle">N</text>
+                <text x="200" y="378" text-anchor="middle">S</text>
+                <text x="376" y="208" text-anchor="middle">E</text>
+                <text x="24" y="208" text-anchor="middle">W</text>
+              </g>
+              <g font-family="Georgia" font-size="12" fill="#FCD46F">
+                <text x="335" y="70" text-anchor="middle">NE</text>
+                <text x="335" y="340" text-anchor="middle">SE</text>
+                <text x="65" y="70" text-anchor="middle">NW</text>
+                <text x="65" y="340" text-anchor="middle">SW</text>
+              </g>
+              <circle cx="200" cy="200" r="4" fill="#FCD46F"/>
+            </svg>
+            <div class="center">
+              <span class="om deva">ॐ</span>
+              <span class="brahma">Brahmasthan</span>
+            </div>
+          </div>
+          <div class="shrine-hint">Tap a direction to enter</div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Real yantra geometry</b> — interlocking triangles inside the wheel echo the Sri Yantra tradition, not decorative fluff.</li>
+      <li><b>Deities named</b> at each direction — Kubera (N), Indra (E), Yama (S), Varuna (W), plus the four sub-directions. Reveals purpose.</li>
+      <li><b>The Om at center</b> breathes on the sacred pulse — the visual heart of the whole page.</li>
+      <li><b>Mobile</b> — smaller labels, N/S/E/W abbreviated, deity names hide until a direction is tapped (bottom-sheet reveals them).</li>
+      <li><b>Interaction</b> — hovering a direction highlights its arc and shows a floating label with the deity, element, and one product silhouette.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 06 — FEATURED PIECES -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s06">
+  <div class="sp-head">
+    <div class="n">06</div>
+    <div class="title">
+      <span class="eyebrow">Featured pieces</span>
+      <h2>Today at the workshop.</h2>
+      <p>Three pieces in the arch card format from the design system — material-appropriate atmospheres (copper, silver, brass), gold arches, deity names, and mantras on the price row.</p>
+    </div>
+    <div class="anchor">/section 06</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-feat">
+          <div class="head">
+            <span class="eyebrow">Today at the workshop</span>
+            <h2>Pieces <i>awaiting their home.</i></h2>
+          </div>
+          <div class="products">
+            <div class="prod copper">
+              <div class="arch">
+                <div class="badges"><span class="badge">Northeast</span><span class="badge">Water</span></div>
+                <svg class="glyph" width="110" height="160" viewBox="0 0 120 160" fill="none">
+                  <ellipse cx="60" cy="14" rx="12" ry="8" fill="currentColor"/>
+                  <path d="M40 20 Q 36 8, 30 20" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity=".7"/>
+                  <path d="M80 20 Q 84 8, 90 20" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity=".7"/>
+                  <ellipse cx="60" cy="38" rx="24" ry="5" fill="currentColor"/>
+                  <rect x="40" y="38" width="40" height="7" fill="currentColor"/>
+                  <path d="M36 46 C 20 74, 20 128, 42 152 L 78 152 C 100 128, 100 74, 84 46 Z" fill="currentColor" opacity=".95"/>
+                  <line x1="36" y1="90" x2="84" y2="90" stroke="rgba(0,0,0,.3)" stroke-width="1.5"/>
+                  <line x1="38" y1="108" x2="82" y2="108" stroke="rgba(0,0,0,.3)" stroke-width="1"/>
+                </svg>
+              </div>
+              <div class="body">
+                <div class="deity">Kubera Kalash</div>
+                <div class="name">Copper Vastu Kalash</div>
+                <div class="comp">Cu 812 g · hand-beaten</div>
+                <div class="foot"><span class="amt">₹18,400</span><span class="mantra deva">ॐ कुबेराय नमः</span></div>
+              </div>
+            </div>
+            <div class="prod silver">
+              <div class="arch">
+                <div class="badges"><span class="badge">North</span><span class="badge">Wealth</span></div>
+                <svg class="glyph" width="130" height="130" viewBox="0 0 140 140" fill="none">
+                  <polygon points="70,20 20,110 120,110" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                  <polygon points="70,120 20,30 120,30" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                  <polygon points="70,40 40,90 100,90" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                  <polygon points="70,100 40,50 100,50" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                  <circle cx="70" cy="70" r="4" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="body">
+                <div class="deity">Sri Lakshmi Yantra</div>
+                <div class="name">Silver Sri Yantra Plate</div>
+                <div class="comp">Ag 265 g · one of six</div>
+                <div class="foot"><span class="amt">₹31,200</span><span class="mantra deva">ॐ श्री महालक्ष्म्यै</span></div>
+              </div>
+            </div>
+            <div class="prod brass">
+              <div class="arch">
+                <div class="badges"><span class="badge">Center</span><span class="badge">Balance</span></div>
+                <svg class="glyph" width="120" height="130" viewBox="0 0 130 130" fill="none">
+                  <polygon points="65,15 20,110 110,110" stroke="currentColor" stroke-width="1.6" fill="none"/>
+                  <polygon points="65,15 20,110 65,85" stroke="currentColor" stroke-width="1.2" fill="rgba(0,0,0,.18)"/>
+                  <line x1="65" y1="15" x2="65" y2="85" stroke="currentColor" stroke-width=".8"/>
+                </svg>
+              </div>
+              <div class="body">
+                <div class="deity">Brahmasthan Pyramid</div>
+                <div class="name">Brass Ashtadhatu Pyramid</div>
+                <div class="comp">Ashtadhatu · 540 g</div>
+                <div class="foot"><span class="amt">₹9,800</span><span class="mantra deva">ॐ ब्रह्मणे नमः</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="view-all"><a href="#">Enter the full collection →</a></div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-feat">
+          <div class="head">
+            <span class="eyebrow">Today at the workshop</span>
+            <h2>Pieces <i>awaiting their home.</i></h2>
+          </div>
+          <div class="products">
+            <div class="prod copper">
+              <div class="arch">
+                <div class="badges"><span class="badge">Northeast</span><span class="badge">Water</span></div>
+                <svg class="glyph" width="90" height="130" viewBox="0 0 120 160" fill="none">
+                  <ellipse cx="60" cy="14" rx="12" ry="8" fill="currentColor"/>
+                  <ellipse cx="60" cy="38" rx="24" ry="5" fill="currentColor"/>
+                  <rect x="40" y="38" width="40" height="7" fill="currentColor"/>
+                  <path d="M36 46 C 20 74, 20 128, 42 152 L 78 152 C 100 128, 100 74, 84 46 Z" fill="currentColor" opacity=".95"/>
+                </svg>
+              </div>
+              <div class="body">
+                <div class="deity">Kubera Kalash</div>
+                <div class="name">Copper Vastu Kalash</div>
+                <div class="comp">Cu 812 g</div>
+                <div class="foot"><span class="amt">₹18,400</span><span class="mantra deva">ॐ कुबेराय</span></div>
+              </div>
+            </div>
+            <div class="prod silver">
+              <div class="arch">
+                <div class="badges"><span class="badge">North</span><span class="badge">Wealth</span></div>
+                <svg class="glyph" width="100" height="100" viewBox="0 0 140 140" fill="none">
+                  <polygon points="70,20 20,110 120,110" stroke="currentColor" stroke-width="1.6" fill="none"/>
+                  <polygon points="70,120 20,30 120,30" stroke="currentColor" stroke-width="1.6" fill="none"/>
+                  <circle cx="70" cy="70" r="4" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="body">
+                <div class="deity">Sri Lakshmi</div>
+                <div class="name">Silver Sri Yantra Plate</div>
+                <div class="comp">Ag 265 g</div>
+                <div class="foot"><span class="amt">₹31,200</span><span class="mantra deva">ॐ श्री</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="view-all"><a href="#">Enter the full collection →</a></div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Material atmosphere</b> — each card's background gradient matches the actual metal. Copper is warm-orange, silver is cool-neutral, brass is warm-gold. The pieces feel like they're in their true light.</li>
+      <li><b>Gold arch frame</b> — every product arch has a real gold border echoing the temple archway motif from the ornament library.</li>
+      <li><b>Deity name above product name</b> — the small caps line ("Kubera Kalash") anchors the piece devotionally before the SKU name.</li>
+      <li><b>Sanskrit mantra on price row</b> — quiet devotional finish. Every piece has its associated mantra shown at the bottom of the card.</li>
+      <li><b>Mobile</b> — shows 2 of 3 (the mobile viewport reveals more via scroll). No horizontal scroll — pure vertical stack.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 07 — HOME AUDIT CTA -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s07">
+  <div class="sp-head">
+    <div class="n">07</div>
+    <div class="title">
+      <span class="eyebrow">Home audit</span>
+      <h2>The concierge quiz, teased on the homepage.</h2>
+      <p>An editorial band with a live preview of the first quiz question — a taste of the concierge experience (Warby-Parker-style branching), showing the visitor exactly what they'll get.</p>
+    </div>
+    <div class="anchor">/section 07</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-audit">
+          <div class="inner">
+            <div class="copy">
+              <span class="eyebrow">Uncertain where a piece belongs?</span>
+              <h2>The two-minute<br><i>home audit.</i></h2>
+              <p>Four short questions about your home's layout and orientation — we recommend the pieces built for it. Personal, guided, honest.</p>
+              <a href="#" class="btn primary">Begin the audit</a>
+            </div>
+            <div class="quiz-preview">
+              <div class="q-lbl">Question 1 of 4</div>
+              <div class="q-txt">Which direction does your home's main entrance face?</div>
+              <div class="q-options">
+                <div class="q-opt">North</div>
+                <div class="q-opt active">Northeast</div>
+                <div class="q-opt">East</div>
+                <div class="q-opt">I'm not sure</div>
+              </div>
+              <div class="step">Step 1 of 4</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-audit">
+          <div class="inner">
+            <div class="copy">
+              <span class="eyebrow">Uncertain?</span>
+              <h2>The two-minute<br><i>home audit.</i></h2>
+              <p>Four short questions — we recommend the pieces built for your home.</p>
+              <a href="#" class="btn primary">Begin the audit</a>
+            </div>
+            <div class="quiz-preview">
+              <div class="q-lbl">Question 1 of 4</div>
+              <div class="q-txt">Which direction does your entrance face?</div>
+              <div class="q-options">
+                <div class="q-opt">North</div>
+                <div class="q-opt active">Northeast</div>
+                <div class="q-opt">East</div>
+              </div>
+              <div class="step">Step 1 of 4</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Live quiz preview</b> — showing the first question directly on the homepage makes the CTA concrete. Not "take a quiz" — "answer this."</li>
+      <li><b>Diagonal gradient</b> — sanctum-lift to burnt-gold, hints at the temple threshold. Radial light from the top-right side.</li>
+      <li><b>Selected option</b> already active (Northeast) so the visitor sees the interaction working before clicking.</li>
+      <li><b>Mobile</b> — stacks vertically; the quiz card sits below the copy, shorter option list. Same taste, less content.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 08 — RITUAL GUIDANCE -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s08">
+  <div class="sp-head">
+    <div class="n">08</div>
+    <div class="title">
+      <span class="eyebrow">Ritual guidance</span>
+      <h2>Sankalpa · Cleansing · Placement · First Puja.</h2>
+      <p>The four-step consecration ritual shown on every product page, teased here so the visitor knows a piece never arrives alone — a printable ritual card comes in the box.</p>
+    </div>
+    <div class="anchor">/section 08</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-ritual">
+          <span class="eyebrow">Included with every piece</span>
+          <h2>A guide to <i>consecrate it.</i></h2>
+          <p class="intro">Every order ships with a printable ritual card. Four short steps, honored across centuries — brought to your hands when the box arrives.</p>
+          <div class="steps">
+            <div class="step">
+              <div class="circle"><span class="num">I</span></div>
+              <h3>Sankalpa</h3>
+              <p>The quiet intention — why this piece, and for whom.</p>
+            </div>
+            <div class="step">
+              <div class="circle"><span class="num">II</span></div>
+              <h3>Cleansing</h3>
+              <p>Water, a soft cloth, and a simple mantra to receive the piece.</p>
+            </div>
+            <div class="step">
+              <div class="circle"><span class="num">III</span></div>
+              <h3>Placement</h3>
+              <p>The exact direction, angle, and height for this piece.</p>
+            </div>
+            <div class="step">
+              <div class="circle"><span class="num">IV</span></div>
+              <h3>First Puja</h3>
+              <p>A short verse, a lit diya, a moment of stillness.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-ritual">
+          <span class="eyebrow">Included with every piece</span>
+          <h2>A guide to <i>consecrate it.</i></h2>
+          <p class="intro">Four short steps, honored across centuries — brought in the box.</p>
+          <div class="steps">
+            <div class="step">
+              <div class="circle"><span class="num">I</span></div>
+              <h3>Sankalpa</h3>
+              <p>The quiet intention.</p>
+            </div>
+            <div class="step">
+              <div class="circle"><span class="num">II</span></div>
+              <h3>Cleansing</h3>
+              <p>Water, cloth, mantra.</p>
+            </div>
+            <div class="step">
+              <div class="circle"><span class="num">III</span></div>
+              <h3>Placement</h3>
+              <p>Direction and angle.</p>
+            </div>
+            <div class="step">
+              <div class="circle"><span class="num">IV</span></div>
+              <h3>First Puja</h3>
+              <p>Verse, diya, stillness.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Ivory ground</b> — the whole page switches to warm parchment for this section. It reads like a printed ritual card, not a screen.</li>
+      <li><b>Roman numerals in gold</b> — the four numerals sit in gold circles with soft inner shadow, echoing a temple bell hanging.</li>
+      <li><b>Horizontal thread</b> — a faint gold rule connects the four circles across the top, tying the ritual as one continuous act.</li>
+      <li><b>Mobile</b> — reflows to 2×2 grid, the connecting thread removed. Each step stands alone.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 09 — CONSULTATION SANCTUARY -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s09">
+  <div class="sp-head">
+    <div class="n">09</div>
+    <div class="title">
+      <span class="eyebrow">Consultation sanctuary</span>
+      <h2>Sit with a consultant. Read your chart.</h2>
+      <p>Dark sanctum full-bleed. Two side-by-side cards — Vastu placement consultation (₹999, credits toward order) and Astrology reading (₹1,499, standalone). Presented as invitations, not products.</p>
+    </div>
+    <div class="anchor">/section 09</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-consult">
+          <div class="content">
+            <span class="eyebrow">Uncertain?</span>
+            <h2>Sit with a consultant.<br><i>Twenty minutes.</i></h2>
+            <p class="lead">If a piece calls but you're unsure where it belongs, take a short reading with our resident consultant or astrologer. No obligation, no upsell.</p>
+            <div class="cards">
+              <div class="card">
+                <div class="kind">Placement reading</div>
+                <h3>Vastu consultation</h3>
+                <p>A 20-minute call to place your pieces correctly for your specific home layout. The fee is credited toward any order over ₹5,000.</p>
+                <div class="fee">₹999<span class="dur">20 min · video</span></div>
+                <div class="btn-line">Book a reading →</div>
+              </div>
+              <div class="card">
+                <div class="kind">Birth-chart reading</div>
+                <h3>Astrology consultation</h3>
+                <p>A 30-minute reading of your natal chart with our astrologer. Understand the pieces most aligned to your rashi and dasha.</p>
+                <div class="fee">₹1,499<span class="dur">30 min · video</span></div>
+                <div class="btn-line">Book a reading →</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-consult">
+          <div class="content">
+            <span class="eyebrow">Uncertain?</span>
+            <h2>Sit with a<br><i>consultant.</i></h2>
+            <p class="lead">Twenty minutes with our resident consultant or astrologer.</p>
+            <div class="cards">
+              <div class="card">
+                <div class="kind">Placement</div>
+                <h3>Vastu consultation</h3>
+                <p>Place your pieces correctly for your home layout. Credited toward orders over ₹5,000.</p>
+                <div class="fee">₹999<span class="dur">20 min</span></div>
+                <div class="btn-line">Book →</div>
+              </div>
+              <div class="card">
+                <div class="kind">Birth-chart</div>
+                <h3>Astrology consultation</h3>
+                <p>A 30-minute reading of your natal chart. Understand pieces aligned to your rashi.</p>
+                <div class="fee">₹1,499<span class="dur">30 min</span></div>
+                <div class="btn-line">Book →</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Sanctum ground</b> — the section is deep and quiet. A radial gold glow behind marks it as sacred, not commercial.</li>
+      <li><b>Presented as an invitation</b> — not "book now" pressure but "sit with." The register matches the offer.</li>
+      <li><b>Fee shown as a serif number</b> — reads honest, direct, not hidden. Duration and format ("video") stated plainly.</li>
+      <li><b>Hover</b> — the card lifts slightly with a gold-lit border and soft gold glow (0 0 30px rgba(232,184,73,.15)).</li>
+      <li><b>Mobile</b> — cards stack vertically. Copy tightens; still both offerings visible.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 10 — BHAKTAS' HOMES -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s10">
+  <div class="sp-head">
+    <div class="n">10</div>
+    <div class="title">
+      <span class="eyebrow">Bhaktas' homes</span>
+      <h2>Where our pieces have gone to live.</h2>
+      <p>A curated grid of real customers' altars — each with the family name, city, and the piece from Sarthak Arts inside. Social proof, but sacred rather than salesy.</p>
+    </div>
+    <div class="anchor">/section 10</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-bhak">
+          <div class="head">
+            <span class="eyebrow">Where they live</span>
+            <h2>Bhaktas' <i>homes.</i></h2>
+            <p>Real altars from real homes across India. Each family shared a photograph of their pieces in place — because a Sarthak Arts piece is not for a shelf, it's for a shrine.</p>
+          </div>
+          <div class="grid">
+            <div class="bhak f1"><div class="fill">◈</div><span class="piece">Copper Kalash</span><div class="info"><div class="name">The Ramaswamys</div><div class="place">Bengaluru</div></div></div>
+            <div class="bhak f2"><div class="fill">◈</div><span class="piece">Brass Ganesha</span><div class="info"><div class="name">Anjali &amp; Rohan</div><div class="place">Pune</div></div></div>
+            <div class="bhak f3"><div class="fill">◈</div><span class="piece">Silver Sri Yantra</span><div class="info"><div class="name">The Iyers</div><div class="place">Chennai</div></div></div>
+            <div class="bhak f4"><div class="fill">◈</div><span class="piece">Ashtadhatu Pyramid</span><div class="info"><div class="name">Vikram Sharma</div><div class="place">Jaipur</div></div></div>
+            <div class="bhak f5"><div class="fill">◈</div><span class="piece">Copper Wind Chime</span><div class="info"><div class="name">The Kapoors</div><div class="place">Delhi</div></div></div>
+            <div class="bhak f6"><div class="fill">◈</div><span class="piece">Silver Om Wall</span><div class="info"><div class="name">Meera Rao</div><div class="place">Hyderabad</div></div></div>
+          </div>
+          <div class="cta"><a href="#">See all bhaktas' homes →</a></div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-bhak">
+          <div class="head">
+            <span class="eyebrow">Where they live</span>
+            <h2>Bhaktas' <i>homes.</i></h2>
+            <p>Real altars from real families across India.</p>
+          </div>
+          <div class="grid">
+            <div class="bhak f1"><div class="fill">◈</div><span class="piece">Kalash</span><div class="info"><div class="name">The Ramaswamys</div><div class="place">Bengaluru</div></div></div>
+            <div class="bhak f2"><div class="fill">◈</div><span class="piece">Ganesha</span><div class="info"><div class="name">The Sharmas</div><div class="place">Pune</div></div></div>
+            <div class="bhak f3"><div class="fill">◈</div><span class="piece">Yantra</span><div class="info"><div class="name">The Iyers</div><div class="place">Chennai</div></div></div>
+            <div class="bhak f4"><div class="fill">◈</div><span class="piece">Pyramid</span><div class="info"><div class="name">Vikram</div><div class="place">Jaipur</div></div></div>
+          </div>
+          <div class="cta"><a href="#">See all bhaktas' homes →</a></div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Placeholder gradients</b> in the mockup — real photography replaces them. The gradients suggest what each altar's warmth and light should feel like.</li>
+      <li><b>Piece tag top-right</b> — small gold chip showing what Sarthak Arts piece is in the frame. Answers "which of your things?" at a glance.</li>
+      <li><b>Family name + city</b> at the bottom — attribution, not testimonial. No stars, no quotes. Just: <i>here, this one lives with them</i>.</li>
+      <li><b>Zoom on hover</b> — the fill scales 1.06 with slow ease over 500ms. Feels like leaning closer to look.</li>
+      <li><b>Mobile</b> — 2×2 grid instead of 3×2; shortened piece names. Load fewer at a time.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 11 — RITUAL CALENDAR -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s11">
+  <div class="sp-head">
+    <div class="n">11</div>
+    <div class="title">
+      <span class="eyebrow">Ritual calendar</span>
+      <h2>Next festival, and the pieces that meet it.</h2>
+      <p>A single card announcing the next major festival with its exact date, tithi, and Sanskrit name — beside it, three pieces from the collection appropriate for the occasion.</p>
+    </div>
+    <div class="anchor">/section 11</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-cal">
+          <div class="inner">
+            <div class="festival">
+              <div class="eyebrow">Next festival</div>
+              <div class="date">15 August</div>
+              <div class="name deva">श्रावण पूर्णिमा</div>
+              <div class="subname">Shravan Purnima</div>
+              <div class="in"><b>In 12 days</b> · Rakhi + Raksha Bandhan</div>
+            </div>
+            <div class="picks">
+              <h3>Pieces for <i>the occasion.</i></h3>
+              <p class="desc">Traditionally offered or gifted on this tithi — brass and silver pieces for the household protectorship the festival honours.</p>
+              <div class="items">
+                <div class="pick">
+                  <svg class="glyph" width="26" height="26" viewBox="0 0 40 40" fill="none"><path d="M20 4 C 14 4, 12 18, 10 30 L 30 30 C 28 18, 26 4, 20 4 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity=".2"/><line x1="20" y1="30" x2="20" y2="36" stroke="currentColor" stroke-width="1.4"/><circle cx="20" cy="36" r="2.5" fill="currentColor"/></svg>
+                  <div class="n">Brass<br>Puja Bell</div>
+                  <div class="p">₹2,400</div>
+                </div>
+                <div class="pick">
+                  <svg class="glyph" width="26" height="26" viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="4" rx="4" ry="3" fill="currentColor"/><ellipse cx="20" cy="15" rx="10" ry="3" fill="currentColor"/><rect x="14" y="15" width="12" height="4" fill="currentColor"/><path d="M12 19 C 8 25, 8 34, 12 38 L 28 38 C 32 34, 32 25, 28 19 Z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity=".3"/></svg>
+                  <div class="n">Copper<br>Kalash</div>
+                  <div class="p">₹18,400</div>
+                </div>
+                <div class="pick">
+                  <svg class="glyph" width="26" height="26" viewBox="0 0 40 40" fill="none"><polygon points="20,6 32,30 8,30" stroke="currentColor" stroke-width="1.4" fill="none"/><polygon points="20,34 32,10 8,10" stroke="currentColor" stroke-width="1.4" fill="none"/><circle cx="20" cy="20" r="2" fill="currentColor"/></svg>
+                  <div class="n">Silver<br>Sri Yantra</div>
+                  <div class="p">₹31,200</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-cal">
+          <div class="inner">
+            <div class="festival">
+              <div class="eyebrow">Next festival</div>
+              <div class="date">15 August</div>
+              <div class="name deva">श्रावण पूर्णिमा</div>
+              <div class="subname">Shravan Purnima</div>
+              <div class="in"><b>In 12 days</b> · Rakhi</div>
+            </div>
+            <div class="picks">
+              <h3>Pieces for <i>the occasion.</i></h3>
+              <p class="desc">Brass and silver pieces for the household protectorship the festival honours.</p>
+              <div class="items">
+                <div class="pick">
+                  <svg width="22" height="22" viewBox="0 0 40 40" fill="none" style="color:var(--gold-lit)"><path d="M20 4 C 14 4, 12 18, 10 30 L 30 30 C 28 18, 26 4, 20 4 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity=".2"/></svg>
+                  <div class="n">Brass Puja Bell</div>
+                  <div class="p">₹2,400</div>
+                </div>
+                <div class="pick">
+                  <svg width="22" height="22" viewBox="0 0 40 40" fill="none" style="color:var(--gold-lit)"><ellipse cx="20" cy="4" rx="4" ry="3" fill="currentColor"/><ellipse cx="20" cy="15" rx="10" ry="3" fill="currentColor"/><path d="M12 19 C 8 25, 8 34, 12 38 L 28 38 C 32 34, 32 25, 28 19 Z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity=".3"/></svg>
+                  <div class="n">Copper Kalash</div>
+                  <div class="p">₹18,400</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Sindoor-bordered festival card</b> — the single moment on the homepage that uses sacred red. It marks the festival as ritual event.</li>
+      <li><b>Countdown line</b> — "In 12 days" is quick-scan information; the tithi name in Sanskrit is the identity of the day itself.</li>
+      <li><b>Curated three pieces</b> — not the whole catalogue. Editorial selection, based on the festival's meaning.</li>
+      <li><b>Mobile</b> — festival card stacks above the picks; only two pieces shown on mobile (with "see more →" implicit through scroll).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 12 — WORKSHOP JOURNAL -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s12">
+  <div class="sp-head">
+    <div class="n">12</div>
+    <div class="title">
+      <span class="eyebrow">Workshop journal</span>
+      <h2>From the hands that make them.</h2>
+      <p>One featured journal piece (an editorial photograph + title + excerpt) beside a 2×2 grid of recent workshop moments from Instagram. Craft as content, not marketing.</p>
+    </div>
+    <div class="anchor">/section 12</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-work">
+          <div class="head">
+            <span class="eyebrow">The journal</span>
+            <h2>From the <i>workshop.</i></h2>
+          </div>
+          <div class="grid">
+            <div class="journal-feat">
+              <div class="meta">Craft · 4 min read</div>
+              <h3>The seven days a copper<br>kalash <i>takes to make.</i></h3>
+              <p>A single sheet of copper, four thousand hammer strikes, and the patience of one man. A photo essay from Bhavesh's workshop.</p>
+              <div class="read">Read the piece →</div>
+            </div>
+            <div class="ig-grid">
+              <div class="ig-post p1"><div class="fill"></div><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" stroke="currentColor" stroke-width="1.5" rx="4"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/></svg></div>
+              <div class="ig-post p2"><div class="fill"></div><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" stroke="currentColor" stroke-width="1.5" rx="4"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/></svg></div>
+              <div class="ig-post p3"><div class="fill"></div><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" stroke="currentColor" stroke-width="1.5" rx="4"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/></svg></div>
+              <div class="ig-post p4"><div class="fill"></div><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" stroke="currentColor" stroke-width="1.5" rx="4"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/></svg></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-work">
+          <div class="head">
+            <span class="eyebrow">The journal</span>
+            <h2>From the <i>workshop.</i></h2>
+          </div>
+          <div class="grid">
+            <div class="journal-feat">
+              <div class="meta">Craft · 4 min</div>
+              <h3>The seven days a kalash <i>takes to make.</i></h3>
+              <p>A single sheet of copper, four thousand hammer strikes.</p>
+              <div class="read">Read the piece →</div>
+            </div>
+            <div class="ig-grid">
+              <div class="ig-post p1"><div class="fill"></div></div>
+              <div class="ig-post p2"><div class="fill"></div></div>
+              <div class="ig-post p3"><div class="fill"></div></div>
+              <div class="ig-post p4"><div class="fill"></div></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Featured piece is a photograph</b> — an editorial hero, not a card. Long shadows, dark gradient overlay at the bottom, warm gold copy on top.</li>
+      <li><b>2×2 Instagram grid</b> — small, gold-bordered squares suggesting workshop reels. Camera icons appear on hover, hinting they're videos.</li>
+      <li><b>"From the workshop"</b> language over "Blog" or "News" — reinforces the makers-first framing.</li>
+      <li><b>Mobile</b> — grid stacks; featured piece on top, IG posts below.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 13 — TRUST BAR -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s13">
+  <div class="sp-head">
+    <div class="n">13</div>
+    <div class="title">
+      <span class="eyebrow">Trust bar</span>
+      <h2>The proof strip.</h2>
+      <p>Warm parchment ground, five short trust signals in a row: certified per piece, artisan-made, ritual card included, 7-day returns, secure payments. Icons paired with a headline and one line each.</p>
+    </div>
+    <div class="anchor">/section 13</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-trust">
+          <div class="row">
+            <div class="cell">
+              <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" stroke="currentColor" stroke-width="1.6" rx="2"/><path d="M8 12 L 11 15 L 16 9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+              <div class="txt"><b>Certified per piece.</b><br>Exact metal weight, stated.</div>
+            </div>
+            <div class="cell">
+              <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6 20 C 6 14, 10 12, 12 12 M 12 12 C 14 12, 18 14, 18 20 M 12 12 L 12 8 M 12 8 C 10 8, 8 6, 8 4 M 12 8 C 14 8, 16 6, 16 4" stroke="currentColor" stroke-width="1.5"/></svg>
+              <div class="txt"><b>Made by hand.</b><br>By one artisan, start to finish.</div>
+            </div>
+            <div class="cell">
+              <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="18" stroke="currentColor" stroke-width="1.5" rx="1"/><line x1="8" y1="9" x2="16" y2="9" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="1.5"/></svg>
+              <div class="txt"><b>Ritual card included.</b><br>Printed guide in the box.</div>
+            </div>
+            <div class="cell">
+              <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 12 A 8 8 0 1 1 12 20" stroke="currentColor" stroke-width="1.6" fill="none"/><polyline points="4,8 4,12 8,12" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+              <div class="txt"><b>Seven-day returns.</b><br>If it isn't right for the home.</div>
+            </div>
+            <div class="cell">
+              <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="12" stroke="currentColor" stroke-width="1.6" rx="1.5"/><path d="M8 10 V 7 C 8 4, 10 3, 12 3 C 14 3, 16 4, 16 7 V 10" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+              <div class="txt"><b>Secured payments.</b><br>Razorpay · UPI · Cards · Stripe.</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-trust">
+          <div class="row">
+            <div class="cell">
+              <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" stroke="currentColor" stroke-width="1.6" rx="2"/><path d="M8 12 L 11 15 L 16 9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+              <div class="txt"><b>Certified per piece.</b><br>Exact weight stated.</div>
+            </div>
+            <div class="cell">
+              <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 20 C 6 14, 10 12, 12 12 C 14 12, 18 14, 18 20 M 12 12 L 12 8" stroke="currentColor" stroke-width="1.5"/></svg>
+              <div class="txt"><b>Made by hand.</b><br>One artisan.</div>
+            </div>
+            <div class="cell">
+              <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="18" stroke="currentColor" stroke-width="1.5" rx="1"/><line x1="8" y1="9" x2="16" y2="9" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.5"/></svg>
+              <div class="txt"><b>Ritual card.</b><br>Included.</div>
+            </div>
+            <div class="cell">
+              <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12 A 8 8 0 1 1 12 20" stroke="currentColor" stroke-width="1.6" fill="none"/><polyline points="4,8 4,12 8,12" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+              <div class="txt"><b>7-day returns.</b><br>No questions.</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Ivory ground</b> — brief return to parchment, so the trust bar reads as printed matter rather than a marketing block.</li>
+      <li><b>Icon + two-line copy</b> — headline (bold) + one-line explanation. Scannable in 2 seconds.</li>
+      <li><b>Gold-deep icons</b> — one weight darker than the section-eyebrows. Reads as a stamp/seal.</li>
+      <li><b>Mobile</b> — reflows to 2×2 grid + last item wraps into own row. Payment cell hidden on mobile (payment logos surface at checkout instead).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 14 — NEWSLETTER -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s14">
+  <div class="sp-head">
+    <div class="n">14</div>
+    <div class="title">
+      <span class="eyebrow">Newsletter</span>
+      <h2>One placement tip a month.</h2>
+      <p>Not "subscribe for offers." A quiet promise — one considered placement note or ritual observation each month, no more. Honest register throughout.</p>
+    </div>
+    <div class="anchor">/section 14</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <section class="hp-nl">
+          <span class="eyebrow">The monthly note</span>
+          <h2>One placement tip a month.<br><i>Nothing else.</i></h2>
+          <p>A single, considered note — a Vastu tip, a ritual observation, a new piece from the workshop. No sales, no urgency, no unsubscribe funnel.</p>
+          <form onsubmit="return false">
+            <input type="email" placeholder="your@email.com">
+            <button>Subscribe</button>
+          </form>
+          <div class="fine">By subscribing, you agree to receive one email per month. Unsubscribe any time.</div>
+        </section>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <section class="hp-nl">
+          <span class="eyebrow">The monthly note</span>
+          <h2>One placement tip a month.<br><i>Nothing else.</i></h2>
+          <p>A single note — a Vastu tip, a ritual observation, a piece from the workshop.</p>
+          <form onsubmit="return false">
+            <input type="email" placeholder="your@email.com">
+            <button>Subscribe</button>
+          </form>
+          <div class="fine">One email a month. Unsubscribe any time.</div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Register matters</b> — the copy sets the tone: no shouting, no upsells. Matches the whole brand voice.</li>
+      <li><b>Input + button</b> — the button carries the golden shimmer primitive from the design system. Focus ring is 3px gold-lit with 20% opacity halo.</li>
+      <li><b>Fine print stated up front</b> — trust is built by openly saying "one email a month" before you ask for the address.</li>
+      <li><b>Mobile</b> — form stacks vertically; button becomes full-width.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 15 — FOOTER -->
+<!-- ============================================================ -->
+<section class="section-preview" id="s15">
+  <div class="sp-head">
+    <div class="n">15</div>
+    <div class="title">
+      <span class="eyebrow">Footer</span>
+      <h2>The closing panel.</h2>
+      <p>Deep sanctum, five columns — brand + social, Shop, Learn, Support, and the live Instagram strip. Below: copyright, legal links, and payment badges.</p>
+    </div>
+    <div class="anchor">/section 15</div>
+  </div>
+  <div class="layouts">
+    <div class="frame frame-desktop">
+      <div class="frame-label">Desktop <span class="dots"><span></span><span></span><span></span></span></div>
+      <div class="frame-content">
+        <footer class="hp-foot">
+          <div class="top">
+            <div>
+              <div class="brand"><span class="om deva">ॐ</span> Sarthak Arts</div>
+              <p class="about">Handcrafted Vastu instruments and murtis in copper, brass and silver — direction-first, ritual-included, certified per piece.</p>
+              <div class="social">
+                <a href="#" title="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" stroke="currentColor" stroke-width="1.5" rx="4"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+                <a href="#" title="Threads"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 4 C 8 4, 5 7, 5 12 C 5 17, 8 20, 12 20 C 16 20, 18 18, 18 14 C 18 10, 14 9, 11 10" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></a>
+                <a href="#" title="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" stroke="currentColor" stroke-width="1.5" rx="2"/><polygon points="10,9 15,12 10,15" fill="currentColor"/></svg></a>
+              </div>
+            </div>
+            <div class="col">
+              <h5>Shop</h5>
+              <ul>
+                <li><a href="#">The Collection</a></li>
+                <li><a href="#">By Direction</a></li>
+                <li><a href="#">By Deity</a></li>
+                <li><a href="#">By Material</a></li>
+                <li><a href="#">Ritual Calendar</a></li>
+              </ul>
+            </div>
+            <div class="col">
+              <h5>Learn</h5>
+              <ul>
+                <li><a href="#">Our Craft</a></li>
+                <li><a href="#">Vastu Shastra</a></li>
+                <li><a href="#">The Journal</a></li>
+                <li><a href="#">Bhaktas' Homes</a></li>
+                <li><a href="#">FAQ</a></li>
+              </ul>
+            </div>
+            <div class="col">
+              <h5>Support</h5>
+              <ul>
+                <li><a href="#">Order lookup</a></li>
+                <li><a href="#">Consultations</a></li>
+                <li><a href="#">Shipping</a></li>
+                <li><a href="#">Returns</a></li>
+                <li><a href="#">Contact us</a></li>
+              </ul>
+            </div>
+            <div class="col">
+              <h5>From the workshop</h5>
+              <div class="ig-strip">
+                <div class="ig-cell i1"></div>
+                <div class="ig-cell i2"></div>
+                <div class="ig-cell i3"></div>
+                <div class="ig-cell i4"></div>
+                <div class="ig-cell i5"></div>
+                <div class="ig-cell i6"></div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom">
+            <div class="copy">© 2026 Sarthak Arts · handcrafted in India</div>
+            <div class="legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Shipping</a></div>
+            <div class="pay">
+              <span>Secured by</span>
+              <span class="pay-chip">Razorpay</span>
+              <span class="pay-chip">Stripe</span>
+              <span class="pay-chip">UPI</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <div class="frame frame-mobile">
+      <div class="frame-label">Mobile · 380px</div>
+      <div class="frame-content">
+        <footer class="hp-foot">
+          <div class="top">
+            <div>
+              <div class="brand"><span class="om deva">ॐ</span> Sarthak Arts</div>
+              <p class="about">Handcrafted Vastu instruments and murtis — direction-first, ritual-included, certified per piece.</p>
+              <div class="social">
+                <a href="#" title="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" stroke="currentColor" stroke-width="1.5" rx="4"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/></svg></a>
+                <a href="#" title="Threads"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 4 C 8 4, 5 7, 5 12 C 5 17, 8 20, 12 20 C 16 20, 18 18, 18 14 C 18 10, 14 9, 11 10" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></a>
+              </div>
+            </div>
+            <div class="col">
+              <h5>Shop</h5>
+              <ul>
+                <li><a href="#">The Collection</a></li>
+                <li><a href="#">By Direction</a></li>
+                <li><a href="#">Ritual Calendar</a></li>
+              </ul>
+            </div>
+            <div class="col">
+              <h5>Support</h5>
+              <ul>
+                <li><a href="#">Order lookup</a></li>
+                <li><a href="#">Consultations</a></li>
+                <li><a href="#">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="bottom">
+            <div class="copy">© 2026 Sarthak Arts</div>
+            <div class="legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Shipping</a></div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+  <div class="sp-notes">
+    <h5>Design decisions</h5>
+    <ul>
+      <li><b>Five-column grid</b> — brand column is 1.6× width so the description has breathing room; last column (Instagram) is 1.4× to fit the grid.</li>
+      <li><b>Om in gold-lit</b> — the sacred glow returns at the bottom, closing the page the way it opened.</li>
+      <li><b>Payment chips</b> — Razorpay, Stripe, UPI stated plainly with the "Secured by" prefix. Not a badge wall.</li>
+      <li><b>Mobile</b> — collapses to a single column; only most-essential nav items stay; social bar and payment chips hidden on mobile bottom (payment info surfaces at checkout).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SIGN-OFF -->
+<!-- ============================================================ -->
+<section class="signoff">
+  <span class="om deva">ॐ</span>
+  <span class="eyebrow">Your sign-off</span>
+  <h2 class="serif">The homepage, <i>at this bar.</i></h2>
+  <p>Every section designed at desktop and mobile, using nothing but the tokens, motion, and components locked in Design System v1. Anything off — a section that doesn't land, an element missing, an interaction I've gotten wrong — say so.</p>
+  <div class="questions">
+    <div class="q"><b>1.</b> Does the <b>hero</b> land — the mandala, the diyas, the mantra, the CTAs?</div>
+    <div class="q"><b>2.</b> Is the <b>direction shrine</b> the treatment you want, or should it lean further into ritual?</div>
+    <div class="q"><b>3.</b> Do the <b>product cards</b> feel like altars, or should the arch language be pushed further?</div>
+    <div class="q"><b>4.</b> The <b>consultation sanctuary</b> — feel like an invitation, or too transactional?</div>
+    <div class="q"><b>5.</b> Is the <b>section order</b> right, or does something need to move?</div>
+    <div class="q"><b>6.</b> Anything <b>missing</b> from the homepage before we lock it and move to the next page?</div>
+  </div>
+</section>
+
+<footer class="doc-footer">
+  Sarthak Arts · Homepage · Phase 1 Section 1 · v1 · in review
+</footer>
