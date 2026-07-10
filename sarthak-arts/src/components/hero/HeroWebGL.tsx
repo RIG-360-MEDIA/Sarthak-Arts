@@ -55,6 +55,18 @@ function SriYantra() {
       0.25 + cursor.current.y * 0.08,
       0.03,
     );
+    // The yantra belongs to the hero. As the visitor scrolls into the content
+    // sections it bows out (fades to ~15%) so its lines never clutter the
+    // wheel, cards, and copy below. Dust and stars remain.
+    const h = document.documentElement;
+    const frac = Math.min(1, h.scrollTop / (window.innerHeight * 1.6));
+    const fade = 1 - frac * 0.85;
+    for (const child of groupRef.current.children) {
+      const mat = (child as THREE.Line).material as THREE.LineBasicMaterial;
+      if (mat?.userData?.baseOpacity !== undefined) {
+        mat.opacity = mat.userData.baseOpacity * fade;
+      }
+    }
   });
 
   const layers = useMemo(() => {
@@ -139,6 +151,7 @@ function SriYantra() {
         color: gold, transparent: true, opacity: l.opacity * 0.85,
       });
       material.toneMapped = false;
+      material.userData.baseOpacity = l.opacity * 0.85; // for the scroll fade
       return new THREE.Line(geometry, material);
     });
   }, []);

@@ -125,21 +125,18 @@ export function DirectionWheel() {
     >
       <div ref={tiltRef} className="sa-wheel-tilt">
         <svg viewBox="0 0 400 400" fill="none">
-          {/* Rings */}
-          <circle cx="200" cy="200" r="195" stroke="#E8B849" strokeWidth=".8" opacity=".4" />
-          <circle cx="200" cy="200" r="160" stroke="#E8B849" strokeWidth=".8" opacity=".55" />
-          <circle cx="200" cy="200" r="110" stroke="#E8B849" strokeWidth=".8" opacity=".65" />
-          <circle cx="200" cy="200" r="60" stroke="#FCD46F" strokeWidth="1.2" opacity=".85" />
-          {/* Spokes */}
-          <g stroke="#E8B849" strokeWidth=".6" opacity=".55">
+          {/* Rings — a clean compass; the Śrī Yantra lives in the scene behind,
+              not repeated here */}
+          <circle cx="200" cy="200" r="195" stroke="#E8B849" strokeWidth=".8" opacity=".35" />
+          <circle cx="200" cy="200" r="160" stroke="#E8B849" strokeWidth=".8" opacity=".45" />
+          <circle cx="200" cy="200" r="66" stroke="#FCD46F" strokeWidth="1.1" opacity=".8" />
+          {/* Spokes — whispered */}
+          <g stroke="#E8B849" strokeWidth=".5" opacity=".28">
             <line x1="200" y1="5" x2="200" y2="395" />
             <line x1="5" y1="200" x2="395" y2="200" />
             <line x1="62" y1="62" x2="338" y2="338" />
             <line x1="338" y1="62" x2="62" y2="338" />
           </g>
-          {/* Śrī Yantra core */}
-          <polygon points="200,140 250,240 150,240" stroke="#FCD46F" strokeWidth=".8" fill="none" opacity=".65" />
-          <polygon points="200,260 250,160 150,160" stroke="#FCD46F" strokeWidth=".8" fill="none" opacity=".65" />
 
           {/* Hover arcs — one per direction, only the pointed one glows */}
           {DIRECTIONS.map((d) => (
