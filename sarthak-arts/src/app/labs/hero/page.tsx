@@ -213,6 +213,33 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ================= HOME AUDIT ================= */}
+        <section className="sa-section sa-section-solid" aria-labelledby="audit-title">
+          <div className="sa-audit-grid">
+            <div className="sa-audit-copy sa-reveal">
+              <span className="sa-eyebrow">Uncertain where a piece belongs?</span>
+              <h2 id="audit-title">The two-minute<br /><em>home audit.</em></h2>
+              <p>
+                Four short questions about your home's layout and orientation — and we
+                recommend the pieces built for it. Personal, guided, honest. No account
+                needed, nothing saved without asking.
+              </p>
+              <a className="sa-btn sa-btn-primary" href="/home-audit">Begin the audit</a>
+            </div>
+            <div className="sa-quiz sa-reveal" aria-hidden="true">
+              <div className="sa-quiz-lbl">Question 1 of 4</div>
+              <div className="sa-quiz-q">Which direction does your home's main entrance face?</div>
+              <div className="sa-quiz-opts">
+                <div className="sa-quiz-opt">North</div>
+                <div className="sa-quiz-opt active">Northeast</div>
+                <div className="sa-quiz-opt">East</div>
+                <div className="sa-quiz-opt">I'm not sure</div>
+              </div>
+              <div className="sa-quiz-step">Step 1 of 4</div>
+            </div>
+          </div>
+        </section>
+
         {/* ================= RITUAL ================= */}
         <section className="sa-section sa-section-solid" aria-labelledby="ritual-title">
           <div className="sa-section-head sa-reveal">
@@ -292,6 +319,133 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ================= BHAKTAS' HOMES ================= */}
+        <section className="sa-section sa-section-solid" aria-labelledby="bhak-title">
+          <div className="sa-section-head sa-reveal">
+            <span className="sa-eyebrow">Where they live</span>
+            <h2 id="bhak-title">Bhaktas' <em>homes.</em></h2>
+            <p className="sub">
+              Real altars from real families across India — each photograph shared with
+              permission, each piece in its place. A Sarthak Arts piece is not for a
+              shelf; it is for a shrine.
+            </p>
+          </div>
+          <div className="sa-bhak-grid sa-reveal">
+            <div className="sa-bhak f1"><div className="fill">◈</div><span className="piece">Copper Kalash</span><div className="who"><div className="name">The Ramaswamys</div><div className="place">Bengaluru</div></div></div>
+            <div className="sa-bhak f2"><div className="fill">◈</div><span className="piece">Brass Ganesha</span><div className="who"><div className="name">Anjali &amp; Rohan</div><div className="place">Pune</div></div></div>
+            <div className="sa-bhak f3"><div className="fill">◈</div><span className="piece">Silver Sri Yantra</span><div className="who"><div className="name">The Iyers</div><div className="place">Chennai</div></div></div>
+            <div className="sa-bhak f4"><div className="fill">◈</div><span className="piece">Aṣṭadhātu Pyramid</span><div className="who"><div className="name">Vikram Sharma</div><div className="place">Jaipur</div></div></div>
+            <div className="sa-bhak f5"><div className="fill">◈</div><span className="piece">Copper Wind Chime</span><div className="who"><div className="name">The Kapoors</div><div className="place">Delhi</div></div></div>
+            <div className="sa-bhak f6"><div className="fill">◈</div><span className="piece">Gold-Accent Om</span><div className="who"><div className="name">Meera Rao</div><div className="place">Hyderabad</div></div></div>
+          </div>
+          <div className="sa-bhak-cta sa-reveal">
+            <a className="sa-link-line" href="/collection">See all bhaktas' homes →</a>
+          </div>
+        </section>
+
+        {/* ================= RITUAL CALENDAR ================= */}
+        <section className="sa-section" aria-labelledby="cal-title">
+          <div className="sa-section-head sa-reveal">
+            <span className="sa-eyebrow">The ritual calendar</span>
+            <h2 id="cal-title">The next festival, and the pieces <em>that meet it.</em></h2>
+          </div>
+          <div className="sa-cal-grid sa-reveal">
+            {/* Live: date + tithi from the panchang engine at promotion */}
+            <div className="sa-festival">
+              <div className="kind">Next festival</div>
+              <div className="date">28 August</div>
+              <div className="deva-name" lang="sa">श्रावण पूर्णिमा</div>
+              <div className="roman">Śrāvaṇa Pūrṇimā · Raksha Bandhan</div>
+              <div className="in"><b>In 52 days</b> · the tie of protection</div>
+            </div>
+            <div className="sa-cal-picks">
+              <h3>For <em>the occasion.</em></h3>
+              <p>
+                Traditionally offered or gifted on this tithi — pieces for the household
+                protectorship the festival honours.
+              </p>
+              <div className="sa-cal-pick"><span className="n">Brass Puja Bell<small>the call to attention</small></span><span className="p">₹2,400</span></div>
+              <div className="sa-cal-pick"><span className="n">Copper Vastu Kalash<small>the vessel kept full</small></span><span className="p">₹18,400</span></div>
+              <div className="sa-cal-pick"><span className="n">Silver Sri Yantra Plate<small>the seat of Lakṣmī</small></span><span className="p">₹31,200</span></div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= WORKSHOP JOURNAL ================= */}
+        <section className="sa-section sa-section-solid" aria-labelledby="journal-title">
+          <div className="sa-section-head sa-reveal">
+            <span className="sa-eyebrow">The journal</span>
+            <h2 id="journal-title">From the <em>workshop.</em></h2>
+          </div>
+          <div className="sa-journal-grid sa-reveal">
+            <a className="sa-journal-feat" href="/our-craft">
+              <div className="meta">Craft · 4 min read</div>
+              <h3>The seven days a copper kalash <em>takes to make.</em></h3>
+              <p>
+                A single sheet of copper, four thousand hammer strikes, and the patience
+                of one man. A photo essay from Bhavesh's workshop in Amritsar.
+              </p>
+              <span className="sa-link-line">Read the piece →</span>
+            </a>
+            <div>
+              <div className="sa-ig-grid">
+                {["g1", "g2", "g3", "g4"].map((g) => (
+                  <div key={g} className={`sa-ig ${g}`}>
+                    <div className="fill" />
+                    <svg className="cam" width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" stroke="currentColor" strokeWidth="1.5" rx="4" /><circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" /></svg>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 12, textAlign: "center", fontSize: 10.5, letterSpacing: "0.18em", textTransform: "uppercase" as const, color: "rgba(247,236,212,0.45)" }}>
+                @sarthakarts · from the workshop
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= TRUST BAR ================= */}
+        <section className="sa-trust" aria-label="Our promises">
+          <div className="sa-trust-row">
+            <div className="sa-trust-cell">
+              <svg className="ic" width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" stroke="currentColor" strokeWidth="1.5" rx="2" /><path d="M8 12 L 11 15 L 16 9" stroke="currentColor" strokeWidth="1.7" fill="none" /></svg>
+              <div className="tx"><b>Certified per piece</b>Exact metal weight, stated and signed.</div>
+            </div>
+            <div className="sa-trust-cell">
+              <svg className="ic" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 20 C 6 14, 10 12, 12 12 C 14 12, 18 14, 18 20 M 12 12 L 12 7 M 9 4 Q 12 8, 15 4" stroke="currentColor" strokeWidth="1.4" fill="none" /></svg>
+              <div className="tx"><b>Made by hand</b>One artisan, start to finish.</div>
+            </div>
+            <div className="sa-trust-cell">
+              <svg className="ic" width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="18" stroke="currentColor" strokeWidth="1.4" rx="1" /><line x1="8" y1="9" x2="16" y2="9" stroke="currentColor" strokeWidth="1.4" /><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" strokeWidth="1.4" /><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" strokeWidth="1.4" /></svg>
+              <div className="tx"><b>Ritual card included</b>The consecration guide, in the box.</div>
+            </div>
+            <div className="sa-trust-cell">
+              <svg className="ic" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12 A 8 8 0 1 1 12 20" stroke="currentColor" strokeWidth="1.5" fill="none" /><polyline points="4,8 4,12 8,12" stroke="currentColor" strokeWidth="1.5" fill="none" /></svg>
+              <div className="tx"><b>Seven-day returns</b>If it isn't right for the home.</div>
+            </div>
+            <div className="sa-trust-cell">
+              <svg className="ic" width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="12" stroke="currentColor" strokeWidth="1.5" rx="1.5" /><path d="M8 10 V 7 C 8 4, 10 3, 12 3 C 14 3, 16 4, 16 7 V 10" stroke="currentColor" strokeWidth="1.5" fill="none" /></svg>
+              <div className="tx"><b>Secured payments</b>Razorpay · UPI · cards.</div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= NEWSLETTER ================= */}
+        <section className="sa-section sa-nl" aria-labelledby="nl-title">
+          <div className="sa-section-head sa-reveal" style={{ marginBottom: 0 }}>
+            <span className="sa-eyebrow">The monthly note</span>
+            <h2 id="nl-title">One placement tip a month.<br /><em>Nothing else.</em></h2>
+            <p className="sub">
+              A single, considered note — a Vastu tip, a ritual observation, a new piece
+              from the workshop. No sales pressure, no urgency, no funnel.
+            </p>
+          </div>
+          <form className="sa-reveal">
+            <input type="email" placeholder="your@email.com" aria-label="Email address" />
+            <button type="button">Subscribe</button>
+          </form>
+          <div className="fine">One email a month. Unsubscribe any time.</div>
+        </section>
+
         {/* ================= FOOTER ================= */}
         <footer className="sa-foot">
           <div className="sa-foot-om" aria-hidden="true">ॐ</div>
@@ -299,15 +453,19 @@ export default function HomePage() {
             <a href="/collection">The Collection</a>
             <a href="/direction">By Direction</a>
             <a href="/consultation">Consultations</a>
+            <a href="/home-audit">Home Audit</a>
             <a href="/order-lookup">Order Lookup</a>
             <a href="/our-craft">Our Craft</a>
             <a href="/vastu-shastra">Vastu Shastra</a>
+            <a href="/about">About</a>
+          </div>
+          <div className="sa-foot-links" style={{ marginTop: 0 }}>
             <a href="/terms">Terms</a>
             <a href="/privacy">Privacy</a>
             <a href="/shipping-returns">Shipping &amp; Returns</a>
           </div>
           <div className="sa-foot-meta">
-            © 2026 Sarthak Arts · handcrafted in India · certified per piece<br />
+            © 2026 Sarthak Arts · handcrafted in India · certified per piece · secured by Razorpay<br />
             Panchang by <b>Swiss Ephemeris</b> · Lahiri Ayanamsa · directional positions per <b>Bṛhat Saṃhitā</b>
           </div>
         </footer>
