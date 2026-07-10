@@ -24,29 +24,44 @@ type Direction = {
   deva: string;
   element: string;
   angle: number; // screen-space degrees: East 0, South 90, West 180, North -90
-  labelPos: [number, number];
-  dikpalaPos: [number, number];
 };
 
 const DIRECTIONS: Direction[] = [
-  { key: "north",     label: "North", dikpala: "KUBERA",  deva: "कुबेर",   element: "Wealth · Water",    angle: -90,  labelPos: [200, 30],  dikpalaPos: [200, 47] },
-  { key: "northeast", label: "NE",    dikpala: "ĪŚĀNA",   deva: "ईशान",    element: "Clarity · Water",   angle: -45,  labelPos: [335, 68],  dikpalaPos: [335, 83] },
-  { key: "east",      label: "East",  dikpala: "INDRA",   deva: "इन्द्र",    element: "Energy · Space",    angle: 0,    labelPos: [378, 205], dikpalaPos: [378, 221] },
-  { key: "southeast", label: "SE",    dikpala: "AGNI",    deva: "अग्नि",    element: "Vitality · Fire",   angle: 45,   labelPos: [335, 343], dikpalaPos: [335, 358] },
-  { key: "south",     label: "South", dikpala: "YAMA",    deva: "यम",      element: "Dharma · Earth",    angle: 90,   labelPos: [200, 380], dikpalaPos: [200, 363] },
-  { key: "southwest", label: "SW",    dikpala: "NIRṚTI",  deva: "निर्ऋति",  element: "Stability · Earth", angle: 135,  labelPos: [65, 343],  dikpalaPos: [65, 358] },
-  { key: "west",      label: "West",  dikpala: "VARUṆA",  deva: "वरुण",    element: "Relations · Water", angle: 180,  labelPos: [22, 205],  dikpalaPos: [22, 221] },
-  { key: "northwest", label: "NW",    dikpala: "VĀYU",    deva: "वायु",    element: "Movement · Air",    angle: -135, labelPos: [65, 68],   dikpalaPos: [65, 83] },
+  { key: "north",     label: "North", dikpala: "KUBERA",  deva: "कुबेर",   element: "Wealth · Water",    angle: -90 },
+  { key: "northeast", label: "NE",    dikpala: "ĪŚĀNA",   deva: "ईशान",    element: "Clarity · Water",   angle: -45 },
+  { key: "east",      label: "East",  dikpala: "INDRA",   deva: "इन्द्र",    element: "Energy · Space",    angle: 0 },
+  { key: "southeast", label: "SE",    dikpala: "AGNI",    deva: "अग्नि",    element: "Vitality · Fire",   angle: 45 },
+  { key: "south",     label: "South", dikpala: "YAMA",    deva: "यम",      element: "Dharma · Earth",    angle: 90 },
+  { key: "southwest", label: "SW",    dikpala: "NIRṚTI",  deva: "निर्ऋति",  element: "Stability · Earth", angle: 135 },
+  { key: "west",      label: "West",  dikpala: "VARUṆA",  deva: "वरुण",    element: "Relations · Water", angle: 180 },
+  { key: "northwest", label: "NW",    dikpala: "VĀYU",    deva: "वायु",    element: "Movement · Air",    angle: -135 },
 ];
 
-/** Arc path along radius r, centered on `angle`, spanning ±spread degrees. */
-function arcPath(cx: number, cy: number, r: number, angle: number, spread: number) {
-  const toXY = (a: number): [number, number] => [
-    cx + r * Math.cos((a * Math.PI) / 180),
-    cy + r * Math.sin((a * Math.PI) / 180),
+/* Every piece of text and line-work is computed from its angle, so nothing
+   collides: labels center in the outer band (between the two outer rings),
+   Dikpāla names sit clear inside the middle ring, spokes stop before the
+   band, and the hover arc hugs the rim above everything. */
+const CX = 200, CY = 200;
+const R_OUTER = 195;   // outer ring
+const R_MID = 160;     // middle ring — inner edge of the label band
+const R_INNER = 66;    // caption circle
+const R_LABEL = 177;   // direction names, centered in the band
+const R_DIKPALA = 141; // guardian names, clear of the middle ring
+const R_ARC = 189;     // hover arc, just inside the rim
+const R_SPOKE_IN = 72;   // spokes: from outside the caption circle…
+const R_SPOKE_OUT = 120; // …stopping well before the Dikpāla names at R_DIKPALA
+
+function pt(angle: number, r: number): [number, number] {
+  return [
+    CX + r * Math.cos((angle * Math.PI) / 180),
+    CY + r * Math.sin((angle * Math.PI) / 180),
   ];
-  const [x1, y1] = toXY(angle - spread);
-  const [x2, y2] = toXY(angle + spread);
+}
+
+/** Arc path along radius r, centered on `angle`, spanning ±spread degrees. */
+function arcPath(r: number, angle: number, spread: number) {
+  const [x1, y1] = pt(angle - spread, r);
+  const [x2, y2] = pt(angle + spread, r);
   return `M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`;
 }
 
@@ -127,22 +142,28 @@ export function DirectionWheel() {
         <svg viewBox="0 0 400 400" fill="none">
           {/* Rings — a clean compass; the Śrī Yantra lives in the scene behind,
               not repeated here */}
-          <circle cx="200" cy="200" r="195" stroke="#E8B849" strokeWidth=".8" opacity=".35" />
-          <circle cx="200" cy="200" r="160" stroke="#E8B849" strokeWidth=".8" opacity=".45" />
-          <circle cx="200" cy="200" r="66" stroke="#FCD46F" strokeWidth="1.1" opacity=".8" />
-          {/* Spokes — whispered */}
-          <g stroke="#E8B849" strokeWidth=".5" opacity=".28">
-            <line x1="200" y1="5" x2="200" y2="395" />
-            <line x1="5" y1="200" x2="395" y2="200" />
-            <line x1="62" y1="62" x2="338" y2="338" />
-            <line x1="338" y1="62" x2="62" y2="338" />
+          <circle cx={CX} cy={CY} r={R_OUTER} stroke="#E8B849" strokeWidth=".8" opacity=".35" />
+          <circle cx={CX} cy={CY} r={R_MID} stroke="#E8B849" strokeWidth=".8" opacity=".45" />
+          <circle cx={CX} cy={CY} r={R_INNER} stroke="#FCD46F" strokeWidth="1.1" opacity=".8" />
+
+          {/* Spokes — whispered, stopping short of the caption circle and the
+              label band so no line ever runs under text */}
+          <g stroke="#E8B849" strokeWidth=".5" opacity=".3">
+            {DIRECTIONS.map((d) => {
+              // The horizontal axis has the least room for horizontal text —
+              // East/West spokes stop earlier so VARUṆA and INDRA sit clear.
+              const horizontal = d.angle % 180 === 0;
+              const [x1, y1] = pt(d.angle, R_SPOKE_IN);
+              const [x2, y2] = pt(d.angle, horizontal ? 104 : R_SPOKE_OUT);
+              return <line key={`spoke-${d.key}`} x1={x1} y1={y1} x2={x2} y2={y2} />;
+            })}
           </g>
 
-          {/* Hover arcs — one per direction, only the pointed one glows */}
+          {/* Hover arcs — hugging the rim, above the label band */}
           {DIRECTIONS.map((d) => (
             <path
               key={`arc-${d.key}`}
-              d={arcPath(200, 200, 186, d.angle, 20)}
+              d={arcPath(R_ARC, d.angle, 18)}
               stroke="#FCD46F"
               strokeWidth="2.5"
               strokeLinecap="round"
@@ -155,28 +176,34 @@ export function DirectionWheel() {
             />
           ))}
 
-          {/* Direction + Dikpāla labels */}
+          {/* Direction + Dikpāla labels — positions computed from angle:
+              direction name centered in the outer band, guardian name
+              inside the middle ring, both vertically centered */}
           {DIRECTIONS.map((d) => {
             const active = hovered?.key === d.key;
             const cardinal = ["north", "south", "east", "west"].includes(d.key);
+            const [lx, ly] = pt(d.angle, R_LABEL);
+            const [dx, dy] = pt(d.angle, d.angle % 180 === 0 ? 134 : R_DIKPALA);
             return (
               <g
                 key={d.key}
                 style={{ opacity: hovered && !active ? 0.4 : 1, transition: "opacity .35s ease" }}
               >
                 <text
-                  x={d.labelPos[0]} y={d.labelPos[1]} textAnchor="middle"
-                  fontFamily="Georgia, serif" fontSize={cardinal ? 14 : 11}
+                  x={lx.toFixed(1)} y={ly.toFixed(1)}
+                  textAnchor="middle" dominantBaseline="central"
+                  fontFamily="Georgia, serif" fontSize={cardinal ? 13.5 : 11}
                   fill={active ? "#FCD46F" : cardinal ? "#F7ECD4" : "#FCD46F"}
                   style={{ transition: "fill .35s ease" }}
                 >
                   {d.label}
                 </text>
                 <text
-                  x={d.dikpalaPos[0]} y={d.dikpalaPos[1]} textAnchor="middle"
-                  fontFamily="system-ui, sans-serif" fontSize="8.5" fontWeight="600"
-                  letterSpacing="1.4"
-                  fill={active ? "#FCD46F" : "rgba(232,184,73,.9)"}
+                  x={dx.toFixed(1)} y={dy.toFixed(1)}
+                  textAnchor="middle" dominantBaseline="central"
+                  fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="600"
+                  letterSpacing="1.2"
+                  fill={active ? "#FCD46F" : "rgba(232,184,73,.85)"}
                   style={{ transition: "fill .35s ease" }}
                 >
                   {d.dikpala}
@@ -185,7 +212,7 @@ export function DirectionWheel() {
             );
           })}
 
-          <circle cx="200" cy="200" r="5" fill="#FCD46F" opacity=".95" />
+          <circle cx={CX} cy={CY} r="4" fill="#FCD46F" opacity=".9" />
         </svg>
 
         {/* Center caption — the Brahmasthan, or the Dikpāla you're pointing at */}
