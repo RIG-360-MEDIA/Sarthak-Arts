@@ -100,8 +100,16 @@ async function main() {
   const g = async (c: string) => (await db.gemstone.findUniqueOrThrow({ where: { code: c } })).id;
   const d = async (c: string) => (await db.direction.findUniqueOrThrow({ where: { code: c } })).id;
   const cat = async (c: string) => (await db.category.findUniqueOrThrow({ where: { code: c } })).id;
+  const deity = async (c: string) => (await db.deity.findUniqueOrThrow({ where: { code: c } })).id;
 
-  const products = [
+  const products: Array<{
+    slug: string; name: string; category: string;
+    direction: string; directions?: string[]; deity?: string;
+    priceMinor: number;
+    positioningLine: string; placementNote: string; description: string;
+    careNote: string; includedItems: string;
+    composition: Array<{ metal?: string; gemstone?: string; weightGrams?: number | null; gemstoneQty?: number; label?: string }>;
+  }> = [
     {
       slug: "copper-vastu-kalash", name: "Copper Vastu Kalash", category: "kalash", direction: "northeast", priceMinor: 1840000,
       positioningLine: "A hand-beaten copper vessel that keeps the water element active in your northeast corner.",
@@ -152,6 +160,24 @@ async function main() {
       ],
     },
     {
+      // ── First real client product (copy received 2026-07) ──
+      // Price is a DRAFT taken from the client's reference poster (₹7,500);
+      // the owner sets the final price in the admin. Exact brass weight is
+      // measured per piece and pending from the client — required before the
+      // certificate-of-composition promise can be honored for this piece.
+      slug: "ashtalakshmi-brass-kalash", name: "Ashtalakshmi Brass Kalash", category: "kalash",
+      direction: "northeast", directions: ["northeast", "north", "east"], deity: "lakshmi",
+      priceMinor: 750000,
+      positioningLine: "The eight forms of Goddess Lakshmi, hand-worked around one brass kalash — the seat of abundance in Sanatan tradition.",
+      placementNote: "Best in the Northeast (Ishan) corner — the traditional seat of the puja room and spiritual practice. Also suited to the North, associated with prosperity and opportunity, or the East, the direction of new beginnings and divine blessing. Keep it in a clean and respected place, on a wooden platform or within the prayer altar — never directly on the floor.",
+      description: "Inspired by the eight divine manifestations of Goddess Mahalakshmi, this kalash carries abundance, wisdom, courage, success, nourishment, fertility, victory, and spiritual prosperity in its eight worked panels. In Sanatan tradition the kalash is among the most auspicious of symbols — the vessel of divine presence, placed at every major puja, griha pravesh, festival, and sacred rite. Crafted in premium brass with intricate detailing: a spiritual treasure, and an heirloom of India's living heritage. Suited to daily worship, Varalakshmi Vratam, Navratri, Diwali — and as a wedding, housewarming, or corporate spiritual gift.",
+      careNote: "Brass has been the sacred metal of temples and yajnas for centuries — durable, timeless, made to last generations. Wipe with a dry soft cloth; its warm golden tone deepens gracefully with age.",
+      includedItems: "Kalash, cotton dust cover, placement card, certificate of composition.",
+      composition: [
+        { metal: "brass", weightGrams: null, label: "exact weight measured per piece — pending from the client" },
+      ],
+    },
+    {
       slug: "copper-brass-wind-chime", name: "Copper-Brass Wind Chime", category: "chime", direction: "northwest", priceMinor: 980000,
       positioningLine: "A six-rod chime in copper and brass for the northwest — the zone of support and movement.",
       placementNote: "Northwest (Vayavya) — linked to relationships, travel, and the flow of support from others.",
@@ -173,12 +199,16 @@ async function main() {
         slug: p.slug, name: p.name, positioningLine: p.positioningLine, placementNote: p.placementNote,
         description: p.description, careNote: p.careNote, includedItems: p.includedItems,
         basePriceMinor: p.priceMinor, categoryId: await cat(p.category),
+        deityId: p.deity ? await deity(p.deity) : null,
       },
     });
-    await db.productDirection.upsert({
-      where: { productId_directionId: { productId: created.id, directionId: await d(p.direction) } },
-      update: {}, create: { productId: created.id, directionId: await d(p.direction) },
-    });
+    // A piece may suit several directions (e.g. the Ashtalakshmi Kalash: NE/N/E)
+    for (const dirCode of p.directions ?? [p.direction]) {
+      await db.productDirection.upsert({
+        where: { productId_directionId: { productId: created.id, directionId: await d(dirCode) } },
+        update: {}, create: { productId: created.id, directionId: await d(dirCode) },
+      });
+    }
     if (!(await db.productComposition.findFirst({ where: { productId: created.id } }))) {
       let sortOrder = 0;
       for (const line of p.composition as Array<{ metal?: string; gemstone?: string; weightGrams?: number; gemstoneQty?: number; label?: string }>)
@@ -258,6 +288,7 @@ async function main() {
     await db.returnReason.upsert({ where: { code }, update: {}, create: { code, displayName } });
 
   const stockBySlug: Record<string, number> = {
+    "ashtalakshmi-brass-kalash": 6,
     "copper-vastu-kalash": 14,
     "brass-ashtadhatu-pyramid": 8,
     "silver-sri-yantra-plate": 3,
