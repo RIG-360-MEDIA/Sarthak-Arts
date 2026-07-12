@@ -300,8 +300,15 @@
 /* --------------------------------------------------------------------------
    Section scaffolding
    -------------------------------------------------------------------------- */
-.sa-section { padding: 130px clamp(20px, 5vw, 48px); position: relative; }
-.sa-section-solid { background: linear-gradient(180deg, rgba(10, 4, 22, 0.5), rgba(10, 4, 22, 0.93) 16%, rgba(10, 4, 22, 0.93) 84%, rgba(10, 4, 22, 0.5)); }
+/* Every content section sits on a near-solid dark ground — the WebGL scene is
+   the threshold (hero), never a graphic competing behind body copy. The scene
+   only breathes through the thin translucent edges where sections meet. */
+.sa-section {
+  padding: 130px clamp(20px, 5vw, 48px); position: relative;
+  background: linear-gradient(180deg, rgba(10, 4, 22, 0.72), rgba(10, 4, 22, 0.94) 14%, rgba(10, 4, 22, 0.94) 86%, rgba(10, 4, 22, 0.72));
+}
+/* The "solid" variant is a touch deeper still, for the darkest editorial bands */
+.sa-section-solid { background: linear-gradient(180deg, rgba(10, 4, 22, 0.82), rgba(8, 3, 18, 0.97) 14%, rgba(8, 3, 18, 0.97) 86%, rgba(10, 4, 22, 0.82)); }
 .sa-section-head { max-width: 640px; margin: 0 auto 70px; text-align: center; }
 .sa-section-head h2 {
   font-size: clamp(34px, 4.6vw, 52px);

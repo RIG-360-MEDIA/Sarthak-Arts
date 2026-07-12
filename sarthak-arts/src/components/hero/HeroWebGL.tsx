@@ -189,7 +189,7 @@ function Bindu({ onReady }: { onReady: (mesh: THREE.Mesh) => void }) {
     // The Bindu blazes at the threshold and settles to a dim ember behind the
     // content — the god-rays follow automatically, since they sample its
     // rendered brightness. Below bloom threshold it stops glowing entirely.
-    const fade = Math.max(0.05, heroScrollFade(0.96));
+    const fade = Math.max(0.02, heroScrollFade(0.99));
     matRef.current.color.setRGB(6 * fade, 4.2 * fade, 1.6 * fade);
     const breath = 1 + Math.sin(t * 1.2) * 0.12;
     ref.current.scale.setScalar(breath * (0.4 + 0.6 * fade));
@@ -236,7 +236,7 @@ function ParticleField({ count = 1800 }: { count?: number }) {
     u.uTime.value = performance.now() * 0.001;
     (u.uCursor.value as THREE.Vector2).lerp(cursorWorld.current, 0.08);
     // Dust dims to ~35% behind the content sections — atmosphere without competition
-    u.uFade.value = heroScrollFade(0.65);
+    u.uFade.value = heroScrollFade(0.82);
   });
 
   return (
