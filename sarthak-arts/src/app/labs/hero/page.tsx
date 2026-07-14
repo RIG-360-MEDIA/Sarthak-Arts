@@ -56,7 +56,7 @@ export default async function HomePage() {
           </a>
           <div className="sa-nav-links">
             <a href="/collection">The Collection</a>
-            <a href="/direction">Shop by Direction</a>
+            <a href="/labs/direction">Shop by Direction</a>
             <a href="/consultation">Consultations</a>
             <a href="/vastu-shastra">Journal</a>
           </div>
@@ -80,7 +80,7 @@ export default async function HomePage() {
             </p>
             <div className="sa-hero-mantra" lang="sa">॥ शुभं भवतु ॥</div>
             <div className="sa-hero-ctas">
-              <a className="sa-btn sa-btn-primary" href="/direction">Enter the shrine</a>
+              <a className="sa-btn sa-btn-primary" href="/labs/direction">Enter the shrine</a>
               <a className="sa-btn sa-btn-ghost" href="/home-audit">Two-minute audit</a>
             </div>
           </div>
@@ -110,14 +110,14 @@ export default async function HomePage() {
           </div>
 
           <div className="sa-dir-index sa-reveal">
-            <div className="sa-dir-row"><span className="c">N</span><span className="d"><span className="sa-deva" lang="sa">कुबेर</span>Kubera</span><span className="e">Wealth · Water</span></div>
-            <div className="sa-dir-row"><span className="c">NE</span><span className="d"><span className="sa-deva" lang="sa">ईशान</span>Īśāna</span><span className="e">Clarity · Water</span></div>
-            <div className="sa-dir-row"><span className="c">E</span><span className="d"><span className="sa-deva" lang="sa">इन्द्र</span>Indra</span><span className="e">Energy · Space</span></div>
-            <div className="sa-dir-row"><span className="c">SE</span><span className="d"><span className="sa-deva" lang="sa">अग्नि</span>Agni</span><span className="e">Vitality · Fire</span></div>
-            <div className="sa-dir-row"><span className="c">S</span><span className="d"><span className="sa-deva" lang="sa">यम</span>Yama</span><span className="e">Dharma · Earth</span></div>
-            <div className="sa-dir-row"><span className="c">SW</span><span className="d"><span className="sa-deva" lang="sa">निर्ऋति</span>Nirṛti</span><span className="e">Stability · Earth</span></div>
-            <div className="sa-dir-row"><span className="c">W</span><span className="d"><span className="sa-deva" lang="sa">वरुण</span>Varuṇa</span><span className="e">Relations · Water</span></div>
-            <div className="sa-dir-row"><span className="c">NW</span><span className="d"><span className="sa-deva" lang="sa">वायु</span>Vāyu</span><span className="e">Movement · Air</span></div>
+            <a href="/labs/direction/north"     className="sa-dir-row"><span className="c">N</span><span className="d"><span className="sa-deva" lang="sa">कुबेर</span>Kubera</span><span className="e">Wealth · Water</span></a>
+            <a href="/labs/direction/northeast" className="sa-dir-row"><span className="c">NE</span><span className="d"><span className="sa-deva" lang="sa">ईशान</span>Īśāna</span><span className="e">Clarity · Water</span></a>
+            <a href="/labs/direction/east"      className="sa-dir-row"><span className="c">E</span><span className="d"><span className="sa-deva" lang="sa">इन्द्र</span>Indra</span><span className="e">Energy · Space</span></a>
+            <a href="/labs/direction/southeast" className="sa-dir-row"><span className="c">SE</span><span className="d"><span className="sa-deva" lang="sa">अग्नि</span>Agni</span><span className="e">Vitality · Fire</span></a>
+            <a href="/labs/direction/south"     className="sa-dir-row"><span className="c">S</span><span className="d"><span className="sa-deva" lang="sa">यम</span>Yama</span><span className="e">Dharma · Earth</span></a>
+            <a href="/labs/direction/southwest" className="sa-dir-row"><span className="c">SW</span><span className="d"><span className="sa-deva" lang="sa">निर्ऋति</span>Nirṛti</span><span className="e">Stability · Earth</span></a>
+            <a href="/labs/direction/west"      className="sa-dir-row"><span className="c">W</span><span className="d"><span className="sa-deva" lang="sa">वरुण</span>Varuṇa</span><span className="e">Relations · Water</span></a>
+            <a href="/labs/direction/northwest" className="sa-dir-row"><span className="c">NW</span><span className="d"><span className="sa-deva" lang="sa">वायु</span>Vāyu</span><span className="e">Movement · Air</span></a>
           </div>
 
           <div className="sa-cite">

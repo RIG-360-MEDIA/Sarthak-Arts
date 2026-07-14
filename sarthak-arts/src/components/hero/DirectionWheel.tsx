@@ -124,8 +124,20 @@ export function DirectionWheel() {
     target.current.ry = 0;
   };
 
+  const enter = (key: string) => {
+    window.location.href = `/labs/direction/${key}`;
+  };
   const onClick = () => {
-    if (hovered) window.location.href = `/direction?zone=${hovered.key}`;
+    if (hovered) enter(hovered.key);
+  };
+  // Keyboard: if a direction is currently highlighted (via hover) Enter/Space
+  // navigates to it. Otherwise the wheel is a link to the index.
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (hovered) enter(hovered.key);
+      else window.location.href = "/labs/direction";
+    }
   };
 
   return (
@@ -135,8 +147,10 @@ export function DirectionWheel() {
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       onClick={onClick}
-      role="img"
-      aria-label="Vastu direction wheel — the eight Dikpālas. Move across the wheel to reveal each guardian; click to enter its direction."
+      onKeyDown={onKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label="Vastu direction wheel — the eight Dikpālas. Move across the wheel to reveal each guardian; click to enter its direction. Press Enter to open the full index."
     >
       <div ref={tiltRef} className="sa-wheel-tilt">
         <svg viewBox="0 0 400 400" fill="none">

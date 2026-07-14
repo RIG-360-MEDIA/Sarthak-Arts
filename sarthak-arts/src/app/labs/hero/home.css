@@ -478,9 +478,16 @@
 }
 .sa-dir-row {
   display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: baseline;
-  padding: 11px 0; border-bottom: 1px solid var(--line-dark);
+  padding: 11px 6px; border-bottom: 1px solid var(--line-dark);
   font-size: 13px;
+  text-decoration: none; color: inherit;
+  transition: background 0.25s, padding-left 0.3s var(--ease);
 }
+.sa-dir-row:hover {
+  background: rgba(20, 9, 43, 0.35);
+  padding-left: 12px;
+}
+.sa-dir-row:hover .c { color: var(--gold-lit); }
 .sa-dir-row .c { font-family: var(--f-display); font-size: 15px; color: var(--silk); }
 .sa-dir-row .d { color: var(--gold-lit); }
 .sa-dir-row .d .sa-deva { margin-right: 8px; }
