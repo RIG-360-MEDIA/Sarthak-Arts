@@ -283,6 +283,95 @@
   color: var(--silk-faint);
 }
 .sa-panchang-cite b { color: var(--gold-lit); font-weight: 600; }
+
+/* Change button — a quiet gold-underlined text control tucked into the citation */
+.sa-panchang-change {
+  background: none; border: none; padding: 0; margin-left: 6px;
+  color: var(--gold-lit); font: inherit; letter-spacing: 0.05em;
+  border-bottom: 1px dashed rgba(232, 184, 73, 0.5);
+  cursor: pointer; transition: color 0.2s, border-color 0.2s;
+}
+.sa-panchang-change:hover { color: var(--gold); border-color: var(--gold); }
+
+/* Solar-region roadmap note — honest, not louder than the strip */
+.sa-panchang-solar-note {
+  max-width: 640px; margin: 12px auto 0;
+  padding: 10px 14px; border: 1px solid var(--line-dark);
+  background: rgba(20, 9, 43, 0.4); border-radius: 3px;
+  font-family: var(--f-body); font-size: 11.5px; letter-spacing: 0.02em;
+  color: var(--silk-muted); text-transform: none; line-height: 1.55;
+}
+.sa-panchang-solar-note b { color: var(--gold-lit); font-weight: 600; }
+
+/* ── Change-panchang dialog ─────────────────────────────────────────────── */
+.sa-panchang-dialog {
+  padding: 0; border: 1px solid var(--line-gold); border-radius: 6px;
+  background: rgba(10, 4, 22, 0.98); color: var(--silk);
+  max-width: 440px; width: calc(100% - 32px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.sa-panchang-dialog::backdrop {
+  background: rgba(5, 2, 15, 0.72); backdrop-filter: blur(6px);
+}
+.sa-panchang-dialog-inner {
+  padding: 26px 28px 22px; display: flex; flex-direction: column; gap: 18px;
+  font-family: var(--f-body);
+}
+.sa-panchang-dialog h3 {
+  margin: 0; font-family: var(--f-display); font-weight: 400;
+  font-size: 22px; color: var(--silk); letter-spacing: -0.01em;
+}
+.sa-panchang-field { display: flex; flex-direction: column; gap: 8px; }
+.sa-panchang-field .lbl {
+  font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold-lit); font-weight: 600;
+}
+.sa-panchang-field select {
+  padding: 10px 12px; background: rgba(20, 9, 43, 0.55);
+  border: 1px solid var(--line-gold); border-radius: 3px;
+  color: var(--silk); font-family: var(--f-body); font-size: 14px;
+}
+.sa-panchang-field select:focus {
+  outline: none; border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(232, 184, 73, 0.18);
+}
+.sa-panchang-radios { border: none; padding: 0; margin: 0; }
+.sa-panchang-radios label {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 4px; font-size: 14px; cursor: pointer;
+}
+.sa-panchang-radios label small {
+  color: var(--silk-faint); font-size: 11.5px; margin-left: 6px;
+}
+.sa-panchang-radios input[type="radio"] { accent-color: var(--gold); }
+.sa-panchang-suggest {
+  font-size: 11.5px; color: var(--silk-muted); margin-top: 2px;
+  padding-left: 4px; letter-spacing: 0.02em;
+}
+.sa-panchang-note {
+  padding: 10px 12px; background: rgba(20, 9, 43, 0.5);
+  border: 1px solid var(--line-dark); border-radius: 3px;
+  font-size: 12px; color: var(--silk-muted); line-height: 1.55;
+}
+.sa-panchang-note b { color: var(--gold-lit); font-weight: 600; }
+.sa-panchang-dialog-actions {
+  display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px;
+}
+.sa-panchang-dialog-actions button {
+  padding: 10px 20px; border-radius: 3px; cursor: pointer;
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  transition: box-shadow 0.25s;
+}
+.sa-panchang-dialog-actions .ghost {
+  background: transparent; border: 1px solid var(--line-gold); color: var(--silk-muted);
+}
+.sa-panchang-dialog-actions .ghost:hover { color: var(--silk); border-color: var(--gold); }
+.sa-panchang-dialog-actions .primary {
+  border: none; color: #0A0416;
+  background: linear-gradient(100deg, #A67816 0%, #FCD46F 45%, #E8B849 60%, #A67816 100%);
+}
+.sa-panchang-dialog-actions .primary:hover { box-shadow: 0 0 30px rgba(252, 212, 111, 0.4); }
+.sa-panchang-dialog-actions button:disabled { opacity: 0.6; cursor: wait; }
 @media (max-width: 760px) {
   .sa-panchang-grid { grid-template-columns: 1fr; gap: 0; padding: 10px 20px 6px; }
   .sa-panchang-cell {

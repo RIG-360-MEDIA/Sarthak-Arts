@@ -1,22 +1,21 @@
 import { computePanchang, fmtIST } from "@/lib/panchang";
-import { cookies } from "next/headers";
-
-const CITY_COOKIE = "panchang_city";
+import { readPanchangPreferences } from "@/lib/panchang/preferences";
+import { isSolarNativeRegion, nativeCalendarLabel } from "@/lib/panchang/cities";
+import { PanchangSwitcher } from "./PanchangSwitcher";
 
 /**
- * Live panchang strip — five cells + citation.
- * Reads the visitor's preferred city from cookie (set by the switcher, TBD)
- * and defaults to Delhi. Every value is computed from mhah-panchang +
- * suncalc at request time — verified accurate against Drik Panchang
- * (see scripts/verify-panchang.ts).
+ * Live panchang strip — five cells + citation with a switcher.
+ * Reads city + masa-system preferences via readPanchangPreferences() with
+ * city-appropriate defaults (Delhi → Pūrṇimānta, Bengaluru → Amānta, etc.).
+ * Every value is computed live from mhah-panchang + suncalc — verified
+ * against Drik Panchang (see scripts/verify-panchang.ts).
  *
  * Fail-loud: on error the strip renders a plain "temporarily unavailable"
  * state — never a fabricated value.
  */
 export async function PanchangStrip() {
-  const jar = await cookies();
-  const cityCode = jar.get(CITY_COOKIE)?.value;
-  const p = computePanchang(cityCode);
+  const prefs = await readPanchangPreferences();
+  const p = computePanchang(prefs.city.code, undefined, { masaSystem: prefs.masaSystem });
 
   if (!p.ok) {
     return (
@@ -70,7 +69,14 @@ export async function PanchangStrip() {
         </div>
       </div>
       <div className="sa-panchang-cite">
-        Live via <b>mhah-panchang</b> · Lahiri Ayanamsa · {p.city.name} {p.city.lat.toFixed(2)}°N {p.city.lon.toFixed(2)}°E · Pūrṇimānta reckoning · verified against Drik Panchang
+        Live via <b>mhah-panchang</b> · Lahiri Ayanamsa · {p.city.name} · {p.masaSystem === "purnimanta" ? "Pūrṇimānta" : "Amānta"} reckoning · verified against Drik Panchang
+        {" "}
+        <PanchangSwitcher currentCityCode={p.city.code} currentMasaSystem={p.masaSystem} />
+        {isSolarNativeRegion(p.city) && (
+          <div className="sa-panchang-solar-note">
+            {p.city.state}'s primary calendar is <b>{nativeCalendarLabel(p.city.nativeCalendar)}</b>. A dedicated solar panchang for your region is on our roadmap; for now the universally-valid lunar panchang is shown above.
+          </div>
+        )}
       </div>
     </section>
   );
@@ -81,9 +87,8 @@ export async function PanchangStrip() {
  * Now live: reads the current Choghadiya window and its end time.
  */
 export async function HeroAnnouncement() {
-  const jar = await cookies();
-  const cityCode = jar.get(CITY_COOKIE)?.value;
-  const p = computePanchang(cityCode);
+  const prefs = await readPanchangPreferences();
+  const p = computePanchang(prefs.city.code, undefined, { masaSystem: prefs.masaSystem });
   if (!p.ok || !p.choghadiyaNow) {
     // Silent, honest fallback — no anno pill rather than a fake one.
     return null;
