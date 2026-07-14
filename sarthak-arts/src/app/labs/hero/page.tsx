@@ -50,7 +50,7 @@ export default async function HomePage() {
 
       <div className="sa-overlay">
         {/* ================= NAV ================= */}
-        <nav className="sa-nav" aria-label="Primary">
+        <nav className="sa-nav" aria-label="Primary" id="sa-nav-top">
           <a className="sa-nav-logo" href="/">
             <span className="om" aria-hidden="true">ॐ</span> Sarthak Arts
           </a>
@@ -62,9 +62,18 @@ export default async function HomePage() {
           </div>
           <div className="sa-nav-actions">
             <a href="/search">Search</a>
-            <a href="/cart">Cart{cartCount > 0 && <span className="cart-n">{cartCount}</span>}</a>
+            <a href="/cart" aria-label={cartCount > 0 ? `Cart, ${cartCount} item${cartCount === 1 ? "" : "s"}` : "Cart, empty"}>
+              Cart
+              <span className="cart-n" aria-live="polite" aria-atomic="true" data-empty={cartCount === 0 ? "true" : "false"}>
+                {cartCount > 0 ? cartCount : ""}
+              </span>
+            </a>
           </div>
         </nav>
+
+        <a className="sa-skip-link" href="#sa-main">Skip to content</a>
+
+        <main id="sa-main">
 
         {/* ================= HERO ================= */}
         <section className="sa-hero">
@@ -402,6 +411,8 @@ export default async function HomePage() {
           </div>
           <div className="fine">One email a month. Unsubscribe any time.</div>
         </section>
+
+        </main>
 
         {/* ================= FOOTER ================= */}
         <footer className="sa-foot">

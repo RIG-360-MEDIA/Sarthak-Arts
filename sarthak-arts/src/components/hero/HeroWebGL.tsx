@@ -396,12 +396,35 @@ export function HeroWebGL() {
   const [ready, setReady] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [particleCount, setParticleCount] = useState(1800);
+  // Frameloop pauses the entire Three render tree when the sanctum is
+  // scrolled well offscreen — a real perf win on long scrolls & mobile.
+  // IntersectionObserver can't observe a `position: fixed` element (it
+  // always looks "in view" to the viewport), so we track scroll depth.
+  const [inView, setInView] = useState(true);
 
   useEffect(() => {
     setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     if (window.innerWidth < 720) setParticleCount(900); // mobile perf budget
     const t = setTimeout(() => setReady(true), 60);
     return () => clearTimeout(t);
+  }, []);
+
+  // Pause the render loop once the visitor has scrolled ~2 viewports past
+  // the top (well past the hero). Restore before it re-enters view. Throttled
+  // via rAF so scroll stays smooth.
+  useEffect(() => {
+    let raf = 0;
+    let last = true;
+    const check = () => {
+      raf = 0;
+      const threshold = window.innerHeight * 1.8;
+      const next = window.scrollY < threshold;
+      if (next !== last) { last = next; setInView(next); }
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(check); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    check();
+    return () => { window.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
   }, []);
 
   // Reduced motion: a still, dignified gradient — no animation forced on anyone
@@ -433,6 +456,7 @@ export function HeroWebGL() {
         camera={{ position: [0, 0, 5.5], fov: 45 }}
         gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
         dpr={[1, 1.5]}
+        frameloop={inView ? "always" : "never"}
       >
         <SanctumScene particleCount={particleCount} />
       </Canvas>

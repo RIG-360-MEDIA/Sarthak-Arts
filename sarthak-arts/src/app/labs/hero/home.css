@@ -9,7 +9,10 @@
   --sanctum-panel: rgba(13, 6, 28, 0.78);
   --silk: #F7ECD4;
   --silk-muted: rgba(247, 236, 212, 0.72);
-  --silk-faint: rgba(247, 236, 212, 0.45);
+  /* 0.60 opacity (was 0.45) — measured against sanctum #0A0416 gives ~5.6:1
+     contrast, clearing WCAG AA for normal text (4.5:1). Small-caps captions
+     read comfortably without losing their editorial hush. */
+  --silk-faint: rgba(247, 236, 212, 0.60);
   --gold: #E8B849;
   --gold-lit: #FCD46F;
   --gold-deep: #A67816;
@@ -130,6 +133,36 @@
   min-width: 17px; height: 17px; margin-left: 6px; padding: 0 4px;
   background: var(--sindoor); color: #fff; border-radius: 999px;
   font-size: 9.5px; font-weight: 700; letter-spacing: 0;
+}
+/* Empty cart: hide the badge but keep the live region present so screen-reader
+   announcements still fire when the count changes from 0 → n */
+.sa-nav-actions .cart-n[data-empty="true"] {
+  display: none;
+}
+
+/* ── Skip link — invisible until keyboard-focused ─────────────────────── */
+.sa-skip-link {
+  position: fixed; top: 6px; left: 6px; z-index: 100;
+  padding: 10px 16px;
+  background: var(--gold); color: #0A0416;
+  font-family: var(--f-body); font-weight: 700;
+  font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+  text-decoration: none; border-radius: 3px;
+  transform: translateY(-140%); transition: transform 0.2s var(--ease);
+}
+.sa-skip-link:focus { transform: translateY(0); outline: none; }
+
+/* ── Focus rings — a distinctive gold outline every interactive element earns ── */
+.sa-home a:focus-visible,
+.sa-home button:focus-visible,
+.sa-home input:focus-visible,
+.sa-home select:focus-visible,
+.sa-home textarea:focus-visible,
+.sa-home [role="button"]:focus-visible,
+.sa-home [tabindex="0"]:focus-visible {
+  outline: 2px solid var(--gold-lit);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 @media (max-width: 760px) {
   .sa-nav-links { display: none; }

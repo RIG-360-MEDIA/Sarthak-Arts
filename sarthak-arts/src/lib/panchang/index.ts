@@ -64,7 +64,18 @@ export type PanchangOptions = {
 /**
  * Compute the panchang for a given moment at a given city.
  * `at` defaults to now. Options control regional convention.
+ *
+ * Results are memoized in-process with a 60-second bucket key so back-to-back
+ * renders in the same minute (nav + strip + hero pill + festival section) reuse
+ * a single Swiss-Ephemeris pass. Choghadiya windows change every ~90 min so a
+ * 60s bucket is safely stale-free. Bucket key is derived from the caller's `at`
+ * argument (not wall-clock) so historical calls (e.g. the festival finder that
+ * scans day-by-day) also benefit.
  */
+const CACHE = new Map<string, Panchang>();
+const CACHE_TTL_MS = 60 * 1000;
+const CACHE_MAX = 400; // 15 cities x ~3 minute-buckets x 2 systems worth of headroom
+
 export function computePanchang(
   cityCode: CityCode | string | undefined,
   at: Date = new Date(),
@@ -72,6 +83,21 @@ export function computePanchang(
 ): Panchang {
   const masaSystem: MasaSystem = opts.masaSystem ?? "purnimanta";
   const city = getCity(cityCode);
+  const bucket = Math.floor(at.getTime() / CACHE_TTL_MS);
+  const key = `${city.code}|${masaSystem}|${bucket}`;
+  const hit = CACHE.get(key);
+  if (hit) return hit;
+  const result = computePanchangUncached(city, masaSystem, at);
+  if (CACHE.size >= CACHE_MAX) CACHE.clear();
+  CACHE.set(key, result);
+  return result;
+}
+
+function computePanchangUncached(
+  city: City,
+  masaSystem: MasaSystem,
+  at: Date,
+): Panchang {
   try {
     // Sunrise/sunset for the calendar day the observer is currently living in.
     // For accuracy convention: tithi/nakshatra/yoga/karana are the values at

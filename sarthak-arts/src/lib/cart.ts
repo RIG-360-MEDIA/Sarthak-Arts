@@ -40,14 +40,38 @@ export async function setItemQuantity(cartId: string, productId: number, quantit
  * Peek at the cart's total item count without creating a cart cookie.
  * Safe to call from any server component (e.g. the homepage nav) — a fresh
  * visitor with no cookie yet returns 0 rather than provisioning a row.
+ *
+ * Cached in a short-lived cookie (30s) so repeated renders in quick
+ * succession (nav on the homepage, PDP, direction pages) don't each hit
+ * the database. The cache is invalidated whenever the cart is mutated via
+ * bumpCartCountCache() below.
  */
+const CART_COUNT_COOKIE = "cart_n_cache";
+const CART_COUNT_TTL = 30; // seconds
+
 export async function getCartItemCount(): Promise<number> {
   const jar = await cookies();
   const id = jar.get(CART_COOKIE)?.value;
   if (!id) return 0;
+  const cached = jar.get(CART_COUNT_COOKIE)?.value;
+  if (cached != null) {
+    const n = Number(cached);
+    if (Number.isFinite(n) && n >= 0) return n;
+  }
   const agg = await prisma.cartItem.aggregate({
     where: { cartId: id },
     _sum: { quantity: true },
   });
-  return agg._sum.quantity ?? 0;
+  const count = agg._sum.quantity ?? 0;
+  jar.set(CART_COUNT_COOKIE, String(count), { sameSite: "lax", maxAge: CART_COUNT_TTL, path: "/" });
+  return count;
+}
+
+/**
+ * Called by any cart-mutation server action (addItem, setItemQuantity, etc.)
+ * to invalidate the count cache so the next render reflects the change.
+ */
+export async function bumpCartCountCache(): Promise<void> {
+  const jar = await cookies();
+  jar.delete(CART_COUNT_COOKIE);
 }
