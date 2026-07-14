@@ -5,6 +5,7 @@ import { Product3D } from "@/components/hero/Product3D";
 import { DirectionWheel } from "@/components/hero/DirectionWheel";
 import { NewsletterForm } from "@/components/hero/NewsletterForm";
 import { getFeaturedPieces, formatINR } from "@/lib/home-featured";
+import { getCartItemCount } from "@/lib/cart";
 import "./home.css";
 
 // Map a Product's category.code to one of the procedural Product3D kinds.
@@ -35,7 +36,10 @@ export const metadata: Metadata = {
  *  - The ritual is the four-fold Prāṇa Pratiṣṭhā sequence
  */
 export default async function HomePage() {
-  const featured = await getFeaturedPieces(3);
+  const [featured, cartCount] = await Promise.all([
+    getFeaturedPieces(3),
+    getCartItemCount(),
+  ]);
   return (
     <div className="sa-home">
       <SmoothScroll />
@@ -55,7 +59,7 @@ export default async function HomePage() {
           </div>
           <div className="sa-nav-actions">
             <a href="/search">Search</a>
-            <a href="/cart">Cart<span className="cart-n">2</span></a>
+            <a href="/cart">Cart{cartCount > 0 && <span className="cart-n">{cartCount}</span>}</a>
           </div>
         </nav>
 

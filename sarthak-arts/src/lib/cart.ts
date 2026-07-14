@@ -35,3 +35,19 @@ export async function setItemQuantity(cartId: string, productId: number, quantit
   if (quantity <= 0) await prisma.cartItem.deleteMany({ where: { cartId, productId } });
   else await prisma.cartItem.update({ where: { cartId_productId: { cartId, productId } }, data: { quantity } });
 }
+
+/**
+ * Peek at the cart's total item count without creating a cart cookie.
+ * Safe to call from any server component (e.g. the homepage nav) — a fresh
+ * visitor with no cookie yet returns 0 rather than provisioning a row.
+ */
+export async function getCartItemCount(): Promise<number> {
+  const jar = await cookies();
+  const id = jar.get(CART_COOKIE)?.value;
+  if (!id) return 0;
+  const agg = await prisma.cartItem.aggregate({
+    where: { cartId: id },
+    _sum: { quantity: true },
+  });
+  return agg._sum.quantity ?? 0;
+}
