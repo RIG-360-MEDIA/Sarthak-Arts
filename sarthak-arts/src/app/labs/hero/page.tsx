@@ -4,6 +4,7 @@ import { SmoothScroll } from "@/components/hero/SmoothScroll";
 import { Product3D } from "@/components/hero/Product3D";
 import { DirectionWheel } from "@/components/hero/DirectionWheel";
 import { NewsletterForm } from "@/components/hero/NewsletterForm";
+import { PanchangStrip, HeroAnnouncement } from "@/components/hero/PanchangStrip";
 import { getFeaturedPieces, formatINR } from "@/lib/home-featured";
 import { getCartItemCount } from "@/lib/cart";
 import "./home.css";
@@ -66,10 +67,7 @@ export default async function HomePage() {
         {/* ================= HERO ================= */}
         <section className="sa-hero">
           <div className="sa-hero-inner">
-            <div className="sa-hero-anno">
-              <span className="dot" aria-hidden="true" />
-              <span><b>Labh Choghadiya</b> · auspicious to begin any ritual · until 4:11 PM</span>
-            </div>
+            <HeroAnnouncement />
             <div>
               <span className="sa-eyebrow sa-hero-eyebrow">Handcrafted for the eight directions</span>
             </div>
@@ -91,33 +89,7 @@ export default async function HomePage() {
         </section>
 
         {/* ================= PANCHANG ================= */}
-        <section className="sa-panchang" aria-label="Today's panchang">
-          <div className="sa-panchang-grid">
-            <div className="sa-panchang-cell">
-              <div className="sa-panchang-lbl">Today</div>
-              <div className="sa-panchang-val">Tuesday<b>Ashadha 25</b></div>
-            </div>
-            <div className="sa-panchang-cell">
-              <div className="sa-panchang-lbl">Tithi</div>
-              <div className="sa-panchang-val">Śukla<b lang="sa">एकादशी</b></div>
-            </div>
-            <div className="sa-panchang-cell">
-              <div className="sa-panchang-lbl">Nakshatra</div>
-              <div className="sa-panchang-val">Chitrā<b lang="sa">चित्रा</b></div>
-            </div>
-            <div className="sa-panchang-cell now">
-              <div className="sa-panchang-lbl">Now · Choghadiya</div>
-              <div className="sa-panchang-val">Auspicious<b lang="sa">लाभ · Labh</b></div>
-            </div>
-            <div className="sa-panchang-cell avoid">
-              <div className="sa-panchang-lbl">Avoid</div>
-              <div className="sa-panchang-val">Rāhu Kāla<b>3:36 – 5:15 PM</b></div>
-            </div>
-          </div>
-          <div className="sa-panchang-cite">
-            Computed via <b>Swiss Ephemeris</b> · Lahiri Ayanamsa · New Delhi 28.61°N 77.21°E · verified against Drik Panchang
-          </div>
-        </section>
+        <PanchangStrip />
 
         {/* ================= DIRECTION SHRINE ================= */}
         <section className="sa-section sa-section-solid" aria-labelledby="shrine-title">
