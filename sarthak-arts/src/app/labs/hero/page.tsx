@@ -8,10 +8,24 @@ import { PanchangStrip, HeroAnnouncement } from "@/components/hero/PanchangStrip
 import { ToastProvider } from "@/components/hero/Toast";
 import { WishlistHeart } from "@/components/hero/WishlistHeart";
 import { AuditPreview } from "@/components/hero/AuditPreview";
+import { SanctumNav } from "@/components/hero/SanctumNav";
 import { getFeaturedPieces, formatINR } from "@/lib/home-featured";
 import { getNextFestival } from "@/lib/home-festivals";
 import { getCartItemCount } from "@/lib/cart";
+import { computePanchang, fmtIST } from "@/lib/panchang";
+import { readPanchangPreferences } from "@/lib/panchang/preferences";
 import "./home.css";
+
+// Small one-line summary passed into the mobile drawer, so the drawer
+// carries a live "Now: Kāla · until 3:54 pm" glance without importing
+// the whole panchang strip.
+async function buildPanchangSummary(): Promise<string | null> {
+  const prefs = await readPanchangPreferences();
+  const p = computePanchang(prefs.city.code, undefined, { masaSystem: prefs.masaSystem });
+  if (!p.ok || !p.choghadiyaNow) return null;
+  const n = p.choghadiyaNow;
+  return `${n.iast} Choghadiya · ${n.auspicious ? "auspicious" : "avoid"} · until ${fmtIST(n.end)}`;
+}
 
 // Map a Product's category.code to one of the procedural Product3D kinds.
 // Falls back to "kalash" — the safest silhouette for undefined categories.
@@ -41,10 +55,11 @@ export const metadata: Metadata = {
  *  - The ritual is the four-fold Prāṇa Pratiṣṭhā sequence
  */
 export default async function HomePage() {
-  const [featured, cartCount, festival] = await Promise.all([
+  const [featured, cartCount, festival, panchangSummary] = await Promise.all([
     getFeaturedPieces(3),
     getCartItemCount(),
     getNextFestival("north"),
+    buildPanchangSummary(),
   ]);
   return (
     <ToastProvider>
@@ -54,26 +69,7 @@ export default async function HomePage() {
 
       <div className="sa-overlay">
         {/* ================= NAV ================= */}
-        <nav className="sa-nav" aria-label="Primary" id="sa-nav-top">
-          <a className="sa-nav-logo" href="/">
-            <span className="om" aria-hidden="true">ॐ</span> Sarthak Arts
-          </a>
-          <div className="sa-nav-links">
-            <a href="/collection">The Collection</a>
-            <a href="/labs/direction">Shop by Direction</a>
-            <a href="/consultation">Consultations</a>
-            <a href="/vastu-shastra">Journal</a>
-          </div>
-          <div className="sa-nav-actions">
-            <a href="/search">Search</a>
-            <a href="/cart" aria-label={cartCount > 0 ? `Cart, ${cartCount} item${cartCount === 1 ? "" : "s"}` : "Cart, empty"}>
-              Cart
-              <span className="cart-n" aria-live="polite" aria-atomic="true" data-empty={cartCount === 0 ? "true" : "false"}>
-                {cartCount > 0 ? cartCount : ""}
-              </span>
-            </a>
-          </div>
-        </nav>
+        <SanctumNav initialCartCount={cartCount} panchangSummary={panchangSummary} />
 
         <a className="sa-skip-link" href="#sa-main">Skip to content</a>
 
