@@ -3,6 +3,7 @@ import { HeroWebGL } from "@/components/hero/HeroWebGL";
 import { SmoothScroll } from "@/components/hero/SmoothScroll";
 import { Product3D } from "@/components/hero/Product3D";
 import { DirectionWheel } from "@/components/hero/DirectionWheel";
+import { NewsletterForm } from "@/components/hero/NewsletterForm";
 import "./home.css";
 
 export const metadata: Metadata = {
@@ -319,7 +320,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ================= BHAKTAS' HOMES ================= */}
+        {/* ================= BHAKTAS' HOMES =================
+            HIDDEN until we have real customer photos with consent.
+            Do NOT delete — un-hide by removing the {false && ...} wrapper the
+            moment we have 3+ real altars from real families. */}
+        {false && (
         <section className="sa-section sa-section-solid" aria-labelledby="bhak-title">
           <div className="sa-section-head sa-reveal">
             <span className="sa-eyebrow">Where they live</span>
@@ -342,6 +347,7 @@ export default function HomePage() {
             <a className="sa-link-line" href="/collection">See all bhaktas' homes →</a>
           </div>
         </section>
+        )}
 
         {/* ================= RITUAL CALENDAR ================= */}
         <section className="sa-section" aria-labelledby="cal-title">
@@ -367,38 +373,6 @@ export default function HomePage() {
               <div className="sa-cal-pick"><span className="n">Brass Puja Bell<small>the call to attention</small></span><span className="p">₹2,400</span></div>
               <div className="sa-cal-pick"><span className="n">Copper Vastu Kalash<small>the vessel kept full</small></span><span className="p">₹18,400</span></div>
               <div className="sa-cal-pick"><span className="n">Silver Sri Yantra Plate<small>the seat of Lakṣmī</small></span><span className="p">₹31,200</span></div>
-            </div>
-          </div>
-        </section>
-
-        {/* ================= WORKSHOP JOURNAL ================= */}
-        <section className="sa-section sa-section-solid" aria-labelledby="journal-title">
-          <div className="sa-section-head sa-reveal">
-            <span className="sa-eyebrow">The journal</span>
-            <h2 id="journal-title">From the <em>workshop.</em></h2>
-          </div>
-          <div className="sa-journal-grid sa-reveal">
-            <a className="sa-journal-feat" href="/our-craft">
-              <div className="meta">Craft · 4 min read</div>
-              <h3>The seven days a copper kalash <em>takes to make.</em></h3>
-              <p>
-                A single sheet of copper, four thousand hammer strikes, and the patience
-                of one man. A photo essay from Bhavesh's workshop in Amritsar.
-              </p>
-              <span className="sa-link-line">Read the piece →</span>
-            </a>
-            <div>
-              <div className="sa-ig-grid">
-                {["g1", "g2", "g3", "g4"].map((g) => (
-                  <div key={g} className={`sa-ig ${g}`}>
-                    <div className="fill" />
-                    <svg className="cam" width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" stroke="currentColor" strokeWidth="1.5" rx="4" /><circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" /></svg>
-                  </div>
-                ))}
-              </div>
-              <div style={{ marginTop: 12, textAlign: "center", fontSize: 10.5, letterSpacing: "0.18em", textTransform: "uppercase" as const, color: "rgba(247,236,212,0.45)" }}>
-                @sarthakarts · from the workshop
-              </div>
             </div>
           </div>
         </section>
@@ -439,10 +413,9 @@ export default function HomePage() {
               from the workshop. No sales pressure, no urgency, no funnel.
             </p>
           </div>
-          <form className="sa-reveal">
-            <input type="email" placeholder="your@email.com" aria-label="Email address" />
-            <button type="button">Subscribe</button>
-          </form>
+          <div className="sa-reveal">
+            <NewsletterForm />
+          </div>
           <div className="fine">One email a month. Unsubscribe any time.</div>
         </section>
 

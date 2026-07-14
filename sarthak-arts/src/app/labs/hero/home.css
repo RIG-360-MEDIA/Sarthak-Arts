@@ -758,8 +758,17 @@
   transition: box-shadow 0.3s var(--ease);
 }
 .sa-nl button:hover { box-shadow: 0 0 30px rgba(252, 212, 111, 0.4); }
+.sa-nl button:disabled, .sa-nl input:disabled { opacity: 0.6; cursor: wait; }
+/* Live subscribe feedback — reserves a line so success/error doesn't jolt the layout */
+.sa-nl-status {
+  min-height: 18px; margin-top: 14px; font-size: 12.5px; letter-spacing: 0.02em;
+  transition: color 0.25s var(--ease);
+}
+.sa-nl-status.ok { color: var(--gold-lit); }
+.sa-nl-status.warn { color: var(--silk-muted); }
+.sa-nl-status.err { color: var(--rose); }
 .sa-nl .fine {
-  margin-top: 16px; font-size: 10.5px; color: var(--silk-faint); letter-spacing: 0.06em;
+  margin-top: 10px; font-size: 10.5px; color: var(--silk-faint); letter-spacing: 0.06em;
 }
 
 /* --------------------------------------------------------------------------
