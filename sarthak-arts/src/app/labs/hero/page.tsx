@@ -4,7 +4,17 @@ import { SmoothScroll } from "@/components/hero/SmoothScroll";
 import { Product3D } from "@/components/hero/Product3D";
 import { DirectionWheel } from "@/components/hero/DirectionWheel";
 import { NewsletterForm } from "@/components/hero/NewsletterForm";
+import { getFeaturedPieces, formatINR } from "@/lib/home-featured";
 import "./home.css";
+
+// Map a Product's category.code to one of the procedural Product3D kinds.
+// Falls back to "kalash" — the safest silhouette for undefined categories.
+type Product3DKind = "kalash" | "yantra" | "pyramid";
+function kindFor(categoryCode: string): Product3DKind {
+  if (categoryCode === "yantra") return "yantra";
+  if (categoryCode === "pyramid") return "pyramid";
+  return "kalash";
+}
 
 export const metadata: Metadata = {
   title: "Sarthak Arts — Made by hand. Placed with intention.",
@@ -24,7 +34,8 @@ export const metadata: Metadata = {
  *  - Each product carries its deity's authentic short-form mantra
  *  - The ritual is the four-fold Prāṇa Pratiṣṭhā sequence
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const featured = await getFeaturedPieces(3);
   return (
     <div className="sa-home">
       <SmoothScroll />
@@ -148,65 +159,36 @@ export default function HomePage() {
           </div>
 
           <div className="sa-pieces-grid">
-            <article className="sa-piece sa-reveal">
-              <div className="sa-piece-stage">
-                <div className="sa-piece-badges">
-                  <span className="sa-piece-badge">Northeast</span>
-                  <span className="sa-piece-badge">Water</span>
-                </div>
-                <Product3D kind="kalash" />
-                <div className="sa-piece-hint">Live 3D · rotating</div>
-              </div>
-              <div className="sa-piece-body">
-                <div className="sa-piece-deity">Kubera Kalash</div>
-                <div className="sa-piece-name">Copper Vastu Kalash</div>
-                <div className="sa-piece-comp">Cu 812 g · hand-beaten · Amritsar Thatheras</div>
-                <div className="sa-piece-foot">
-                  <span className="sa-piece-price">₹18,400</span>
-                  <span className="sa-piece-mantra" lang="sa">ॐ कुबेराय नमः</span>
-                </div>
-              </div>
-            </article>
-
-            <article className="sa-piece sa-reveal">
-              <div className="sa-piece-stage">
-                <div className="sa-piece-badges">
-                  <span className="sa-piece-badge">North</span>
-                  <span className="sa-piece-badge">Wealth</span>
-                </div>
-                <Product3D kind="yantra" />
-                <div className="sa-piece-hint">Live 3D · rotating</div>
-              </div>
-              <div className="sa-piece-body">
-                <div className="sa-piece-deity">Śrī Lakṣmī Yantra</div>
-                <div className="sa-piece-name">Silver Sri Yantra Plate</div>
-                <div className="sa-piece-comp">Ag 99.9% · 265 g · one of six</div>
-                <div className="sa-piece-foot">
-                  <span className="sa-piece-price">₹31,200</span>
-                  <span className="sa-piece-mantra" lang="sa">ॐ श्रीं महालक्ष्म्यै</span>
-                </div>
-              </div>
-            </article>
-
-            <article className="sa-piece sa-reveal">
-              <div className="sa-piece-stage">
-                <div className="sa-piece-badges">
-                  <span className="sa-piece-badge">Center</span>
-                  <span className="sa-piece-badge">Balance</span>
-                </div>
-                <Product3D kind="pyramid" />
-                <div className="sa-piece-hint">Live 3D · rotating</div>
-              </div>
-              <div className="sa-piece-body">
-                <div className="sa-piece-deity">Brahmasthan Pyramid</div>
-                <div className="sa-piece-name">Brass Aṣṭadhātu Pyramid</div>
-                <div className="sa-piece-comp">Aṣṭadhātu · 540 g · sand-cast</div>
-                <div className="sa-piece-foot">
-                  <span className="sa-piece-price">₹9,800</span>
-                  <span className="sa-piece-mantra" lang="sa">ॐ ब्रह्मणे नमः</span>
-                </div>
-              </div>
-            </article>
+            {featured.map((p) => {
+              const compBits: string[] = [];
+              if (p.primaryMetalName && p.primaryMetalWeightG != null) {
+                compBits.push(`${p.primaryMetalName} · ${p.primaryMetalWeightG} g`);
+              } else if (p.primaryMetalName) {
+                compBits.push(p.primaryMetalName);
+              }
+              if (p.primaryMetalLabel) compBits.push(p.primaryMetalLabel);
+              return (
+                <a key={p.slug} href={`/collection/${p.slug}`} className="sa-piece sa-reveal">
+                  <div className="sa-piece-stage">
+                    <div className="sa-piece-badges">
+                      {p.directionName && <span className="sa-piece-badge">{p.directionName}</span>}
+                      {p.directionElement && <span className="sa-piece-badge">{p.directionElement}</span>}
+                      {p.isSample && <span className="sa-piece-badge sample" title="Sample piece — real catalogue arriving">Sample</span>}
+                    </div>
+                    <Product3D kind={kindFor(p.categoryCode)} />
+                    <div className="sa-piece-hint">Live 3D · rotating</div>
+                  </div>
+                  <div className="sa-piece-body">
+                    {p.deityName && <div className="sa-piece-deity">{p.deityName}</div>}
+                    <div className="sa-piece-name">{p.name}</div>
+                    {compBits.length > 0 && <div className="sa-piece-comp">{compBits.join(" · ")}</div>}
+                    <div className="sa-piece-foot">
+                      <span className="sa-piece-price">{formatINR(p.priceMinor)}</span>
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
           </div>
 
           <div className="sa-pieces-cta sa-reveal">

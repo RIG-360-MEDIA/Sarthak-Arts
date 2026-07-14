@@ -106,12 +106,14 @@ async function main() {
     slug: string; name: string; category: string;
     direction: string; directions?: string[]; deity?: string;
     priceMinor: number;
+    isSample?: boolean;
     positioningLine: string; placementNote: string; description: string;
     careNote: string; includedItems: string;
     composition: Array<{ metal?: string; gemstone?: string; weightGrams?: number | null; gemstoneQty?: number; label?: string }>;
   }> = [
     {
       slug: "copper-vastu-kalash", name: "Copper Vastu Kalash", category: "kalash", direction: "northeast", priceMinor: 1840000,
+      isSample: true,
       positioningLine: "A hand-beaten copper vessel that keeps the water element active in your northeast corner.",
       placementNote: "Northeast (Ishanya) — the zone Vastu Shastra links to clarity and spiritual grounding. A kalash here is traditionally kept filled with water and topped with a coconut or mango leaves.",
       description: "Raised from a single copper sheet by hand, then finished with a narrow silver band at the neck. The surface keeps the light hammer-marks of the smith who shaped it — no two kalashes leave the workshop looking quite the same. Sits at just under 18cm tall, suited to a shelf, altar corner, or low table.",
@@ -124,6 +126,7 @@ async function main() {
     },
     {
       slug: "brass-ashtadhatu-pyramid", name: "Brass Ashtadhatu Pyramid", category: "pyramid", direction: "center", priceMinor: 2490000,
+      isSample: true,
       positioningLine: "An eight-metal alloy pyramid built for the Brahmasthan — the center of your home.",
       placementNote: "Center of the home — the point Vastu treats as the balancing core for every other zone.",
       description: "Cast in an ashtadhatu (eight-metal) brass alloy and finished by hand, with a clear quartz point set at the apex. Meant to sit on a central table or shelf where it isn't boxed in by walls — the Brahmasthan is traditionally kept open, and this piece is sized to sit in that kind of open space rather than dominate it.",
@@ -136,6 +139,7 @@ async function main() {
     },
     {
       slug: "silver-sri-yantra-plate", name: "Silver Sri Yantra Plate", category: "yantra", direction: "north", priceMinor: 3120000,
+      isSample: true,
       positioningLine: "A hand-engraved silver yantra for the wall that governs wealth and career.",
       placementNote: "North (Uttara) — associated in Vastu practice with financial flow and professional growth.",
       description: "Engraved by hand onto a solid silver plate, with a single ruby set at the bindu — the geometric center point of the yantra. Meant to hang at eye height on a north-facing wall, ideally where it catches morning light. Comes pre-fitted with a wall mount.",
@@ -148,6 +152,7 @@ async function main() {
     },
     {
       slug: "gold-accent-om-wall-panel", name: "Gold-Accent Om Wall Panel", category: "panel", direction: "east", priceMinor: 4260000,
+      isSample: true,
       positioningLine: "A brass Om panel with a fine gold overlay for the east wall — the direction linked to new beginnings.",
       placementNote: "East (Purva) — traditionally the direction to support health and fresh starts, best placed where morning light reaches it.",
       description: "The Om form is cut from solid brass, then finished with a thin gold overlay by hand and set with a single turquoise inlay at the base. Substantial enough to anchor a wall on its own — this is not a small accent piece.",
@@ -179,6 +184,7 @@ async function main() {
     },
     {
       slug: "copper-brass-wind-chime", name: "Copper-Brass Wind Chime", category: "chime", direction: "northwest", priceMinor: 980000,
+      isSample: true,
       positioningLine: "A six-rod chime in copper and brass for the northwest — the zone of support and movement.",
       placementNote: "Northwest (Vayavya) — linked to relationships, travel, and the flow of support from others.",
       description: "Six rods, alternating copper and brass, tuned by ear rather than machine — each chime has a slightly different voice. Strung with amethyst beads at the crown. Best hung somewhere air actually moves: near a window or an open doorway, not a sealed corner.",
@@ -200,8 +206,11 @@ async function main() {
         description: p.description, careNote: p.careNote, includedItems: p.includedItems,
         basePriceMinor: p.priceMinor, categoryId: await cat(p.category),
         deityId: p.deity ? await deity(p.deity) : null,
+        isSample: p.isSample ?? false,
       },
     });
+    // Keep the flag in sync on re-seed too — a product may be reclassified.
+    await db.product.update({ where: { id: created.id }, data: { isSample: p.isSample ?? false } });
     // A piece may suit several directions (e.g. the Ashtalakshmi Kalash: NE/N/E)
     for (const dirCode of p.directions ?? [p.direction]) {
       await db.productDirection.upsert({

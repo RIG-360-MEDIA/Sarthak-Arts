@@ -167,6 +167,11 @@ model Product {
   stockQuantity   Int                   @default(0)
   status          String                @default("live")
   isFinalSale     Boolean               @default(false)
+  // Sample pieces are placeholders while the client's real catalogue arrives.
+  // The homepage prefers real products first, then falls back to samples
+  // (badged accordingly) to keep the grid populated. Every product created
+  // via the admin defaults to real (false).
+  isSample        Boolean               @default(false)
   categoryId      Int
   category        Category              @relation(fields: [categoryId], references: [id])
   deityId         Int?

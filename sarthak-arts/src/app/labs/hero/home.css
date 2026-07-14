@@ -417,6 +417,7 @@
   overflow: hidden;
   display: flex; flex-direction: column;
   transition: transform 0.5s var(--ease), border-color 0.5s, box-shadow 0.5s;
+  text-decoration: none; color: inherit;   /* the card is an anchor now */
 }
 .sa-piece:hover {
   transform: translateY(-8px);
@@ -432,13 +433,20 @@
 }
 .sa-piece-badges {
   position: absolute; top: 14px; left: 14px; right: 14px; z-index: 2;
-  display: flex; justify-content: space-between; pointer-events: none;
+  display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none;
 }
 .sa-piece-badge {
   background: rgba(10, 4, 22, 0.7); backdrop-filter: blur(6px);
   color: var(--gold-lit); font-size: 9px; letter-spacing: 0.22em;
   padding: 5px 10px; border-radius: 2px; text-transform: uppercase;
   border: 1px solid rgba(232, 184, 73, 0.3); font-weight: 700;
+}
+/* Sample badge — muted, honest, never louder than a real signal */
+.sa-piece-badge.sample {
+  margin-left: auto;   /* push to the trailing edge so real badges lead */
+  color: var(--silk-muted);
+  border-color: rgba(247, 236, 212, 0.22);
+  background: rgba(10, 4, 22, 0.55);
 }
 .sa-piece-hint {
   position: absolute; bottom: 10px; left: 0; right: 0; z-index: 2;
