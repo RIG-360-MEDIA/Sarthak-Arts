@@ -32,7 +32,10 @@ export async function PanchangStrip() {
   }
 
   const dateFmt = p.sunrise.toLocaleDateString("en-IN", { weekday: "long", timeZone: "Asia/Kolkata" });
-  const dayNum = p.sunrise.toLocaleDateString("en-IN", { day: "numeric", timeZone: "Asia/Kolkata" });
+  // Show the lunar fortnight (masa + paksha) instead of "Āṣāḍha 14" —
+  // a Gregorian day-of-month next to a lunar month reads as a tithi it isn't.
+  const pakshaLabel = p.tithi.paksha === "śukla" ? "Śukla" : "Kṛṣṇa";
+  const fortnight = `${p.masa.iast} · ${pakshaLabel}`;
   const now = p.choghadiyaNow;
   const auspiciousClass = now ? (now.auspicious ? "now" : "avoid") : "";
 
@@ -41,7 +44,7 @@ export async function PanchangStrip() {
       <div className="sa-panchang-grid">
         <div className="sa-panchang-cell">
           <div className="sa-panchang-lbl">Today</div>
-          <div className="sa-panchang-val">{dateFmt}<b>{p.masa.iast} {dayNum}</b></div>
+          <div className="sa-panchang-val">{dateFmt}<b>{fortnight}</b></div>
         </div>
         <div className="sa-panchang-cell">
           <div className="sa-panchang-lbl">Tithi</div>
