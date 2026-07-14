@@ -698,16 +698,114 @@
   font-family: var(--f-display); font-size: 18px; color: var(--silk);
   line-height: 1.35; margin: 12px 0 18px;
 }
+.sa-quiz-lbl { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sa-quiz-back {
+  background: none; border: none; padding: 0; font: inherit;
+  color: var(--silk-muted); letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 9.5px; cursor: pointer; transition: color 0.2s;
+}
+.sa-quiz-back:hover { color: var(--gold-lit); }
+
 .sa-quiz-opts { display: grid; gap: 8px; }
 .sa-quiz-opt {
   padding: 11px 14px; border: 1px solid var(--line-gold); border-radius: 2px;
-  color: var(--silk); font-size: 13px; transition: all 0.25s; cursor: default;
+  color: var(--silk); font-size: 13px; transition: all 0.25s;
+  background: transparent; text-align: left; cursor: pointer; font-family: inherit;
 }
 .sa-quiz-opt:hover { border-color: var(--gold); color: var(--gold-lit); background: rgba(232, 184, 73, 0.06); }
-.sa-quiz-opt.active { background: rgba(232, 184, 73, 0.1); border-color: var(--gold); color: var(--gold-lit); }
+.sa-quiz-opt.active,
+.sa-quiz-opt[aria-checked="true"] {
+  background: rgba(232, 184, 73, 0.1); border-color: var(--gold); color: var(--gold-lit);
+}
 .sa-quiz-step {
   margin-top: 16px; text-align: center;
   font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--silk-faint);
+}
+
+/* Audit result state — the "start with …" strip after Q4 */
+.sa-quiz-result-heading {
+  font-family: var(--f-display); font-size: 26px; font-weight: 400;
+  color: var(--silk); line-height: 1.15; margin: 14px 0 16px;
+}
+.sa-quiz-result-heading em {
+  font-style: italic;
+  background: linear-gradient(180deg, #FCD46F 0%, #E8B849 55%, #A67816 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.sa-quiz-result-sub {
+  color: var(--silk-muted); font-size: 13.5px; line-height: 1.65; margin: 0 0 22px;
+}
+.sa-quiz-result-actions {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.sa-quiz-result-actions .sa-btn { padding: 12px 20px; font-size: 10.5px; }
+
+/* Wishlist heart — top-right of piece stage */
+.sa-piece-wish {
+  position: absolute; top: 12px; right: 12px; z-index: 3;
+}
+.sa-wish {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(10, 4, 22, 0.72); backdrop-filter: blur(8px);
+  border: 1px solid rgba(232, 184, 73, 0.3);
+  color: var(--silk-muted); cursor: pointer;
+  transition: color 0.25s, border-color 0.25s, transform 0.25s var(--ease), background 0.25s;
+}
+.sa-wish:hover {
+  color: var(--rose); border-color: var(--rose); transform: scale(1.08);
+}
+.sa-wish.is-saved {
+  color: var(--sindoor); border-color: rgba(198, 32, 42, 0.5);
+  background: rgba(198, 32, 42, 0.12);
+}
+.sa-wish.is-saved:hover { color: var(--sindoor); }
+/* Prevent hydration flash: hide "saved" state until client mount confirms */
+.sa-wish[data-mounted="false"] { color: var(--silk-muted); background: rgba(10, 4, 22, 0.72); }
+
+/* ── Toast tray — fixed top-right, sanctum gold-frosted ─────────────────── */
+.sa-toast-tray {
+  position: fixed; top: 92px; right: 24px; z-index: 200;
+  display: flex; flex-direction: column; gap: 10px;
+  max-width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+.sa-toast {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px 14px 18px;
+  background: rgba(10, 4, 22, 0.92); backdrop-filter: blur(14px);
+  border: 1px solid var(--line-gold); border-left-width: 3px; border-radius: 3px;
+  color: var(--silk); font-family: var(--f-body); font-size: 13px; line-height: 1.5;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
+  animation: sa-toast-in 0.35s var(--ease) both;
+}
+.sa-toast-ok { border-left-color: var(--gold-lit); }
+.sa-toast-warn { border-left-color: var(--silk-faint); }
+.sa-toast-err { border-left-color: var(--rose); }
+.sa-toast-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; margin-top: 1px;
+  color: var(--gold-lit); font-size: 13px; flex-shrink: 0;
+}
+.sa-toast-warn .sa-toast-icon { color: var(--silk-muted); }
+.sa-toast-err .sa-toast-icon { color: var(--rose); }
+.sa-toast-msg { flex: 1; }
+.sa-toast-close {
+  background: none; border: none; color: var(--silk-faint); padding: 0 2px;
+  font-size: 18px; line-height: 1; cursor: pointer; transition: color 0.2s;
+}
+.sa-toast-close:hover { color: var(--silk); }
+@keyframes sa-toast-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sa-toast { animation: none; }
+}
+@media (max-width: 560px) {
+  .sa-toast-tray { top: auto; bottom: 16px; right: 16px; left: 16px; max-width: none; }
+  .sa-toast { animation: none; }
 }
 
 /* --------------------------------------------------------------------------

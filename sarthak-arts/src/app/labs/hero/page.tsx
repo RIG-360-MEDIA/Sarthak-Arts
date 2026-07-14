@@ -5,6 +5,9 @@ import { Product3D } from "@/components/hero/Product3D";
 import { DirectionWheel } from "@/components/hero/DirectionWheel";
 import { NewsletterForm } from "@/components/hero/NewsletterForm";
 import { PanchangStrip, HeroAnnouncement } from "@/components/hero/PanchangStrip";
+import { ToastProvider } from "@/components/hero/Toast";
+import { WishlistHeart } from "@/components/hero/WishlistHeart";
+import { AuditPreview } from "@/components/hero/AuditPreview";
 import { getFeaturedPieces, formatINR } from "@/lib/home-featured";
 import { getNextFestival } from "@/lib/home-festivals";
 import { getCartItemCount } from "@/lib/cart";
@@ -44,6 +47,7 @@ export default async function HomePage() {
     getNextFestival("north"),
   ]);
   return (
+    <ToastProvider>
     <div className="sa-home">
       <SmoothScroll />
       <HeroWebGL />
@@ -162,6 +166,9 @@ export default async function HomePage() {
                       {p.directionElement && <span className="sa-piece-badge">{p.directionElement}</span>}
                       {p.isSample && <span className="sa-piece-badge sample" title="Sample piece — real catalogue arriving">Sample</span>}
                     </div>
+                    <div className="sa-piece-wish">
+                      <WishlistHeart slug={p.slug} pieceName={p.name} />
+                    </div>
                     <Product3D kind={kindFor(p.categoryCode)} />
                     <div className="sa-piece-hint">Live 3D · rotating</div>
                   </div>
@@ -196,16 +203,8 @@ export default async function HomePage() {
               </p>
               <a className="sa-btn sa-btn-primary" href="/home-audit">Begin the audit</a>
             </div>
-            <div className="sa-quiz sa-reveal" aria-hidden="true">
-              <div className="sa-quiz-lbl">Question 1 of 4</div>
-              <div className="sa-quiz-q">Which direction does your home's main entrance face?</div>
-              <div className="sa-quiz-opts">
-                <div className="sa-quiz-opt">North</div>
-                <div className="sa-quiz-opt active">Northeast</div>
-                <div className="sa-quiz-opt">East</div>
-                <div className="sa-quiz-opt">I'm not sure</div>
-              </div>
-              <div className="sa-quiz-step">Step 1 of 4</div>
+            <div className="sa-reveal">
+              <AuditPreview />
             </div>
           </div>
         </section>
@@ -439,5 +438,6 @@ export default async function HomePage() {
         </footer>
       </div>
     </div>
+    </ToastProvider>
   );
 }
