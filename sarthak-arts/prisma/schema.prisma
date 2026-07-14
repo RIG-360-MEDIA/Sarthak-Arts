@@ -519,3 +519,28 @@ model Subscriber {
   email        String   @unique
   subscribedAt DateTime @default(now())
 }
+
+/// A single observed occurrence of a Hindu festival.
+/// Yearly instances are seeded independently (each `code` unique per year:
+/// "raksha-bandhan-2026", "diwali-2026"). Dates are computed by the verified
+/// panchang engine from the festival's tithi+masa rule, then persisted so
+/// queries and lookups stay fast and traceable. Every row cites its source
+/// per the devotional-data-accuracy principle.
+model Festival {
+  id           Int      @id @default(autoincrement())
+  code         String   @unique
+  name         String                            // "Raksha Bandhan"
+  nameDeva     String                            // "रक्षा बन्धन"
+  nameIast     String                            // "Rakṣā Bandhana"
+  tagline      String                            // "the tie of protection"
+  observedOn   DateTime                          // sunrise-tithi convention date, IST
+  masaIast     String?                           // "Śrāvaṇa" (purnimanta)
+  tithiIast    String?                           // "Pūrṇimā"
+  paksha       String?                           // "śukla" | "kṛṣṇa"
+  regions      String[]                          // ["north","south","bengali","gaudiya"]
+  productSlugs String[]                          // slugs of pieces traditionally offered/gifted
+  source       String                            // citation
+  createdAt    DateTime @default(now())
+
+  @@index([observedOn])
+}

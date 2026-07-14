@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { findFestivalDate, type FestivalRule } from "../src/lib/panchang/festivals";
 const db = new PrismaClient();
 
 async function main() {
@@ -334,6 +335,102 @@ async function main() {
   if (demo && (await db.socialPost.count()) === 0)
     for (let i = 1; i <= 4; i++)
       await db.socialPost.create({ data: { platform: "instagram", caption: `A piece from the workshop #${i}`, mediaUrl: `/placeholder/copper-vastu-kalash.svg`, permalink: "https://instagram.com/sarthakarts" } });
+
+  // ── Festivals ────────────────────────────────────────────────────────────
+  // Each rule is computed against the verified panchang engine to find its
+  // observed date, then persisted. Regenerating the seed re-verifies dates.
+  // Yearly maintenance: rebuild for the coming year, human-review, deploy.
+  const FESTIVAL_YEAR = new Date().getUTCFullYear();
+  type FestSeed = {
+    codeBase: string;
+    name: string; nameDeva: string; nameIast: string; tagline: string;
+    rule: FestivalRule;
+    regions: string[]; productSlugs: string[];
+    source: string;
+  };
+  const festSeeds: FestSeed[] = [
+    {
+      codeBase: "guru-purnima", name: "Guru Purnima",
+      nameDeva: "गुरु पूर्णिमा", nameIast: "Guru Pūrṇimā",
+      tagline: "honouring the teacher",
+      rule: { masa: "Āṣāḍha", tithi: "Pūrṇimā", paksha: "śukla" },
+      regions: ["north", "south", "bengali", "gaudiya"],
+      productSlugs: ["silver-sri-yantra-plate", "brass-ashtadhatu-pyramid"],
+      source: "Purāṇic + Pañcarātra tradition · engine-computed, human-verify before publish",
+    },
+    {
+      codeBase: "raksha-bandhan", name: "Raksha Bandhan",
+      nameDeva: "रक्षा बन्धन", nameIast: "Rakṣā Bandhana",
+      tagline: "the tie of protection",
+      rule: { masa: "Śrāvaṇa", tithi: "Pūrṇimā", paksha: "śukla" },
+      regions: ["north", "south", "bengali", "gaudiya"],
+      productSlugs: ["ashtalakshmi-brass-kalash", "silver-sri-yantra-plate"],
+      source: "Bhaviṣya Purāṇa · engine-computed, human-verify before publish",
+    },
+    {
+      codeBase: "janmashtami", name: "Krishna Janmashtami",
+      nameDeva: "जन्माष्टमी", nameIast: "Janmāṣṭamī",
+      tagline: "the birth of Kṛṣṇa",
+      rule: { masa: "Bhādrapada", tithi: "Aṣṭamī", paksha: "kṛṣṇa" },
+      regions: ["north", "south", "bengali", "gaudiya"],
+      productSlugs: ["silver-sri-yantra-plate"],
+      source: "Śrīmad Bhāgavatam 10.3 · engine-computed, human-verify before publish",
+    },
+    {
+      codeBase: "ganesh-chaturthi", name: "Ganesh Chaturthi",
+      nameDeva: "गणेश चतुर्थी", nameIast: "Gaṇeśa Caturthī",
+      tagline: "the arrival of Ganesha",
+      rule: { masa: "Bhādrapada", tithi: "Caturthī", paksha: "śukla" },
+      regions: ["north", "south"],
+      productSlugs: ["brass-ashtadhatu-pyramid"],
+      source: "Gaṇeśa Purāṇa · engine-computed, human-verify before publish",
+    },
+    {
+      codeBase: "sharad-navratri", name: "Śāradīya Navrātri (Day 1)",
+      nameDeva: "शारदीय नवरात्रि", nameIast: "Śāradīya Navarātri",
+      tagline: "the nine nights of the Devī",
+      rule: { masa: "Āśvina", tithi: "Pratipadā", paksha: "śukla" },
+      regions: ["north", "south", "bengali"],
+      productSlugs: ["ashtalakshmi-brass-kalash"],
+      source: "Devī Māhātmya · engine-computed, human-verify before publish",
+    },
+    {
+      codeBase: "diwali", name: "Deepāvalī",
+      nameDeva: "दीपावली", nameIast: "Deepāvalī",
+      tagline: "the festival of lights",
+      rule: { masa: "Kārtika", tithi: "Amāvāsyā", paksha: "kṛṣṇa" },
+      regions: ["north", "south", "bengali", "gaudiya"],
+      productSlugs: ["ashtalakshmi-brass-kalash", "silver-sri-yantra-plate", "gold-accent-om-wall-panel"],
+      source: "Padma Purāṇa · engine-computed, human-verify before publish",
+    },
+  ];
+
+  const nowUtc = new Date();
+  for (const f of festSeeds) {
+    const date = findFestivalDate(f.rule, nowUtc, "delhi");
+    if (!date) {
+      console.warn(`  ✗ ${f.name}: engine could not find date matching rule — skipping.`);
+      continue;
+    }
+    const code = `${f.codeBase}-${date.getUTCFullYear()}`;
+    await db.festival.upsert({
+      where: { code },
+      update: {
+        observedOn: date, name: f.name, nameDeva: f.nameDeva, nameIast: f.nameIast,
+        tagline: f.tagline, masaIast: f.rule.masa, tithiIast: f.rule.tithi, paksha: f.rule.paksha,
+        regions: f.regions, productSlugs: f.productSlugs, source: f.source,
+      },
+      create: {
+        code, name: f.name, nameDeva: f.nameDeva, nameIast: f.nameIast,
+        tagline: f.tagline, observedOn: date,
+        masaIast: f.rule.masa, tithiIast: f.rule.tithi, paksha: f.rule.paksha,
+        regions: f.regions, productSlugs: f.productSlugs, source: f.source,
+      },
+    });
+    const dateStr = date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
+    console.log(`  ✓ ${f.nameIast.padEnd(24)} → ${dateStr}`);
+  }
+  void FESTIVAL_YEAR;
 
   console.log(`Seed complete. Mode: ${demo ? "demo (sample products loaded)" : "production (reference data only, no sample products)"}.`);
 }

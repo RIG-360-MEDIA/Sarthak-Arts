@@ -6,6 +6,7 @@ import { DirectionWheel } from "@/components/hero/DirectionWheel";
 import { NewsletterForm } from "@/components/hero/NewsletterForm";
 import { PanchangStrip, HeroAnnouncement } from "@/components/hero/PanchangStrip";
 import { getFeaturedPieces, formatINR } from "@/lib/home-featured";
+import { getNextFestival } from "@/lib/home-festivals";
 import { getCartItemCount } from "@/lib/cart";
 import "./home.css";
 
@@ -37,9 +38,10 @@ export const metadata: Metadata = {
  *  - The ritual is the four-fold Prāṇa Pratiṣṭhā sequence
  */
 export default async function HomePage() {
-  const [featured, cartCount] = await Promise.all([
+  const [featured, cartCount, festival] = await Promise.all([
     getFeaturedPieces(3),
     getCartItemCount(),
+    getNextFestival("north"),
   ]);
   return (
     <div className="sa-home">
@@ -314,24 +316,48 @@ export default async function HomePage() {
             <h2 id="cal-title">The next festival, and the pieces <em>that meet it.</em></h2>
           </div>
           <div className="sa-cal-grid sa-reveal">
-            {/* Live: date + tithi from the panchang engine at promotion */}
-            <div className="sa-festival">
-              <div className="kind">Next festival</div>
-              <div className="date">28 August</div>
-              <div className="deva-name" lang="sa">श्रावण पूर्णिमा</div>
-              <div className="roman">Śrāvaṇa Pūrṇimā · Raksha Bandhan</div>
-              <div className="in"><b>In 52 days</b> · the tie of protection</div>
-            </div>
-            <div className="sa-cal-picks">
-              <h3>For <em>the occasion.</em></h3>
-              <p>
-                Traditionally offered or gifted on this tithi — pieces for the household
-                protectorship the festival honours.
-              </p>
-              <div className="sa-cal-pick"><span className="n">Brass Puja Bell<small>the call to attention</small></span><span className="p">₹2,400</span></div>
-              <div className="sa-cal-pick"><span className="n">Copper Vastu Kalash<small>the vessel kept full</small></span><span className="p">₹18,400</span></div>
-              <div className="sa-cal-pick"><span className="n">Silver Sri Yantra Plate<small>the seat of Lakṣmī</small></span><span className="p">₹31,200</span></div>
-            </div>
+            {festival ? (
+              <>
+                <div className="sa-festival">
+                  <div className="kind">Next festival</div>
+                  <div className="date">{festival.dateLabel}</div>
+                  <div className="deva-name" lang="sa">{festival.nameDeva}</div>
+                  <div className="roman">
+                    {festival.masaIast && festival.tithiIast
+                      ? `${festival.masaIast} ${festival.tithiIast} · ${festival.name}`
+                      : festival.name}
+                  </div>
+                  <div className="in">
+                    <b>{festival.daysAway === 0 ? "Today" : festival.daysAway === 1 ? "Tomorrow" : `In ${festival.daysAway} days`}</b>
+                    {" · "}{festival.tagline}
+                  </div>
+                </div>
+                <div className="sa-cal-picks">
+                  <h3>For <em>the occasion.</em></h3>
+                  <p>
+                    Traditionally offered or gifted on this tithi — pieces for the
+                    devotion the festival honours.
+                  </p>
+                  {festival.picks.length === 0 ? (
+                    <p className="sub" style={{ opacity: 0.7, fontSize: 12.5 }}>
+                      Picks for this festival are being confirmed with the client. Check back shortly.
+                    </p>
+                  ) : (
+                    festival.picks.map((pick) => (
+                      <a key={pick.slug} href={`/collection/${pick.slug}`} className="sa-cal-pick">
+                        <span className="n">{pick.name}<small>{pick.positioningLine}</small></span>
+                        <span className="p">{pick.priceMinorFmt}</span>
+                      </a>
+                    ))
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="sa-festival" style={{ gridColumn: "1 / -1", textAlign: "center" }}>
+                <div className="kind">Ritual calendar</div>
+                <div className="roman">The next festival window is being refreshed. Please check back shortly.</div>
+              </div>
+            )}
           </div>
         </section>
 
