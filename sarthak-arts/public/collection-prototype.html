@@ -139,6 +139,8 @@
     background:radial-gradient(ellipse 80% 70% at 50% 50%,var(--pc-wash),transparent 72%),var(--chalk-2);border-right:1px solid var(--line);}
   .featured .f-stage svg.obj{width:56%;height:56%;position:relative;}
   .featured .f-halo{position:absolute;width:80%;height:80%;opacity:.5;color:var(--pc);}
+  .featured .f-niche{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:52%;height:84%;color:var(--pc);}
+  .featured .f-stage svg.obj{transform:translateY(8%);}
   .featured .f-ribbon{position:absolute;top:16px;left:16px;background:var(--sindoor);color:#fff;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:5px 12px;border-radius:20px;}
   .featured .f-body{padding:28px 32px;display:flex;flex-direction:column;}
   .featured .f-deity{font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--pc-deep);}
@@ -241,6 +243,47 @@
   .et-cta{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:16px;}
   @media(max-width:560px){.egrid-tile{grid-column:span 1;min-height:auto;}}
 
+  /* ── category shelves (browse-all structure) ── */
+  .shelf{margin-bottom:34px;}
+  .shelf-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--line);}
+  .shelf-head .sh-title{font-family:var(--f-display);font-size:20px;color:var(--ink);}
+  .shelf-head .sh-title .sh-count{font-size:12px;color:var(--ink-faint);margin-left:9px;font-variant-numeric:tabular-nums;font-family:var(--f-body);}
+  .shelf-head .sh-all{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--marigold-deep);cursor:pointer;white-space:nowrap;}
+  .shelf-head .sh-all:hover{color:var(--sindoor);}
+  .shelf-wrap{position:relative;}
+  .shelf-wrap::after{content:"";position:absolute;top:0;bottom:14px;right:0;width:44px;background:linear-gradient(90deg,transparent,var(--chalk));pointer-events:none;}
+  .shelf-row{display:flex;gap:20px;overflow-x:auto;padding:4px 2px 14px;scroll-snap-type:x proximity;scrollbar-width:thin;}
+  .shelf-row .piece{flex:0 0 clamp(216px,23vw,252px);scroll-snap-align:start;}
+  .shelf-row::-webkit-scrollbar{height:6px;}
+  .shelf-row::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
+  .shelf-row::-webkit-scrollbar-track{background:transparent;}
+
+  /* ── "Shop the Home" — Vāstu Puruṣa Maṇḍala arrangement ── */
+  .mandala-sec{margin-bottom:44px;}
+  .mandala-head{text-align:center;margin-bottom:22px;}
+  .mandala-head .eyebrow{color:var(--peacock);}
+  .mandala-head h2{font-family:var(--f-display);font-weight:400;font-size:clamp(22px,2.8vw,32px);margin:8px 0 4px;}
+  .mandala-head p{font-size:13px;color:var(--ink-muted);}
+  .mandala{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:780px;margin:0 auto;}
+  .mcell{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;background:var(--card);display:flex;flex-direction:column;box-shadow:0 10px 26px -22px rgba(90,60,20,.5);transition:transform .3s var(--ease),box-shadow .3s,border-color .3s;}
+  .mcell:hover{transform:translateY(-5px);box-shadow:0 24px 46px -26px var(--pc,rgba(90,60,20,.5));border-color:var(--pc,var(--line));}
+  .mc-bar{height:5px;background:var(--pc,var(--marigold));}
+  .mc-top{display:flex;align-items:center;gap:8px;padding:10px 13px 0;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--pc-deep,var(--marigold-deep));}
+  .mc-top .deva{font-family:var(--f-deva);font-size:16px;text-transform:none;letter-spacing:0;}
+  .mc-stage{aspect-ratio:4/3;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 72% 62% at 50% 50%,var(--pc-wash,rgba(245,145,30,.14)),transparent 72%),var(--chalk);}
+  .mc-stage .p-niche{width:64%;height:82%;}
+  .mc-stage svg.obj{width:32%;height:32%;transform:translateY(8%);position:relative;}
+  .mc-body{padding:9px 13px 13px;}
+  .mc-name{font-family:var(--f-display);font-size:14.5px;line-height:1.2;}
+  .mc-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;}
+  .mc-price{font-family:var(--f-display);font-variant-numeric:tabular-nums;font-size:14px;}
+  .mc-count{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--pc-deep,var(--marigold-deep));font-weight:700;}
+  .mcenter{align-items:center;justify-content:center;text-align:center;padding:18px;background:radial-gradient(ellipse 82% 82% at 50% 44%,rgba(244,196,48,.2),var(--card));border-color:rgba(232,168,28,.45);}
+  .mcenter .om{font-family:var(--f-deva);font-size:clamp(34px,4vw,48px);color:var(--marigold);line-height:1;}
+  .mcenter .mc-brahma{font-family:var(--f-display);font-size:16px;margin-top:8px;}
+  .mcenter .mc-brline{font-size:11px;color:var(--ink-muted);font-style:italic;font-family:var(--f-display);margin-top:4px;line-height:1.4;}
+  @media(max-width:600px){.mandala{max-width:340px;gap:8px;} .mc-body{padding:8px 9px 10px;} .mc-name{font-size:12px;} .mc-top{font-size:8.5px;padding:7px 9px 0;} .mc-count,.mc-price{font-size:11px;}}
+
   .dir-band{position:relative;display:flex;align-items:center;gap:18px;padding:16px 20px;margin:8px 0 20px;border-radius:12px;overflow:hidden;border:1px solid var(--line);}
   .dir-band .torana{position:absolute;inset:0;opacity:.14;pointer-events:none;}
   .dir-band .db-deva{font-family:var(--f-deva);font-size:38px;line-height:1;flex-shrink:0;position:relative;}
@@ -256,9 +299,10 @@
   .piece.in{opacity:1;transform:none;transition:opacity .5s var(--ease),transform .5s var(--ease),box-shadow .4s,border-color .4s;}
   .piece:hover{transform:translateY(-7px);box-shadow:0 26px 50px -26px var(--pc,rgba(90,60,20,.6));border-color:var(--pc,var(--line));}
   .p-topbar{height:5px;background:var(--pc,var(--marigold));}
-  .p-stage{aspect-ratio:5/4.3;position:relative;display:flex;align-items:center;justify-content:center;
-    background:radial-gradient(ellipse 72% 60% at 50% 44%,var(--pc-wash,rgba(245,145,30,.14)),transparent 72%),var(--chalk);}
-  .p-stage svg.obj{width:50%;height:50%;position:relative;}
+  .p-stage{aspect-ratio:4/4.6;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;
+    background:radial-gradient(ellipse 76% 66% at 50% 48%,var(--pc-wash,rgba(245,145,30,.14)),transparent 72%),var(--chalk);}
+  .p-stage svg.obj{width:40%;height:40%;position:relative;transform:translateY(9%);filter:drop-shadow(0 3px 6px rgba(120,80,20,.14));}
+  .p-niche{position:absolute;top:4%;left:50%;transform:translateX(-50%);width:80%;height:90%;color:var(--pc,var(--marigold));}
   .p-halo{position:absolute;width:74%;height:74%;opacity:.4;color:var(--pc,var(--marigold));}
   .p-glyph{fill:none;stroke:var(--pc,var(--marigold));stroke-width:1.6;}
   .p-wish{position:absolute;top:11px;right:11px;width:30px;height:30px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 4px 10px -6px rgba(0,0,0,.3);}
@@ -428,6 +472,14 @@ let sortMode=0;
 function haloSVG(){let r="";[54,42,30].forEach((rad,i)=>r+=`<circle cx="64" cy="64" r="${rad}" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="${i===1?"3 5":"none"}" opacity="${.5-i*.08}"/>`);
   for(let k=0;k<12;k++){const a=k*30*Math.PI/180;r+=`<circle cx="${(64+58*Math.cos(a)).toFixed(1)}" cy="${(64+58*Math.sin(a)).toFixed(1)}" r="1.6" fill="currentColor" opacity=".4"/>`;}
   return `<svg class="p-halo" viewBox="0 0 128 128" aria-hidden="true">${r}</svg>`;}
+function nicheSVG(){return `<svg class="p-niche" viewBox="0 0 128 128" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  <path d="M24 118 V64 Q24 30 64 30 Q104 30 104 64 V118" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/>
+  <path d="M33 118 V66 Q33 40 64 40 Q95 40 95 66 V118" fill="none" stroke="currentColor" stroke-width="1" opacity=".28"/>
+  <circle cx="64" cy="20" r="3.2" fill="currentColor" opacity=".6"/>
+  <path d="M64 23 V30" stroke="currentColor" stroke-width="1.3" opacity=".5"/>
+  <path d="M12 118 H116" stroke="currentColor" stroke-width="1.5" opacity=".5"/>
+  <path d="M17 123 H111" stroke="currentColor" stroke-width="1" opacity=".33"/>
+</svg>`;}
 function buildOrnaments(){
   let m="";for(let ring=0;ring<3;ring++){const rr=[92,66,40][ring],ry=[34,26,18][ring];for(let k=0;k<16;k++){const a=k*22.5;m+=`<ellipse cx="130" cy="${130-rr}" rx="10" ry="${ry}" transform="rotate(${a} 130 130)"/>`;}}
   document.getElementById("mandala").innerHTML=`<svg viewBox="0 0 260 260" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><g>${m}</g><circle cx="130" cy="130" r="16"/><circle cx="130" cy="130" r="112"/></svg>`;
@@ -527,7 +579,7 @@ function render(){
 function card(p){const d=DIRMAP[p.dir];const st=STOCK[p.name]||"in";
   return `<div class="piece" style="--pc:${d.color};--pc-deep:${d.deep};--pc-wash:${hx(d.color,.16)}">
     <div class="p-topbar"></div>
-    <div class="p-stage">${haloSVG()}<svg class="obj" viewBox="0 0 128 128">${GLYPH[p.glyph]}</svg>
+    <div class="p-stage">${nicheSVG()}<svg class="obj" viewBox="0 0 128 128">${GLYPH[p.glyph]}</svg>
       <span class="p-stock ${st}"><i></i>${STOCK_LABEL[st]}</span>
       <div class="p-actions"><button class="p-add">Add to cart</button><button class="p-qv" aria-label="Quick view">◱</button></div>
     </div>
@@ -548,7 +600,7 @@ document.getElementById("density").addEventListener("click",e=>{const b=e.target
 
 function featuredHTML(){const p=PRODUCTS.find(x=>x.name===FEATURED)||PRODUCTS[0];const d=DIRMAP[p.dir];
   return `<a class="featured" href="#" style="--pc:${d.color};--pc-deep:${d.deep};--pc-wash:${hx(d.color,.2)}">
-    <div class="f-stage">${haloSVG().replace('p-halo','f-halo')}<svg class="obj" viewBox="0 0 128 128">${GLYPH[p.glyph]}</svg><span class="f-ribbon">Flagship piece</span></div>
+    <div class="f-stage">${nicheSVG().replace('p-niche','f-niche')}<svg class="obj" viewBox="0 0 128 128">${GLYPH[p.glyph]}</svg><span class="f-ribbon">Flagship piece</span></div>
     <div class="f-body"><div class="f-deity">${d.dik} · ${d.iast} · ${d.element}</div>
       <div class="f-name serif">${p.name}</div>
       <div class="f-desc">${p.place} A large panel worked in the East for first light — the direction of beginnings and clear breath, under Indra.</div>
@@ -561,6 +613,36 @@ function craftHTML(){return `<div class="craft">
   <div class="c-txt"><b>Weighed, stamped, certified</b><p>Every piece ships with its exact metal weight and the single gemstone set into it, certified per piece. No alloyed surprises — the number on the card is the number in your hands.</p></div>
 </div>`;}
 
+function pickCat(c){selectedCat=(c===selectedCat)?null:c;buildCats();render();window.scrollTo({top:0,behavior:"smooth"});}
+function mandalaCellHTML(d,lead){const cnt=PRODUCTS.filter(p=>p.dir===d.code).length;
+  return `<div class="mcell" role="button" tabindex="0" onclick="toggle('${d.code}')" style="--pc:${d.color};--pc-deep:${d.deep};--pc-wash:${hx(d.color,.14)}">
+    <div class="mc-bar"></div>
+    <div class="mc-top"><span class="deva">${d.deva}</span>${d.iast}</div>
+    <div class="mc-stage">${nicheSVG()}<svg class="obj" viewBox="0 0 128 128">${GLYPH[lead.glyph]}</svg></div>
+    <div class="mc-body"><div class="mc-name">${lead.name}</div>
+      <div class="mc-foot"><span class="mc-price">${inr(lead.price)}</span><span class="mc-count">${cnt} ${cnt===1?"piece":"pieces"} →</span></div></div>
+  </div>`;}
+function centerCellHTML(){return `<div class="mcell mcenter" role="button" tabindex="0" onclick="toggle('center')">
+  <span class="om deva">ॐ</span><span class="mc-brahma serif">Brahmasthāna</span><span class="mc-brline">The still centre —<br>kept open, kept clear</span>
+</div>`;}
+function mandalaSectionHTML(){
+  const order=["northwest","north","northeast","west","center","east","southwest","south","southeast"];
+  const cells=order.map(code=>{const lead=PRODUCTS.filter(p=>p.dir===code)[0];
+    return code==="center"?centerCellHTML():mandalaCellHTML(DIRMAP[code],lead);});
+  return `<section class="mandala-sec"><div class="mandala-head"><span class="eyebrow">Shop the home</span><h2 class="serif">Every piece, in its place</h2><p>The nine zones of a Vāstu home — tap a corner to enter its collection.</p></div><div class="mandala">${cells.join("")}</div></section>`;
+}
+function shelvesHTML(){
+  let h="";
+  for(const c of CATS){
+    const items=sortItems(PRODUCTS.filter(p=>CAT[p.name]===c&&p.name!==FEATURED));
+    if(!items.length)continue;
+    h+=`<section class="shelf">
+      <div class="shelf-head"><span class="sh-title serif">${c}<span class="sh-count">${items.length} ${items.length===1?"piece":"pieces"}</span></span><span class="sh-all" role="button" tabindex="0" onclick="pickCat('${c}')">View all →</span></div>
+      <div class="shelf-wrap"><div class="shelf-row">${items.map(card).join("")}</div></div>
+    </section>`;
+  }
+  return h;
+}
 function spotlightTileHTML(code){const d=DIRMAP[code];
   return `<div class="egrid-tile" role="button" tabindex="0" onclick="toggle('${code}')" style="background:linear-gradient(125deg,${hx(d.color,.2)},${hx(d.color,.05)} 72%);border-color:${hx(d.color,.4)}">
     ${toranaSVG(d.color)}
@@ -578,11 +660,15 @@ function renderField(docked){
   document.getElementById("lead").textContent=docked?"Facing your directions":"The full collection";
   const order=[...DIRS.map(d=>d.code),"center"];
   if(!docked){
-    const showFeat=selectedCat===null;
-    const rest=sortItems(PRODUCTS.filter(p=>catOK(p)&&(!showFeat||p.name!==FEATURED)));
-    const cells=rest.map(card);
-    if(selectedCat===null&&cells.length>6)cells.splice(6,0,spotlightTileHTML("east"));
-    html=(showFeat?featuredHTML():"")+`<div class="grid egrid">${cells.join("")}</div>`+(selectedCat===null?craftHTML():"");
+    if(selectedCat===null){
+      // browse-all: the Vāstu maṇḍala (shop by placement) → shelves (shop by type) → craft
+      html=mandalaSectionHTML()+shelvesHTML()+craftHTML();
+    }else{
+      // a single product-type chosen → full grid of it, with one woven spotlight
+      const cells=sortItems(PRODUCTS.filter(catOK)).map(card);
+      if(cells.length>6)cells.splice(6,0,spotlightTileHTML("east"));
+      html=`<div class="grid egrid">${cells.join("")}</div>`+craftHTML();
+    }
   }
   else{
     for(const c of order.filter(x=>selected.has(x))){
