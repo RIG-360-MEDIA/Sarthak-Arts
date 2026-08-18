@@ -9,13 +9,13 @@ import { AddToCart } from "./AddToCart";
  * direction. The whole card is a stretched link to the product; the wishlist
  * heart and add-to-cart sit above it (so buttons aren't nested in the anchor).
  */
-export function NicheCard({ p, compact }: { p: PieceCard; compact?: boolean }) {
+export function NicheCard({ p, compact, feature }: { p: PieceCard; compact?: boolean; feature?: boolean }) {
   const style = { ["--pc" as string]: p.color, ["--pc-deep" as string]: p.colorDeep } as React.CSSProperties;
   const spec = [p.primaryMetalName, p.weightG != null ? `${p.weightG}g` : null, p.isSample ? "sample" : null]
     .filter(Boolean).join(" · ");
 
   return (
-    <article className={`niche${compact ? " compact" : ""}`} style={style}>
+    <article className={`niche${compact ? " compact" : ""}${feature ? " feature" : ""}`} style={style}>
       <Link href={`/collection/${p.slug}`} className="niche-hit" aria-label={`${p.name} — ${p.directionName}`} />
 
       <span className={`niche-badge${p.inStock ? "" : " sold"}`}>
