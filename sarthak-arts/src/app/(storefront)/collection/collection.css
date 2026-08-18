@@ -50,7 +50,7 @@
 .col-hero .wm { /* glowing mandala watermark */
   position: absolute; z-index: 1; top: 50%; left: 50%; width: 640px; height: 640px;
   transform: translate(-50%, -46%);
-  opacity: .22; pointer-events: none;
+  opacity: .18; pointer-events: none;
   filter: drop-shadow(0 0 40px rgba(232,168,28,.5));
 }
 .col-eyebrow {

@@ -46,58 +46,31 @@ export default async function CollectionPage({
       {/* ── Dark sanctum hero ── */}
       <header className="col-hero bleed">
         <svg className="wm" viewBox="0 0 200 200" aria-hidden="true">
-          {/* Aṣṭadala Padma — a layered eight-petalled lotus (outer + offset mid +
-              inner rows) with a pearl border and the Brahmasthān (ॐ) at its still
-              centre. The platform's motif: eight directions around one quiet core. */}
+          {/* Aṣṭadala Padma — one clean ring of eight lotus petals, each holding a
+              single auspicious symbol (svastika at the cardinals, a sacred flame at
+              the ordinals), around the Brahmasthān (ॐ). Kept spare so it reads. */}
           <g fill="none" stroke="#E8A81C" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="100" cy="100" r="97" strokeWidth="0.35" />
-            <circle cx="100" cy="100" r="88" strokeWidth="0.6" />
-            {/* pearl border */}
-            {Array.from({ length: 32 }).map((_, i) => {
-              const a = (i * 11.25 * Math.PI) / 180;
-              return <circle key={`pearl${i}`} cx={(100 + 97 * Math.cos(a)).toFixed(1)} cy={(100 + 97 * Math.sin(a)).toFixed(1)} r="0.7" fill="#E8A81C" stroke="none" />;
-            })}
-            {/* outer petals — with an inner vein */}
+            <circle cx="100" cy="100" r="95" strokeWidth="0.4" />
+            <circle cx="100" cy="100" r="89" strokeWidth="0.55" />
             {Array.from({ length: 8 }).map((_, i) => (
-              <g key={`op${i}`} transform={`rotate(${i * 45} 100 100)`}>
-                <path strokeWidth="0.8" d="M100 51 C85 46 81 28 100 12 C119 28 115 46 100 51 Z" />
-                <path strokeWidth="0.45" d="M100 47 C97.5 39 97.5 27 100 18" />
-              </g>
+              <path key={`p${i}`} transform={`rotate(${i * 45} 100 100)`} strokeWidth="0.8"
+                d="M100 60 C83 54 79 32 100 13 C121 32 117 54 100 60 Z" />
             ))}
-            {/* mid petals — offset, filling the gaps */}
-            {Array.from({ length: 8 }).map((_, i) => (
-              <path key={`mp${i}`} transform={`rotate(${i * 45 + 22.5} 100 100)`} strokeWidth="0.6"
-                d="M100 57 C91 53 89 39 100 29 C111 39 109 53 100 57 Z" />
-            ))}
-            {/* inner lotus — a small row cupping the centre */}
-            {Array.from({ length: 8 }).map((_, i) => (
-              <path key={`ip${i}`} transform={`rotate(${i * 45} 100 100)`} strokeWidth="0.5"
-                d="M100 73 C94.5 69 93.5 61 100 55 C106.5 61 105.5 69 100 73 Z" />
-            ))}
-            {/* pearls at each outer petal tip */}
             {Array.from({ length: 8 }).map((_, i) => {
               const a = ((-90 + i * 45) * Math.PI) / 180;
-              return <circle key={`tip${i}`} cx={(100 + 90 * Math.cos(a)).toFixed(1)} cy={(100 + 90 * Math.sin(a)).toFixed(1)} r="1.4" fill="#E8A81C" stroke="none" />;
-            })}
-            {/* auspicious symbols — svastika (卐) in the cardinal petals, a sacred
-                flame (dīpa) in the ordinals; drawn upright so each reads correctly. */}
-            {Array.from({ length: 8 }).map((_, i) => {
-              const a = ((-90 + i * 45) * Math.PI) / 180;
-              const cx = (100 + 60 * Math.cos(a)).toFixed(1);
-              const cy = (100 + 60 * Math.sin(a)).toFixed(1);
+              const cx = (100 + 62 * Math.cos(a)).toFixed(1);
+              const cy = (100 + 62 * Math.sin(a)).toFixed(1);
               return (
                 <g key={`sym${i}`} transform={`translate(${cx} ${cy})`} strokeWidth="0.7">
                   {i % 2 === 0 ? (
-                    <path d="M0 -5.2 V5.2 M-5.2 0 H5.2 M0 -5.2 h3 M5.2 0 v3 M0 5.2 h-3 M-5.2 0 v-3" />
+                    <path d="M0 -4.6 V4.6 M-4.6 0 H4.6 M0 -4.6 h2.7 M4.6 0 v2.7 M0 4.6 h-2.7 M-4.6 0 v-2.7" />
                   ) : (
-                    <path d="M0 4 C-3.6 1 -2.8 -3.6 0 -7.4 C2.8 -3.6 3.6 1 0 4 Z" />
+                    <path d="M0 3.4 C-3 1 -2.4 -3 0 -6.4 C2.4 -3 3 1 0 3.4 Z" />
                   )}
                 </g>
               );
             })}
-            {/* centre bindu — double ring */}
-            <circle cx="100" cy="100" r="25" strokeWidth="0.8" />
-            <circle cx="100" cy="100" r="21" strokeWidth="0.35" />
+            <circle cx="100" cy="100" r="25" strokeWidth="0.7" />
           </g>
           <text x="100" y="101" textAnchor="middle" dominantBaseline="central" fontFamily="'Noto Serif Devanagari','Nirmala UI',serif" fontSize="25" fill="#E8A81C">ॐ</text>
         </svg>
