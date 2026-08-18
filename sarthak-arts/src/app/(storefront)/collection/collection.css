@@ -118,15 +118,15 @@
   font-weight: 700; color: var(--gold-deep); margin-bottom: 8px;
 }
 .compass-holder { width: 100%; display: flex; justify-content: center; }
-.compass { width: 100%; max-width: 208px; height: auto; margin: 2px auto 0; }
+.compass { width: 100%; max-width: 236px; height: auto; margin: 2px auto 0; }
 .compass .petal {
   cursor: pointer; transition: opacity .25s ease, transform .25s ease;
   transform-origin: center; transform-box: fill-box;
 }
 .compass .petal:hover { opacity: .9; }
 .compass .petal.dim { opacity: .32; }
-.compass .plabel { font-size: 8.5px; font-weight: 600; fill: var(--ink); pointer-events: none; }
-.compass .pshort { font-size: 7px; font-weight: 700; letter-spacing: .5px; pointer-events: none; }
+.compass .pdeva { font-size: 9.5px; font-weight: 500; pointer-events: none; }
+.compass .plabel { font-size: 6px; font-weight: 700; letter-spacing: .5px; pointer-events: none; }
 .compass .needle { transition: transform .6s cubic-bezier(.2,.8,.2,1); transform-origin: center; }
 .compass .om { font-size: 22px; fill: var(--gold-deep); }
 .compass .cap { font-size: 6.5px; letter-spacing: 1.2px; fill: var(--ink-faint); text-transform: uppercase; }

@@ -16,7 +16,13 @@ type CompassDir = {
  * the caption reads out the direction's Sanskrit name, guardian, and dominion.
  */
 
-const CX = 100, CY = 100, R_IN = 42, R_OUT = 95, R_LABEL = 68, SPREAD = 21;
+const CX = 100, CY = 100, R_IN = 42, R_OUT = 95, R_LABEL = 87, R_DEVA = 62, SPREAD = 21;
+
+/** Compass-point abbreviation for each zone (the plain-language cue). */
+const ABBR: Record<string, string> = {
+  north: "N", northeast: "NE", east: "E", southeast: "SE",
+  south: "S", southwest: "SW", west: "W", northwest: "NW",
+};
 
 function pt(r: number, deg: number): [number, number] {
   const a = (deg * Math.PI) / 180;
@@ -63,6 +69,8 @@ export function CollectionCompass({
             const on = selected.includes(d.code);
             const dim = selected.length > 0 && !on && hover !== d.code;
             const [lx, ly] = pt(R_LABEL, d.angle);
+            const [dvx, dvy] = pt(R_DEVA, d.angle);
+            const abbr = ABBR[d.code] ?? d.name;
             const style = { ["--pc" as string]: d.color } as React.CSSProperties;
             return (
               <g
@@ -81,8 +89,11 @@ export function CollectionCompass({
                 onBlur={() => setHover((h) => (h === d.code ? null : h))}
               >
                 <path d={wedge(d.angle)} fill={d.color} fillOpacity={on ? 0.9 : 0.24} stroke={d.colorDeep} strokeWidth={on ? 1.4 : 0.6} />
-                <text className="plabel" x={lx} y={ly} textAnchor="middle" dominantBaseline="central" fill={on ? "#fff" : d.colorDeep}>
-                  {d.name.replace("North", "N").replace("South", "S").replace("east", "E").replace("west", "W").replace("-", "")}
+                <text className="pdeva sa-deva" x={dvx} y={dvy} textAnchor="middle" dominantBaseline="central" fill={on ? "#fff" : d.colorDeep} aria-hidden="true">
+                  {d.deva}
+                </text>
+                <text className="plabel" x={lx} y={ly} textAnchor="middle" dominantBaseline="central" fill={on ? "rgba(255,255,255,.9)" : d.colorDeep} aria-hidden="true">
+                  {abbr}
                 </text>
               </g>
             );
