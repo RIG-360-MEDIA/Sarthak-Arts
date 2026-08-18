@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toQuery, toggleDirection } from "@/lib/collection-url";
 
@@ -45,14 +45,17 @@ export function CollectionCompass({
   totalLive: number;
 }) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [hover, setHover] = useState<string | null>(null);
   const petals = directions.filter((d) => d.code !== "center");
   const center = directions.find((d) => d.code === "center");
 
   const go = (code: string) => {
     const next = toggleDirection(selected, code);
-    router.push(toQuery({ ...baseParams, direction: next.join(",") || undefined }), { scroll: false });
+    startTransition(() => router.push(toQuery({ ...baseParams, direction: next.join(",") || undefined }), { scroll: false }));
   };
+  const releaseAll = () =>
+    startTransition(() => router.push(toQuery({ ...baseParams, direction: undefined }), { scroll: false }));
 
   // Caption: the hovered petal, else the single active one, else the Brahmasthān.
   const activeCode = hover ?? (selected.length === 1 ? selected[0] : null);
@@ -62,7 +65,7 @@ export function CollectionCompass({
 
   return (
     <>
-      <div className="compass-holder">
+      <div className="compass-holder" aria-busy={isPending} style={{ opacity: isPending ? 0.55 : 1, transition: "opacity .15s ease" }}>
         <svg className="compass" viewBox="0 0 200 200" role="group" aria-label="Filter by direction — the eight guardians">
           <circle cx={CX} cy={CY} r={R_OUT + 2} fill="none" stroke="var(--line)" strokeWidth="1" />
           {petals.map((d) => {
@@ -141,11 +144,7 @@ export function CollectionCompass({
       <div className="fhint">{selected.length ? "Tap a petal to add or remove a zone" : "Tap a petal — you may hold more than one"}</div>
 
       {selected.length > 0 && (
-        <button
-          type="button"
-          className="freset"
-          onClick={() => router.push(toQuery({ ...baseParams, direction: undefined }), { scroll: false })}
-        >
+        <button type="button" className="freset" onClick={releaseAll}>
           Release all directions
         </button>
       )}

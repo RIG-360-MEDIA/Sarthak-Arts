@@ -1,4 +1,5 @@
 "use client";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toQuery } from "@/lib/collection-url";
 
@@ -16,8 +17,9 @@ export function Toolbar({
   current: Record<string, string | undefined>;
 }) {
   const router = useRouter();
+  const [, startTransition] = useTransition();
   const push = (patch: Record<string, string | undefined>) =>
-    router.push(toQuery({ ...current, ...patch }), { scroll: false });
+    startTransition(() => router.push(toQuery({ ...current, ...patch }), { scroll: false }));
 
   return (
     <div className="toolbar">

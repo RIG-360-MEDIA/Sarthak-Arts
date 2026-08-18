@@ -51,12 +51,15 @@
   position: absolute; z-index: 1; top: 50%; left: 50%; width: 640px; height: 640px;
   transform: translate(-50%, -46%);
   opacity: .32; pointer-events: none;
-  filter: drop-shadow(0 0 34px rgba(232,168,28,.55));
+  filter: drop-shadow(0 0 26px rgba(232,168,28,.45));
+  /* Animate ONLY opacity (compositor-cheap). Never animate filter/blur here —
+     it repaints the whole 640px mandala every frame and janks the page. */
   animation: wmGlow 7s ease-in-out infinite;
+  will-change: opacity;
 }
 @keyframes wmGlow {
-  0%, 100% { opacity: .27; filter: drop-shadow(0 0 26px rgba(232,168,28,.45)); }
-  50%      { opacity: .38; filter: drop-shadow(0 0 40px rgba(232,168,28,.7)); }
+  0%, 100% { opacity: .28; }
+  50%      { opacity: .38; }
 }
 .col-eyebrow {
   font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
