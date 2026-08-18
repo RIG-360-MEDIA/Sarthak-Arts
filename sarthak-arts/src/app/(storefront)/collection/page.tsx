@@ -46,17 +46,27 @@ export default async function CollectionPage({
       {/* ── Dark sanctum hero ── */}
       <header className="col-hero bleed">
         <svg className="wm" viewBox="0 0 200 200" aria-hidden="true">
-          <g fill="none" stroke="#E8A81C" strokeWidth="0.6">
-            <circle cx="100" cy="100" r="92" /><circle cx="100" cy="100" r="70" /><circle cx="100" cy="100" r="46" /><circle cx="100" cy="100" r="24" />
-            {Array.from({ length: 16 }).map((_, i) => {
-              const a = (i * 22.5 * Math.PI) / 180;
-              return <line key={i} x1={100} y1={100} x2={100 + 92 * Math.cos(a)} y2={100 + 92 * Math.sin(a)} />;
-            })}
+          {/* Aṣṭadala Padma — the eight-petalled lotus of the eight directions,
+              with the Brahmasthān (ॐ) at its still centre. The platform's motif:
+              every piece is made for one of these eight, around one quiet core. */}
+          <g fill="none" stroke="#E8A81C">
+            <circle cx="100" cy="100" r="96" strokeWidth="0.4" />
+            <circle cx="100" cy="100" r="90" strokeWidth="0.7" />
+            {Array.from({ length: 8 }).map((_, i) => (
+              <path key={`op${i}`} transform={`rotate(${i * 45} 100 100)`} strokeWidth="0.7"
+                d="M100 44 C84 34 86 16 100 8 C114 16 116 34 100 44 Z" />
+            ))}
+            {Array.from({ length: 8 }).map((_, i) => (
+              <path key={`ip${i}`} transform={`rotate(${i * 45 + 22.5} 100 100)`} strokeWidth="0.6"
+                d="M100 68 C91 60 92 50 100 44 C108 50 109 60 100 68 Z" />
+            ))}
             {Array.from({ length: 8 }).map((_, i) => {
               const a = (i * 45 * Math.PI) / 180;
-              return <circle key={i} cx={100 + 46 * Math.cos(a)} cy={100 + 46 * Math.sin(a)} r="14" />;
+              return <circle key={`b${i}`} cx={(100 + 93 * Math.cos(a)).toFixed(1)} cy={(100 + 93 * Math.sin(a)).toFixed(1)} r="1.6" fill="#E8A81C" stroke="none" />;
             })}
+            <circle cx="100" cy="100" r="27" strokeWidth="0.9" />
           </g>
+          <text x="100" y="101" textAnchor="middle" dominantBaseline="central" fontFamily="'Noto Serif Devanagari','Nirmala UI',serif" fontSize="26" fill="#E8A81C">ॐ</text>
         </svg>
         <div className="col-hero-in">
           <span className="col-eyebrow">Sarthak Arts · The Collection</span>
