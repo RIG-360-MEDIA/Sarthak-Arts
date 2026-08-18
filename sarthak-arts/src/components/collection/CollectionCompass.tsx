@@ -31,11 +31,12 @@ function wedge(a: number): string {
 }
 
 export function CollectionCompass({
-  directions, selected, baseParams,
+  directions, selected, baseParams, totalLive,
 }: {
   directions: CompassDir[];
   selected: string[];
   baseParams: Record<string, string | undefined>;
+  totalLive: number;
 }) {
   const router = useRouter();
   const [hover, setHover] = useState<string | null>(null);
@@ -104,7 +105,10 @@ export function CollectionCompass({
             <div className="fm-governs">{active.governs}</div>
           </>
         ) : (
-          <div className="fm-sanskrit">Nine zones, one guardian each.</div>
+          <>
+            <div className="fm-name serif">The full collection</div>
+            <div className="fm-sanskrit">{totalLive} {totalLive === 1 ? "piece" : "pieces"} across nine zones</div>
+          </>
         )}
       </div>
 

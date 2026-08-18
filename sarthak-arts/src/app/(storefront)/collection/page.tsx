@@ -87,7 +87,7 @@ export default async function CollectionPage({
         <aside className="col-rail">
           <div className="fcard">
             <div className="fcard-lbl">Filter by direction</div>
-            <CollectionCompass directions={view.directions} selected={filters.directions} baseParams={nonDir} />
+            <CollectionCompass directions={view.directions} selected={filters.directions} baseParams={nonDir} totalLive={view.totalLive} />
           </div>
           <div className="rail-guide">
             <div className="rg-title">Not sure where it belongs?</div>

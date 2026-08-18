@@ -5,7 +5,7 @@ import { HeroWebGL } from "@/components/hero/HeroWebGL";
 import { SmoothScroll } from "@/components/hero/SmoothScroll";
 import { MiniWheel } from "@/components/hero/MiniWheel";
 import { getDirectionPage } from "@/lib/direction";
-import "@/app/(storefront)/home.css";
+import "../../home.css";
 import "../direction.css";
 
 type Params = { params: Promise<{ code: string }> };
