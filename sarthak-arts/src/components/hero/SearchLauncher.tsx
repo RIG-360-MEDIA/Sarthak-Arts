@@ -66,7 +66,7 @@ export function SearchLauncher() {
                 For now, browse the collection by direction — the shrine is the fastest way to find what belongs where.
               </p>
               <div className="sa-search-links">
-                <a href="/labs/direction">Shop by Direction →</a>
+                <a href="/direction">Shop by Direction →</a>
                 <a href="/collection">The full collection →</a>
               </div>
             </div>

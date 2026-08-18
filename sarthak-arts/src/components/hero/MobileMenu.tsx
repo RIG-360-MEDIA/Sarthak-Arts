@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { LogoMark } from "./LogoMark";
 
 /**
  * MobileMenu — the ☰ hamburger and its right-side slide-in drawer.
@@ -54,8 +55,8 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
           <div className="sa-drawer-scrim" onClick={() => setOpen(false)} aria-hidden="true" />
           <aside className="sa-drawer" role="dialog" aria-modal="true" aria-label="Menu">
             <div className="sa-drawer-head">
-              <Link href="/labs/hero" className="sa-drawer-logo" onClick={() => setOpen(false)}>
-                <span className="om" aria-hidden="true">ॐ</span> Sarthak Arts
+              <Link href="/" className="sa-drawer-logo" onClick={() => setOpen(false)}>
+                <LogoMark size={24} /> Sarthak Arts
               </Link>
               <button
                 type="button"
@@ -76,7 +77,7 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
 
             <nav className="sa-drawer-links" aria-label="Menu">
               <Link href="/collection" onClick={() => setOpen(false)}>The Collection</Link>
-              <Link href="/labs/direction" onClick={() => setOpen(false)}>Shop by Direction</Link>
+              <Link href="/direction" onClick={() => setOpen(false)}>Shop by Direction</Link>
               <Link href="/consultation" onClick={() => setOpen(false)}>Consultations</Link>
               <Link href="/vastu-shastra" onClick={() => setOpen(false)}>Journal</Link>
               <Link href="/home-audit" onClick={() => setOpen(false)}>The two-minute audit</Link>
@@ -90,7 +91,7 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
             </div>
 
             <div className="sa-drawer-cta">
-              <Link href="/labs/direction" className="sa-btn sa-btn-primary" onClick={() => setOpen(false)}>
+              <Link href="/direction" className="sa-btn sa-btn-primary" onClick={() => setOpen(false)}>
                 Enter the shrine
               </Link>
             </div>
