@@ -219,7 +219,7 @@
 
 /* Wishlist heart (base — pages may override position/palette) */
 .sa-wish {
-  display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border-radius: 50%;
   background: rgba(10, 4, 22, 0.72); backdrop-filter: blur(8px);
   border: 1px solid rgba(232, 184, 73, 0.3); color: var(--silk-muted); cursor: pointer;
   transition: color 0.25s, border-color 0.25s, transform 0.25s var(--ease), background 0.25s;
