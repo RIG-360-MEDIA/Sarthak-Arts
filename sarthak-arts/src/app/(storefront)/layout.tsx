@@ -24,7 +24,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
       <ToastProvider>
         {lines[0] && <div className="sa-announce">{lines[0]}</div>}
         <SanctumNav initialCartCount={cartCount} panchangSummary={null} />
-        <main id="main" className="container" style={{ paddingBottom: 80 }}>{children}</main>
+        <main id="main" className="container">{children}</main>
         <SanctumFooter storeName={storeName} />
       </ToastProvider>
     </div>

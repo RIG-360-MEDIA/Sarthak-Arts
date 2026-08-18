@@ -22,7 +22,7 @@ export async function savePanchangPreferences(formData: FormData): Promise<void>
   const jar = await cookies();
   jar.set(CITY_COOKIE, cityRaw, { sameSite: "lax", maxAge: YEAR, path: "/" });
   jar.set(MASA_COOKIE, masaRaw, { sameSite: "lax", maxAge: YEAR, path: "/" });
-  revalidatePath("/labs/hero");
+  revalidatePath("/");
 }
 
 export type ResolvedPrefs = {

@@ -37,6 +37,9 @@
 @keyframes sa-drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @keyframes sa-toast-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
+/* Break a section out of the centered container to full viewport width. */
+.sa-chrome .bleed { width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+
 .sa-deva { font-family: var(--f-deva); }
 .sa-eyebrow {
   display: inline-block; font-size: 10.5px; letter-spacing: 0.32em;

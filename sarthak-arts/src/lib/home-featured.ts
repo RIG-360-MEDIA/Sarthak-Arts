@@ -11,6 +11,7 @@ export type FeaturedPiece = {
   directionCode: string | null;
   directionName: string | null;
   directionElement: string | null;
+  stockQuantity: number;
   // First metal listed by sortOrder; used for the "material · weight · maker" line.
   primaryMetalName: string | null;
   primaryMetalWeightG: number | null;
@@ -27,18 +28,29 @@ export type FeaturedPiece = {
  * "no fake social proof" rule).
  */
 export async function getFeaturedPieces(count = 3): Promise<FeaturedPiece[]> {
-  const rows = await prisma.product.findMany({
-    where: { status: "live" },
-    orderBy: [{ isSample: "asc" }, { createdAt: "desc" }],
-    take: count,
-    include: {
-      category: true,
-      deity: true,
-      // ProductDirection has a composite key (no `id`); pick the first-linked one deterministically.
-      directions: { include: { direction: true }, orderBy: { directionId: "asc" }, take: 1 },
-      composition: { include: { metal: true }, orderBy: { sortOrder: "asc" }, take: 1 },
-    },
-  });
+  // Fail-soft against a suspended Neon endpoint — the homepage is a
+  // marketing surface and hard-crashing on an idle DB is worse than
+  // rendering the rest of the page with no featured pieces. When the
+  // DB is up, the pieces come back automatically. Real breakages
+  // during a live session still show in dev logs via console.warn.
+  let rows;
+  try {
+    rows = await prisma.product.findMany({
+      where: { status: "live" },
+      orderBy: [{ isSample: "asc" }, { createdAt: "desc" }],
+      take: count,
+      include: {
+        category: true,
+        deity: true,
+        // ProductDirection has a composite key (no `id`); pick the first-linked one deterministically.
+        directions: { include: { direction: true }, orderBy: { directionId: "asc" }, take: 1 },
+        composition: { include: { metal: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+      },
+    });
+  } catch (err) {
+    console.warn("[home-featured] getFeaturedPieces failed, rendering empty:", err instanceof Error ? err.message : err);
+    return [];
+  }
   return rows.map((p) => {
     const dir = p.directions[0]?.direction ?? null;
     const comp = p.composition[0] ?? null;
@@ -48,6 +60,7 @@ export async function getFeaturedPieces(count = 3): Promise<FeaturedPiece[]> {
       positioningLine: p.positioningLine,
       priceMinor: p.basePriceMinor,
       isSample: p.isSample,
+      stockQuantity: p.stockQuantity,
       categoryCode: p.category.code,
       deityName: p.deity?.name ?? null,
       directionCode: dir?.code ?? null,

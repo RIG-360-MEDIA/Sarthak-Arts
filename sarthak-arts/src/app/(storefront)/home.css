@@ -33,6 +33,7 @@
   line-height: 1.65;
   min-height: 100vh;
   position: relative;
+  overflow-x: clip; /* guard the full-bleed (.bleed) breakout on the real / route */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -83,48 +84,10 @@
 }
 
 /* --------------------------------------------------------------------------
-   Nav
+   Nav / search / cart / footer — MOVED to the shared sanctum-chrome.css, which
+   the storefront layout renders on every page. Kept out of home.css so the real
+   `/` homepage uses the one shared chrome instead of a conflicting copy.
    -------------------------------------------------------------------------- */
-.sa-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 20px clamp(20px, 4vw, 44px);
-  background: rgba(10, 4, 22, 0.55);
-  backdrop-filter: blur(16px) saturate(1.3);
-  border-bottom: 1px solid var(--line-dark);
-}
-.sa-nav-logo {
-  display: flex; align-items: center; gap: 10px;
-  font-family: var(--f-display); font-size: 18px;
-  color: var(--gold-lit); text-decoration: none;
-}
-.sa-nav-logo .om {
-  font-family: var(--f-deva); font-size: 22px;
-  text-shadow: 0 0 18px rgba(252, 212, 111, 0.55);
-  animation: sa-breath 6s ease-in-out infinite;
-}
-.sa-nav-links { display: flex; gap: 30px; }
-.sa-nav-links a {
-  font-size: 11.5px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--silk-muted); font-weight: 600; text-decoration: none;
-  padding: 6px 0; position: relative; transition: color 0.25s;
-}
-.sa-nav-links a::after {
-  content: ""; position: absolute; bottom: 0; left: 50%;
-  width: 0; height: 1px; background: var(--gold-lit);
-  transform: translateX(-50%); transition: width 0.3s var(--ease);
-}
-.sa-nav-links a:hover { color: var(--gold-lit); }
-.sa-nav-links a:hover::after { width: 22px; }
-.sa-nav.is-scrolled {
-  background: rgba(10, 4, 22, 0.78); border-bottom-color: rgba(232, 184, 73, 0.18);
-}
-.sa-nav-actions { display: flex; gap: 14px; align-items: center; }
 
 /* ── Search launcher — magnifier glyph ─────────────────────────────────── */
 .sa-search-btn {
@@ -331,20 +294,15 @@
   outline-offset: 3px;
   border-radius: 2px;
 }
-@media (max-width: 760px) {
-  .sa-nav-links, .sa-search-btn, .sa-cart { display: none; }
-  .sa-nav { padding: 16px 20px; }
-  .sa-burger { display: inline-flex; }
-  .sa-nav-logo .wordmark { font-size: 16px; }
-}
+/* (mobile nav rules also live in sanctum-chrome.css) */
 
 /* --------------------------------------------------------------------------
    Hero
    -------------------------------------------------------------------------- */
 .sa-hero {
-  min-height: 100vh;
+  min-height: calc(100dvh - 66px); /* sticky shared nav sits above the hero now */
   display: flex; align-items: center; justify-content: center;
-  padding: 140px clamp(20px, 5vw, 48px) 120px;
+  padding: 64px clamp(20px, 5vw, 48px) 110px;
   text-align: center;
   position: relative;
 }
@@ -373,9 +331,15 @@
   box-shadow: 0 0 8px var(--gold-lit);
   animation: sa-pulse 1.8s ease-in-out infinite;
 }
+.sa-returning {
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--silk-faint); margin-bottom: 10px; font-weight: 600;
+}
 .sa-hero-eyebrow {
   position: relative; padding: 6px 26px;
+  transition: opacity 0.4s ease;
 }
+.sa-hero-eyebrow.sa-eyebrow-fade { opacity: 0; }
 .sa-hero-eyebrow::before, .sa-hero-eyebrow::after {
   content: ""; position: absolute; top: 50%; width: 42px; height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold-lit), transparent);
@@ -767,6 +731,11 @@
   border-top: 1px dashed var(--line-gold); margin-top: 18px;
 }
 .sa-piece-price { font-family: var(--f-display); font-size: 21px; color: var(--silk); font-variant-numeric: tabular-nums; }
+.sa-piece-stock {
+  font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600;
+}
+.sa-piece-stock.in-stock { color: #7dcea0; }
+.sa-piece-stock.made-to-order { color: var(--silk-faint); }
 .sa-piece-mantra { font-family: var(--f-deva); font-size: 13px; color: var(--gold); opacity: 0.9; }
 .sa-pieces-cta { text-align: center; margin-top: 52px; }
 .sa-link-line {
@@ -1175,33 +1144,4 @@
   margin-top: 10px; font-size: 10.5px; color: var(--silk-faint); letter-spacing: 0.06em;
 }
 
-/* --------------------------------------------------------------------------
-   Footer
-   -------------------------------------------------------------------------- */
-.sa-foot {
-  padding: 100px clamp(20px, 5vw, 48px) 56px;
-  text-align: center;
-  background: linear-gradient(180deg, transparent, rgba(3, 1, 10, 0.92) 40%);
-  border-top: 1px solid var(--line-dark);
-}
-.sa-foot-om {
-  font-family: var(--f-deva); font-size: 46px; color: var(--gold-lit);
-  text-shadow: 0 0 36px rgba(252, 212, 111, 0.5);
-  animation: sa-breath 6s ease-in-out infinite;
-  display: inline-block;
-}
-.sa-foot-links {
-  display: flex; gap: 28px; justify-content: center; flex-wrap: wrap;
-  margin: 34px 0 26px;
-}
-.sa-foot-links a {
-  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--silk-muted); text-decoration: none; font-weight: 600;
-  transition: color 0.25s;
-}
-.sa-foot-links a:hover { color: var(--gold-lit); }
-.sa-foot-meta {
-  font-family: var(--f-mono); font-size: 10.5px; color: var(--silk-faint);
-  letter-spacing: 0.06em; line-height: 2;
-}
-.sa-foot-meta b { color: var(--gold); font-weight: 600; }
+/* Footer — MOVED to the shared sanctum-chrome.css (SanctumFooter). */

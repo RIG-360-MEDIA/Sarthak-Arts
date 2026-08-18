@@ -141,7 +141,7 @@ export function AuditPreview() {
           Based on your answers, the pieces built for the {rec.winnerName} zone are the natural first step {contextLine}. A full twelve-minute reading on the dedicated audit page will go deeper — for now, take a look at what's built for this zone.
         </p>
         <div className="sa-quiz-result-actions">
-          <Link className="sa-btn sa-btn-primary" href={`/labs/direction/${rec.winner === "center" ? "center" : rec.winner}`}>
+          <Link className="sa-btn sa-btn-primary" href={`/direction/${rec.winner === "center" ? "center" : rec.winner}`}>
             See the {rec.winnerName} pieces →
           </Link>
           <button type="button" className="sa-btn sa-btn-ghost" onClick={restart}>Start over</button>

@@ -5,7 +5,7 @@ import { HeroWebGL } from "@/components/hero/HeroWebGL";
 import { SmoothScroll } from "@/components/hero/SmoothScroll";
 import { MiniWheel } from "@/components/hero/MiniWheel";
 import { getDirectionPage } from "@/lib/direction";
-import "../../hero/home.css";
+import "@/app/(storefront)/home.css";
 import "../direction.css";
 
 type Params = { params: Promise<{ code: string }> };
@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const page = await getDirectionPage(code);
   if (!page) return { title: "Direction — Sarthak Arts" };
   return {
-    title: `${page.name} · ${page.sanskritName} — Sarthak Arts`,
+    title: `${page.name} · ${page.sanskritName} — Vāstu Direction | Sarthak Arts`,
     description: `${page.governs}. ${page.microcopy}`,
   };
 }
@@ -31,26 +31,16 @@ export default async function DirectionPage({ params }: Params) {
     : `The ${page.name} wants ${page.governs.split(",")[0].toLowerCase()}.`;
 
   return (
-    <div className="sa-home sa-direction">
+    <div className="sa-home sa-direction bleed">
       <SmoothScroll />
       <HeroWebGL />
 
       <div className="sa-overlay">
-        <nav className="sa-nav" aria-label="Primary">
-          <Link className="sa-nav-logo" href="/labs/hero">
-            <span className="om" aria-hidden="true">ॐ</span> Sarthak Arts
-          </Link>
-          <div className="sa-nav-links">
-            <Link href="/labs/hero">Home</Link>
-            <Link href="/labs/direction">All eight directions</Link>
-          </div>
-        </nav>
-
         {/* Hero — education */}
         <section className="sa-dir-hero">
           <div className="sa-dir-hero-inner">
             <div className="sa-dir-crumbs">
-              <Link href="/labs/direction">The eight directions</Link>
+              <Link href="/direction">The eight directions</Link>
               <span> · </span>
               <span>{page.name}</span>
             </div>
@@ -96,7 +86,7 @@ export default async function DirectionPage({ params }: Params) {
 
           {page.products.length === 0 ? (
             <div className="sa-dir-empty sa-reveal">
-              <Link href="/labs/hero#newsletter" className="sa-link-line">
+              <Link href="/#newsletter" className="sa-link-line">
                 Notify me when they land →
               </Link>
             </div>
@@ -152,23 +142,12 @@ export default async function DirectionPage({ params }: Params) {
               need placement guidance now, a twenty-minute reading is the honest answer.
             </p>
             <div style={{ marginTop: 24 }}>
-              <Link href="/labs/hero#consultation" className="sa-link-line">
+              <Link href="/consultation" className="sa-link-line">
                 Book a Vāstu reading →
               </Link>
             </div>
           </div>
         </section>
-
-        <footer className="sa-foot">
-          <div className="sa-foot-om" aria-hidden="true">ॐ</div>
-          <div className="sa-foot-links">
-            <Link href="/labs/hero">Home</Link>
-            <Link href="/labs/direction">All directions</Link>
-          </div>
-          <div className="sa-foot-meta">
-            Positions per <b>Bṛhat Saṃhitā, Ch. 53</b> · Aṣṭadikpālaka attributions per Purāṇic tradition
-          </div>
-        </footer>
       </div>
     </div>
   );
@@ -177,7 +156,7 @@ export default async function DirectionPage({ params }: Params) {
 function AdjacentCard({ card, label }: { card: NonNullable<Awaited<ReturnType<typeof getDirectionPage>>>["prev"]; label: string }) {
   if (!card) return null;
   return (
-    <Link href={`/labs/direction/${card.code}`} className="sa-dir-adjacent-card sa-reveal">
+    <Link href={`/direction/${card.code}`} className="sa-dir-adjacent-card sa-reveal">
       <MiniWheel highlight={card.code} size={72} />
       <div>
         <div className="sa-eyebrow">{label}</div>
