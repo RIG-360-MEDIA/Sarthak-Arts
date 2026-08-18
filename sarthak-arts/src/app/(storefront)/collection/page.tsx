@@ -79,6 +79,22 @@ export default async function CollectionPage({
               const a = ((-90 + i * 45) * Math.PI) / 180;
               return <circle key={`tip${i}`} cx={(100 + 90 * Math.cos(a)).toFixed(1)} cy={(100 + 90 * Math.sin(a)).toFixed(1)} r="1.4" fill="#E8A81C" stroke="none" />;
             })}
+            {/* auspicious symbols — svastika (卐) in the cardinal petals, a sacred
+                flame (dīpa) in the ordinals; drawn upright so each reads correctly. */}
+            {Array.from({ length: 8 }).map((_, i) => {
+              const a = ((-90 + i * 45) * Math.PI) / 180;
+              const cx = (100 + 60 * Math.cos(a)).toFixed(1);
+              const cy = (100 + 60 * Math.sin(a)).toFixed(1);
+              return (
+                <g key={`sym${i}`} transform={`translate(${cx} ${cy})`} strokeWidth="0.7">
+                  {i % 2 === 0 ? (
+                    <path d="M0 -5.2 V5.2 M-5.2 0 H5.2 M0 -5.2 h3 M5.2 0 v3 M0 5.2 h-3 M-5.2 0 v-3" />
+                  ) : (
+                    <path d="M0 4 C-3.6 1 -2.8 -3.6 0 -7.4 C2.8 -3.6 3.6 1 0 4 Z" />
+                  )}
+                </g>
+              );
+            })}
             {/* centre bindu — double ring */}
             <circle cx="100" cy="100" r="25" strokeWidth="0.8" />
             <circle cx="100" cy="100" r="21" strokeWidth="0.35" />
