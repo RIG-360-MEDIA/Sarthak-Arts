@@ -176,6 +176,11 @@ export default async function CollectionPage({
                       <span className="dg-count">{items.length} {items.length === 1 ? "piece" : "pieces"}</span>
                     </header>
                     <div className={`field${density === "compact" ? " compact" : ""}`}>
+                      <Link href={`/direction/${d.code}`} className="dg-note">
+                        <span className="dg-note-om sa-deva" aria-hidden="true">ॐ</span>
+                        {d.microcopy && <p>{d.microcopy}</p>}
+                        <span className="dg-note-cta">Explore the {d.name} →</span>
+                      </Link>
                       {items.map((p) => <NicheCard key={p.slug} p={p} compact={density === "compact"} />)}
                     </div>
                   </section>

@@ -38,6 +38,10 @@ body:has(.col-root) {
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
 }
 
+/* The collection uses more width than the default container so it doesn't leave
+   big empty margins on wide screens (the shared 1080px cap is too narrow here). */
+main:has(.col-root) { max-width: 1340px; }
+
 /* Break a section out of the storefront's centered container to viewport width. */
 .col-root .bleed {
   width: 100vw;
@@ -283,8 +287,23 @@ body:has(.col-root) {
 .dg-count { margin-left: auto; font-size: 12.5px; color: var(--ink-muted); }
 
 /* ── Product field + niche cards ─────────────────────────────────────────── */
-.field { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
-.field.compact { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+/* auto-fit (not auto-fill) so cards expand to fill the row — no empty tracks. */
+.field { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+.field.compact { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+
+/* Direction note panel — fills the first slot of each group and links onward. */
+.dg-note {
+  display: flex; flex-direction: column; justify-content: center; gap: 10px;
+  padding: 22px; border-radius: 16px; text-decoration: none; min-height: 210px;
+  background: color-mix(in srgb, var(--pc) 13%, #fff);
+  border: 1px dashed color-mix(in srgb, var(--pc) 42%, #fff);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.dg-note:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -16px color-mix(in srgb, var(--pc) 55%, transparent); }
+.dg-note-om { font-size: 28px; color: var(--pc-deep); line-height: 1; }
+.dg-note p { font-size: 13.5px; line-height: 1.55; color: var(--ink); font-style: italic; margin: 0; }
+.dg-note-cta { font-size: 11.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--pc-deep); }
+.dg-note:hover .dg-note-cta { text-decoration: underline; }
 
 .niche {
   position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit;
