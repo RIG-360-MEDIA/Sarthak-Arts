@@ -33,7 +33,6 @@
   line-height: 1.65;
   min-height: 100vh;
   position: relative;
-  overflow-x: clip; /* guard the full-bleed (.bleed) breakout on the real / route */
   -webkit-font-smoothing: antialiased;
 }
 

@@ -20,8 +20,6 @@
 
   color: var(--ink);
   font-family: var(--font-inter), system-ui, sans-serif;
-  /* Contain the full-bleed breakout so the page never scrolls sideways. */
-  overflow-x: clip;
 }
 .col-root .serif { font-family: var(--font-fraunces), Georgia, serif; }
 

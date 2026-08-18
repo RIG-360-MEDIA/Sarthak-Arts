@@ -29,6 +29,9 @@
   --f-mono: "SF Mono", Menlo, Consolas, monospace;
   --f-deva: "Sanskrit Text", "Noto Serif Devanagari", "Nirmala UI", Georgia, serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Contain full-bleed (.bleed) sections at viewport width so the page never
+     scrolls sideways. `clip` (not hidden) does NOT break the sticky nav. */
+  overflow-x: clip;
 }
 
 @keyframes sa-breath { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
