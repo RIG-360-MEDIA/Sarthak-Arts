@@ -3,7 +3,6 @@ import Link from "next/link";
 import "./collection.css";
 import { getCollectionView, parseFilters, toQuery } from "@/lib/collection";
 import { PieceDefs } from "@/components/collection/Piece";
-import { MandalaHome } from "@/components/collection/MandalaHome";
 import { NicheCard } from "@/components/collection/NicheCard";
 import { CollectionCompass } from "@/components/collection/CollectionCompass";
 import { Toolbar } from "@/components/collection/Toolbar";
@@ -149,8 +148,6 @@ export default async function CollectionPage({
           </nav>
 
           <Toolbar lead={lead} count={view.pieces.length} sort={filters.sort} density={density} current={currentAll} />
-
-          <MandalaHome directions={view.directions} selected={filters.directions} baseParams={nonDir} />
 
           {view.pieces.length === 0 ? (
             <div className="col-empty">
