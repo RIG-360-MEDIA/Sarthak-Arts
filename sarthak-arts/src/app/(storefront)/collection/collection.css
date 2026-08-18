@@ -125,6 +125,9 @@
 }
 .compass .petal:hover { opacity: .9; }
 .compass .petal.dim { opacity: .32; }
+/* No black UA focus box on click; a gold ring only for keyboard focus. */
+.compass .petal:focus { outline: none; }
+.compass .petal:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 1px; border-radius: 4px; }
 .compass .pdeva { font-size: 9.5px; font-weight: 500; pointer-events: none; }
 .compass .plabel { font-size: 6px; font-weight: 700; letter-spacing: .5px; pointer-events: none; }
 .compass .needle { transition: transform .6s cubic-bezier(.2,.8,.2,1); transform-origin: center; }
