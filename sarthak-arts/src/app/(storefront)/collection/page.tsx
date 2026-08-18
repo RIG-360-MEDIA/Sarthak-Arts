@@ -39,6 +39,28 @@ export default async function CollectionPage({
     : filters.category ? (catName ?? "The collection")
     : "The full collection";
 
+  // Eight auspicious symbols for the hero lotus — several echo the pieces this
+  // page sells (kalasha, yantra, pyramid, bell), the rest are Sanātana maṅgala
+  // marks. Each is drawn centred on the origin (~±5 units), upright.
+  const PETAL_SYMBOLS: React.ReactNode[] = [
+    // Kalasha — the sacred pot (also a piece we make)
+    <g key="s"><path d="M-3.6 -0.6 C-4.3 4.4 4.3 4.4 3.6 -0.6 Z M-2.9 -0.6 H2.9 M-1.9 -2.1 H1.9" /><circle cx="0" cy="-3.7" r="1.4" /></g>,
+    // Śrī Yantra — interlocking triangles + bindu (also a piece we make)
+    <g key="s"><path d="M0 -5 L4.3 2.5 L-4.3 2.5 Z M0 5 L4.3 -2.5 L-4.3 -2.5 Z" /><circle cx="0" cy="0" r="0.9" fill="#E8A81C" stroke="none" /></g>,
+    // Dīpa — the lamp and its flame
+    <g key="s"><path d="M-4 2 C-3 4.8 3 4.8 4 2 Z M-4 2 H4" /><path d="M0 1 C-1.9 -1 -1.3 -3.3 0 -4.8 C1.3 -3.3 1.9 -1 0 1 Z" /></g>,
+    // Svastika — the auspicious Vāstu mark
+    <path key="s" d="M0 -4.6 V4.6 M-4.6 0 H4.6 M0 -4.6 h2.7 M4.6 0 v2.7 M0 4.6 h-2.7 M-4.6 0 v-2.7" />,
+    // Pyramid — the Vāstu pyramid (also a piece we make)
+    <g key="s"><path d="M0 -4.6 L4.6 4 L-4.6 4 Z M0 -4.6 V4" /><circle cx="0" cy="-4.6" r="0.7" fill="#E8A81C" stroke="none" /></g>,
+    // Ghaṇṭā — the temple bell (echoes our chimes)
+    <g key="s"><path d="M-3.4 3 C-3.4 -2.6 3.4 -2.6 3.4 3 Z M-4.1 3 H4.1 M0 -2.6 V-4.3" /><circle cx="0" cy="4.1" r="0.8" fill="#E8A81C" stroke="none" /></g>,
+    // Chakra — the wheel
+    <g key="s"><circle cx="0" cy="0" r="4.6" /><circle cx="0" cy="0" r="1.4" /><path d="M0 -4.6 V-1.4 M0 4.6 V1.4 M-4.6 0 H-1.4 M4.6 0 H1.4 M-3.25 -3.25 L-1 -1 M3.25 3.25 L1 1 M3.25 -3.25 L1 -1 M-3.25 3.25 L-1 1" /></g>,
+    // Padma — the lotus bloom
+    <g key="s"><path d="M0 3.6 C-1.6 0 -1.4 -3.6 0 -5 C1.6 -3.6 1.4 0 0 3.6 Z" /><path d="M-1.2 3.4 C-4 1 -4.6 -1.6 -4.1 -3.6" /><path d="M1.2 3.4 C4 1 4.6 -1.6 4.1 -3.6" /><path d="M-4.2 3.4 Q0 5.6 4.2 3.4" /></g>,
+  ];
+
   return (
     <div className="col-root">
       <PieceDefs />
@@ -61,12 +83,8 @@ export default async function CollectionPage({
               const cx = (100 + 62 * Math.cos(a)).toFixed(1);
               const cy = (100 + 62 * Math.sin(a)).toFixed(1);
               return (
-                <g key={`sym${i}`} transform={`translate(${cx} ${cy})`} strokeWidth="0.7">
-                  {i % 2 === 0 ? (
-                    <path d="M0 -4.6 V4.6 M-4.6 0 H4.6 M0 -4.6 h2.7 M4.6 0 v2.7 M0 4.6 h-2.7 M-4.6 0 v-2.7" />
-                  ) : (
-                    <path d="M0 3.4 C-3 1 -2.4 -3 0 -6.4 C2.4 -3 3 1 0 3.4 Z" />
-                  )}
+                <g key={`sym${i}`} transform={`translate(${cx} ${cy})`} strokeWidth="0.6">
+                  {PETAL_SYMBOLS[i]}
                 </g>
               );
             })}
