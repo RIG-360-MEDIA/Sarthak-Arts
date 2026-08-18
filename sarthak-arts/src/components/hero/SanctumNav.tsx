@@ -42,6 +42,7 @@ export function SanctumNav({ initialCartCount, panchangSummary }: Props) {
       </Link>
 
       <div className="sa-nav-links">
+        <Link href="/">Home</Link>
         <Link href="/collection">The Collection</Link>
         <Link href="/direction">Shop by Direction</Link>
         <Link href="/consultation">Consultations</Link>

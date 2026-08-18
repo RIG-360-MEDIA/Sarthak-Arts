@@ -76,6 +76,7 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
             )}
 
             <nav className="sa-drawer-links" aria-label="Menu">
+              <Link href="/" onClick={() => setOpen(false)}>Home</Link>
               <Link href="/collection" onClick={() => setOpen(false)}>The Collection</Link>
               <Link href="/direction" onClick={() => setOpen(false)}>Shop by Direction</Link>
               <Link href="/consultation" onClick={() => setOpen(false)}>Consultations</Link>
