@@ -221,51 +221,21 @@ main:has(.col-root) { max-width: 1340px; }
   border: 1px solid var(--line); background: var(--chalk-raised); color: var(--ink); cursor: pointer; width: auto;
 }
 
-/* ── Direction-grouped product sections ──────────────────────────────────── */
-.dirgroups { display: grid; gap: 26px; }
-.dirgroup {
-  position: relative;
-  background:
-    radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--pc) 12%, transparent), transparent 55%),
-    color-mix(in srgb, var(--pc) 6%, #fff);
-  border: 1px solid color-mix(in srgb, var(--pc) 24%, var(--line));
-  border-left: 4px solid var(--pc);
-  border-radius: 20px; padding: 22px 20px 24px;
-}
-.dg-head {
-  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
-  margin-bottom: 18px; padding-bottom: 13px;
-  border-bottom: 1px solid color-mix(in srgb, var(--pc) 26%, var(--line));
-}
-.dg-en { font-family: var(--font-fraunces), Georgia, serif; font-size: 23px; color: var(--pc-deep); line-height: 1; }
-.dg-sk { font-size: 13px; color: var(--ink-muted); }
-.dg-sk .sa-deva { color: var(--pc-deep); }
-.dg-gov {
-  font-size: 10.5px; letter-spacing: .6px; text-transform: uppercase; font-weight: 700;
-  color: var(--pc-deep); background: color-mix(in srgb, var(--pc) 15%, #fff);
-  border: 1px solid color-mix(in srgb, var(--pc) 30%, #fff);
-  padding: 5px 12px; border-radius: 999px;
-}
-.dg-count { margin-left: auto; font-size: 12.5px; color: var(--ink-muted); }
-
 /* ── Product field + niche cards ─────────────────────────────────────────── */
-/* auto-fit (not auto-fill) so cards expand to fill the row — no empty tracks. */
-.field { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
-.field.compact { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+/* Compact = an even grid. Comfortable = an editorial masonry mosaic. */
+.field.compact { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
 
-/* Direction note panel — fills the first slot of each group and links onward. */
-.dg-note {
-  display: flex; flex-direction: column; justify-content: center; gap: 10px;
-  padding: 22px; border-radius: 16px; text-decoration: none; min-height: 210px;
-  background: color-mix(in srgb, var(--pc) 13%, #fff);
-  border: 1px dashed color-mix(in srgb, var(--pc) 42%, #fff);
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-.dg-note:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -16px color-mix(in srgb, var(--pc) 55%, transparent); }
-.dg-note-om { font-size: 28px; color: var(--pc-deep); line-height: 1; }
-.dg-note p { font-size: 13.5px; line-height: 1.55; color: var(--ink); font-style: italic; margin: 0; }
-.dg-note-cta { font-size: 11.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--pc-deep); }
-.dg-note:hover .dg-note-cta { text-decoration: underline; }
+/* Editorial mosaic — multi-column masonry: cards flow and stagger with no gaps,
+   with pieces featured at three sizes for a gallery rhythm. */
+.field.mosaic { column-gap: 20px; columns: 3 260px; }
+.field.mosaic > .niche { break-inside: avoid; margin: 0 0 20px; width: 100%; }
+/* large feature pieces — bigger stage + object + title */
+.field.mosaic > .niche:nth-child(5n + 1) .niche-stage { padding: 42px 18px 28px; }
+.field.mosaic > .niche:nth-child(5n + 1) .niche-obj { width: 176px; height: 176px; }
+.field.mosaic > .niche:nth-child(5n + 1) .niche-name { font-size: 20px; }
+/* quieter, smaller pieces */
+.field.mosaic > .niche:nth-child(3n + 3) .niche-stage { padding: 14px 14px 10px; }
+.field.mosaic > .niche:nth-child(3n + 3) .niche-obj { width: 104px; height: 104px; }
 
 .niche {
   position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit;
@@ -373,7 +343,8 @@ main:has(.col-root) { max-width: 1340px; }
 }
 @media (max-width: 560px) {
   .col-hero { padding: 54px 18px 48px; }
-  .field { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .field.compact { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .field.mosaic { columns: 2 150px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

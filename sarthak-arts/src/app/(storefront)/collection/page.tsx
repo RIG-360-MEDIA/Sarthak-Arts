@@ -156,7 +156,7 @@ export default async function CollectionPage({
               <p>Try another direction or type — or <Link href="/collection">see the full collection</Link>.</p>
             </div>
           ) : (
-            <div className={`field${density === "compact" ? " compact" : ""}`}>
+            <div className={`field${density === "compact" ? " compact" : " mosaic"}`}>
               {view.pieces.map((p) => (
                 <NicheCard key={p.slug} p={p} compact={density === "compact"} />
               ))}
