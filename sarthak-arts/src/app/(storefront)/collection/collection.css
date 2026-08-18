@@ -255,8 +255,35 @@ body:has(.col-root) {
 .mcell.center .mc-om { font-size: 34px; color: var(--pc-deep); line-height: 1; }
 .mcell.center .mc-brahma { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; color: var(--pc-deep); margin-top: 6px; }
 
+/* ── Direction-grouped product sections ──────────────────────────────────── */
+.dirgroups { display: grid; gap: 26px; }
+.dirgroup {
+  position: relative;
+  background:
+    radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--pc) 12%, transparent), transparent 55%),
+    color-mix(in srgb, var(--pc) 6%, #fff);
+  border: 1px solid color-mix(in srgb, var(--pc) 24%, var(--line));
+  border-left: 4px solid var(--pc);
+  border-radius: 20px; padding: 22px 20px 24px;
+}
+.dg-head {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 18px; padding-bottom: 13px;
+  border-bottom: 1px solid color-mix(in srgb, var(--pc) 26%, var(--line));
+}
+.dg-en { font-family: var(--font-fraunces), Georgia, serif; font-size: 23px; color: var(--pc-deep); line-height: 1; }
+.dg-sk { font-size: 13px; color: var(--ink-muted); }
+.dg-sk .sa-deva { color: var(--pc-deep); }
+.dg-gov {
+  font-size: 10.5px; letter-spacing: .6px; text-transform: uppercase; font-weight: 700;
+  color: var(--pc-deep); background: color-mix(in srgb, var(--pc) 15%, #fff);
+  border: 1px solid color-mix(in srgb, var(--pc) 30%, #fff);
+  padding: 5px 12px; border-radius: 999px;
+}
+.dg-count { margin-left: auto; font-size: 12.5px; color: var(--ink-muted); }
+
 /* ── Product field + niche cards ─────────────────────────────────────────── */
-.field { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+.field { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
 .field.compact { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
 
 .niche {
