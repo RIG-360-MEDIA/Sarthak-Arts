@@ -46,27 +46,44 @@ export default async function CollectionPage({
       {/* ── Dark sanctum hero ── */}
       <header className="col-hero bleed">
         <svg className="wm" viewBox="0 0 200 200" aria-hidden="true">
-          {/* Aṣṭadala Padma — the eight-petalled lotus of the eight directions,
-              with the Brahmasthān (ॐ) at its still centre. The platform's motif:
-              every piece is made for one of these eight, around one quiet core. */}
-          <g fill="none" stroke="#E8A81C">
-            <circle cx="100" cy="100" r="96" strokeWidth="0.4" />
-            <circle cx="100" cy="100" r="90" strokeWidth="0.7" />
-            {Array.from({ length: 8 }).map((_, i) => (
-              <path key={`op${i}`} transform={`rotate(${i * 45} 100 100)`} strokeWidth="0.7"
-                d="M100 44 C84 34 86 16 100 8 C114 16 116 34 100 44 Z" />
-            ))}
-            {Array.from({ length: 8 }).map((_, i) => (
-              <path key={`ip${i}`} transform={`rotate(${i * 45 + 22.5} 100 100)`} strokeWidth="0.6"
-                d="M100 68 C91 60 92 50 100 44 C108 50 109 60 100 68 Z" />
-            ))}
-            {Array.from({ length: 8 }).map((_, i) => {
-              const a = (i * 45 * Math.PI) / 180;
-              return <circle key={`b${i}`} cx={(100 + 93 * Math.cos(a)).toFixed(1)} cy={(100 + 93 * Math.sin(a)).toFixed(1)} r="1.6" fill="#E8A81C" stroke="none" />;
+          {/* Aṣṭadala Padma — a layered eight-petalled lotus (outer + offset mid +
+              inner rows) with a pearl border and the Brahmasthān (ॐ) at its still
+              centre. The platform's motif: eight directions around one quiet core. */}
+          <g fill="none" stroke="#E8A81C" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="100" cy="100" r="97" strokeWidth="0.35" />
+            <circle cx="100" cy="100" r="88" strokeWidth="0.6" />
+            {/* pearl border */}
+            {Array.from({ length: 32 }).map((_, i) => {
+              const a = (i * 11.25 * Math.PI) / 180;
+              return <circle key={`pearl${i}`} cx={(100 + 97 * Math.cos(a)).toFixed(1)} cy={(100 + 97 * Math.sin(a)).toFixed(1)} r="0.7" fill="#E8A81C" stroke="none" />;
             })}
-            <circle cx="100" cy="100" r="27" strokeWidth="0.9" />
+            {/* outer petals — with an inner vein */}
+            {Array.from({ length: 8 }).map((_, i) => (
+              <g key={`op${i}`} transform={`rotate(${i * 45} 100 100)`}>
+                <path strokeWidth="0.8" d="M100 51 C85 46 81 28 100 12 C119 28 115 46 100 51 Z" />
+                <path strokeWidth="0.45" d="M100 47 C97.5 39 97.5 27 100 18" />
+              </g>
+            ))}
+            {/* mid petals — offset, filling the gaps */}
+            {Array.from({ length: 8 }).map((_, i) => (
+              <path key={`mp${i}`} transform={`rotate(${i * 45 + 22.5} 100 100)`} strokeWidth="0.6"
+                d="M100 57 C91 53 89 39 100 29 C111 39 109 53 100 57 Z" />
+            ))}
+            {/* inner lotus — a small row cupping the centre */}
+            {Array.from({ length: 8 }).map((_, i) => (
+              <path key={`ip${i}`} transform={`rotate(${i * 45} 100 100)`} strokeWidth="0.5"
+                d="M100 73 C94.5 69 93.5 61 100 55 C106.5 61 105.5 69 100 73 Z" />
+            ))}
+            {/* pearls at each outer petal tip */}
+            {Array.from({ length: 8 }).map((_, i) => {
+              const a = ((-90 + i * 45) * Math.PI) / 180;
+              return <circle key={`tip${i}`} cx={(100 + 90 * Math.cos(a)).toFixed(1)} cy={(100 + 90 * Math.sin(a)).toFixed(1)} r="1.4" fill="#E8A81C" stroke="none" />;
+            })}
+            {/* centre bindu — double ring */}
+            <circle cx="100" cy="100" r="25" strokeWidth="0.8" />
+            <circle cx="100" cy="100" r="21" strokeWidth="0.35" />
           </g>
-          <text x="100" y="101" textAnchor="middle" dominantBaseline="central" fontFamily="'Noto Serif Devanagari','Nirmala UI',serif" fontSize="26" fill="#E8A81C">ॐ</text>
+          <text x="100" y="101" textAnchor="middle" dominantBaseline="central" fontFamily="'Noto Serif Devanagari','Nirmala UI',serif" fontSize="25" fill="#E8A81C">ॐ</text>
         </svg>
         <div className="col-hero-in">
           <span className="col-eyebrow">Sarthak Arts · The Collection</span>
