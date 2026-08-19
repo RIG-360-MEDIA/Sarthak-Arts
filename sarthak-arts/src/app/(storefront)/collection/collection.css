@@ -222,41 +222,30 @@ main:has(.col-root) { max-width: 1340px; }
   border: 1px solid var(--line); background: var(--chalk-raised); color: var(--ink); cursor: pointer; width: auto;
 }
 
-/* ── Direction shrine sections — festive, colour-bathed panels ───────────── */
-.shrines { display: grid; gap: 20px; }
-.shrine {
-  position: relative; isolation: isolate;
-  padding: 34px clamp(14px, 3vw, 36px) 42px; border-radius: 28px;
-}
-/* the direction's ambient festive light — its own colour-bathed "room" */
-.shrine::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 28px; pointer-events: none;
+/* ── Contextual direction banner — shown only when one zone is in focus ───── */
+.dir-banner {
+  position: relative; isolation: isolate; overflow: hidden;
+  border-radius: 20px; padding: 30px clamp(18px, 4vw, 40px) 30px; margin-bottom: 26px;
+  border: 1px solid color-mix(in srgb, var(--pc) 26%, transparent);
   background:
-    radial-gradient(85% 65% at 18% 0%, color-mix(in srgb, var(--pc) 28%, transparent), transparent 58%),
-    radial-gradient(70% 70% at 100% 46%, color-mix(in srgb, var(--pc) 15%, transparent), transparent 60%),
-    color-mix(in srgb, var(--pc) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--pc) 22%, transparent);
+    radial-gradient(80% 120% at 0% 0%, color-mix(in srgb, var(--pc) 22%, transparent), transparent 58%),
+    color-mix(in srgb, var(--pc) 8%, #fff);
 }
-.shrine-head { text-align: center; max-width: 640px; margin: 0 auto 28px; }
-.shrine-eyb {
+.dir-banner::after { /* a large faint direction initial as a graphic anchor */
+  content: ""; position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+  width: 180px; height: 180px; z-index: -1; opacity: .16; pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, var(--pc), transparent 66%);
+}
+.db-eyb {
   font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; font-weight: 700; color: var(--pc-deep);
   display: inline-flex; align-items: baseline; gap: 7px;
 }
-.shrine-eyb .sa-deva { font-size: 16px; font-weight: 400; letter-spacing: 0; text-transform: none; }
-.shrine-name {
-  font-family: var(--font-fraunces), Georgia, serif; font-weight: 400;
-  font-size: clamp(30px, 4.4vw, 46px); color: var(--pc-deep); margin: 6px 0 0; line-height: 1.02;
-}
-.shrine-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin-top: 15px; }
-.shrine-elem {
-  font-size: 10.5px; letter-spacing: .6px; text-transform: uppercase; font-weight: 700; color: var(--pc-deep);
-  border: 1px solid color-mix(in srgb, var(--pc) 48%, #fff); padding: 5px 12px; border-radius: 999px;
-}
-.shrine-gov {
-  font-size: 10.5px; letter-spacing: .6px; text-transform: uppercase; font-weight: 700; color: #fff;
-  background: var(--pc-deep); padding: 5px 12px; border-radius: 999px;
-}
-.shrine-count { font-size: 12px; color: var(--ink-muted); }
+.db-eyb .sa-deva { font-size: 17px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+.db-name { font-family: var(--font-fraunces), Georgia, serif; font-weight: 400; font-size: clamp(28px, 4vw, 42px); color: var(--pc-deep); margin: 6px 0 0; line-height: 1.02; }
+.db-micro { font-size: 14.5px; color: var(--ink-muted); line-height: 1.6; margin: 10px 0 0; max-width: 60ch; font-style: italic; }
+.db-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.db-elem { font-size: 10.5px; letter-spacing: .6px; text-transform: uppercase; font-weight: 700; color: var(--pc-deep); border: 1px solid color-mix(in srgb, var(--pc) 48%, #fff); padding: 5px 12px; border-radius: 999px; }
+.db-gov { font-size: 10.5px; letter-spacing: .6px; text-transform: uppercase; font-weight: 700; color: #fff; background: var(--pc-deep); padding: 5px 12px; border-radius: 999px; }
 
 /* ── The festive shrine wall — a grid of arch-topped niches ──────────────── */
 .col-wall {
@@ -269,8 +258,8 @@ main:has(.col-root) { max-width: 1340px; }
 .niche {
   position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit;
   background: var(--chalk-raised);
-  border: 1px solid color-mix(in srgb, var(--pc) 34%, var(--line));
-  border-radius: 46% 46% 20px 20px / 30% 30% 20px 20px;
+  border: 1px solid color-mix(in srgb, var(--pc) 28%, var(--line));
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 3px 6px rgba(60,40,15,.06), 0 22px 42px -24px color-mix(in srgb, var(--pc) 45%, rgba(60,40,15,.55));
   transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease, border-color .25s ease;
@@ -280,12 +269,12 @@ main:has(.col-root) { max-width: 1340px; }
   box-shadow: 0 8px 12px rgba(60,40,15,.07), 0 36px 66px -26px color-mix(in srgb, var(--pc) 65%, rgba(60,40,15,.4));
   border-color: color-mix(in srgb, var(--pc) 60%, var(--line));
 }
-.niche.compact { border-radius: 40% 40% 16px 16px / 22% 22% 16px 16px; }
+.niche.compact { border-radius: 14px; }
 .niche-hit { position: absolute; inset: 0; z-index: 1; } /* stretched link */
 
 /* The lit niche the piece is enshrined in */
 .niche-stage {
-  position: relative; padding: 42px 18px 22px; min-height: 214px;
+  position: relative; padding: 26px 18px 20px; min-height: 208px;
   display: flex; align-items: center; justify-content: center; overflow: hidden;
   background:
     radial-gradient(62% 58% at 50% 44%, color-mix(in srgb, var(--pc) 30%, #fff), transparent 72%),

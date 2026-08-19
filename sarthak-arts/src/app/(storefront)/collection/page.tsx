@@ -38,6 +38,12 @@ export default async function CollectionPage({
     : filters.category ? (catName ?? "The collection")
     : "The full collection";
 
+  // When the shopper focuses a single direction, surface that zone's story
+  // (progressive disclosure) — otherwise the grid stays clean and product-first.
+  const selectedDir = filters.directions.length === 1
+    ? view.directions.find((d) => d.code === filters.directions[0]) ?? null
+    : null;
+
   // Eight auspicious symbols for the hero lotus — several echo the pieces this
   // page sells (kalasha, yantra, pyramid, bell), the rest are Sanātana maṅgala
   // marks. Each is drawn centred on the origin (~±5 units), upright.
@@ -156,35 +162,27 @@ export default async function CollectionPage({
               <p>Try another direction or type — or <Link href="/collection">see the full collection</Link>.</p>
             </div>
           ) : (
-            <div className="shrines">
-              {view.directions
-                .map((d) => ({ d, items: view.pieces.filter((p) => p.directionCode === d.code) }))
-                .filter((g) => g.items.length > 0)
-                .map(({ d, items }) => (
-                  <section
-                    key={d.code}
-                    className="shrine col-reveal"
-                    style={{ ["--pc" as string]: d.color, ["--pc-deep" as string]: d.colorDeep } as React.CSSProperties}
-                  >
-                    <header className="shrine-head">
-                      <span className="shrine-eyb">
-                        <span className="sa-deva">{d.deva}</span> {d.deity} · {d.iast}
-                      </span>
-                      <h2 className="shrine-name serif">{d.name}</h2>
-                      <div className="shrine-tags">
-                        {d.element && <span className="shrine-elem">{d.element}</span>}
-                        {d.governs && <span className="shrine-gov">{d.governs}</span>}
-                        <span className="shrine-count">{items.length} {items.length === 1 ? "piece" : "pieces"}</span>
-                      </div>
-                    </header>
-                    <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
-                      {items.map((p) => (
-                        <NicheCard key={p.slug} p={p} compact={density === "compact"} />
-                      ))}
-                    </div>
-                  </section>
+            <>
+              {selectedDir && (
+                <div
+                  className="dir-banner col-reveal"
+                  style={{ ["--pc" as string]: selectedDir.color, ["--pc-deep" as string]: selectedDir.colorDeep } as React.CSSProperties}
+                >
+                  <span className="db-eyb"><span className="sa-deva">{selectedDir.deva}</span> {selectedDir.deity} · {selectedDir.iast}</span>
+                  <h2 className="db-name serif">{selectedDir.name}</h2>
+                  {selectedDir.microcopy && <p className="db-micro">{selectedDir.microcopy}</p>}
+                  <div className="db-tags">
+                    {selectedDir.element && <span className="db-elem">{selectedDir.element}</span>}
+                    {selectedDir.governs && <span className="db-gov">{selectedDir.governs}</span>}
+                  </div>
+                </div>
+              )}
+              <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
+                {view.pieces.map((p) => (
+                  <NicheCard key={p.slug} p={p} compact={density === "compact"} />
                 ))}
-            </div>
+              </div>
+            </>
           )}
         </main>
       </div>
