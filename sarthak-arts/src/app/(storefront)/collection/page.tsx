@@ -169,7 +169,7 @@ export default async function CollectionPage({
                 .map(({ d, items }) => (
                   <section
                     key={d.code}
-                    className="dirgroup"
+                    className="dirgroup col-reveal"
                     style={{ ["--pc" as string]: d.color, ["--pc-deep" as string]: d.colorDeep } as React.CSSProperties}
                   >
                     <header className="dg-head">
@@ -178,6 +178,7 @@ export default async function CollectionPage({
                         <span className="dg-en serif">{d.name}</span>
                         <span className="dg-sk">{d.iast} · {d.deity} <span className="sa-deva">{d.deva}</span></span>
                       </span>
+                      {d.element && <span className="dg-elem">{d.element}</span>}
                       {d.governs && <span className="dg-gov">{d.governs}</span>}
                       <span className="dg-count">{items.length} {items.length === 1 ? "piece" : "pieces"}</span>
                     </header>

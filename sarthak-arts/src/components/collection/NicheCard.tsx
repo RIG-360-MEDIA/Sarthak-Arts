@@ -14,12 +14,16 @@ export function NicheCard({ p, compact, feature }: { p: PieceCard; compact?: boo
   const spec = [p.primaryMetalName, p.weightG != null ? `${p.weightG}g` : null, p.isSample ? "sample" : null]
     .filter(Boolean).join(" · ");
 
+  const low = p.inStock && p.stockQuantity > 0 && p.stockQuantity <= 3;
+  const badgeLabel = !p.inStock ? "Sold out" : low ? `Only ${p.stockQuantity} left` : "In stock";
+  const badgeClass = !p.inStock ? " sold" : low ? " low" : "";
+
   return (
     <article className={`niche${compact ? " compact" : ""}${feature ? " feature" : ""}`} style={style}>
       <Link href={`/collection/${p.slug}`} className="niche-hit" aria-label={`${p.name} — ${p.directionName}`} />
 
-      <span className={`niche-badge${p.inStock ? "" : " sold"}`}>
-        <span className="dot" />{p.inStock ? "In stock" : "Sold out"}
+      <span className={`niche-badge${badgeClass}`}>
+        <span className="dot" />{badgeLabel}
       </span>
       <WishlistHeart slug={p.slug} pieceName={p.name} />
 
