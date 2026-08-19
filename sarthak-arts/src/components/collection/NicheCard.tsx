@@ -24,9 +24,12 @@ export function NicheCard({ p, compact, feature }: { p: PieceCard; compact?: boo
       <WishlistHeart slug={p.slug} pieceName={p.name} />
 
       <div className="niche-stage">
-        <svg className="niche-arch" viewBox="0 0 100 110" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-          <path d="M8 108 V44 Q8 10 50 10 Q92 10 92 44 V108" />
-          <line x1="4" y1="108" x2="96" y2="108" />
+        <span className="niche-halo" aria-hidden="true" />
+        <svg className="niche-arch" viewBox="0 0 100 118" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <path d="M9 114 V46 Q9 13 50 13 Q91 13 91 46 V114" />
+          <path d="M50 13 V5" />
+          <circle cx="50" cy="3.4" r="2.3" />
+          <line x1="5" y1="114" x2="95" y2="114" />
         </svg>
         <PieceRender glyph={p.glyph} metalGrad={p.metalGrad} gemHex={p.gemHex} className="niche-obj" />
         <AddToCart productId={p.productId} pieceName={p.name} inStock={p.inStock} />
@@ -34,15 +37,17 @@ export function NicheCard({ p, compact, feature }: { p: PieceCard; compact?: boo
 
       <div className="niche-body">
         <span className="niche-dir">
+          <span className="niche-dir-deva sa-deva">{p.directionDeva}</span>
           {p.directionDeity} · {p.directionIast}
         </span>
         <h3 className="niche-name">{p.name}</h3>
-        {spec && <div className="niche-spec">{spec}</div>}
+        <span className="niche-rule" aria-hidden="true" />
         <p className="niche-place">{p.positioningLine}</p>
+        {spec && <div className="niche-spec">{spec}</div>}
         <div className="niche-foot">
           <span className="niche-price">{p.priceDisplay}</span>
           {p.gemName
-            ? <span className="niche-gem"><span className="gdot" style={{ background: p.gemHex }} />{p.gemName}</span>
+            ? <span className="niche-gem"><span className="gem" style={{ ["--gem" as string]: p.gemHex } as React.CSSProperties} />{p.gemName}</span>
             : p.isSample ? <span className="niche-sample">sample</span> : null}
         </div>
       </div>

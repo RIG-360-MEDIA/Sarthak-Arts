@@ -257,21 +257,40 @@ main:has(.col-root) { max-width: 1340px; }
 .niche {
   position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit;
   background: var(--chalk-raised); border: 1px solid var(--line);
-  border-radius: 16px; overflow: hidden; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  border-radius: 18px; overflow: hidden;
+  box-shadow: 0 2px 3px rgba(60,40,15,.04), 0 14px 28px -22px rgba(60,40,15,.5);
+  transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease, border-color .25s ease;
 }
-.niche:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -22px color-mix(in srgb, var(--pc) 60%, rgba(0,0,0,.3)); border-color: color-mix(in srgb, var(--pc) 40%, var(--line)); }
+.niche:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(60,40,15,.05), 0 28px 52px -24px color-mix(in srgb, var(--pc) 62%, rgba(0,0,0,.35));
+  border-color: color-mix(in srgb, var(--pc) 45%, var(--line));
+}
 .niche-hit { position: absolute; inset: 0; z-index: 1; } /* stretched link */
+
+/* The lit shrine niche the piece rests in */
 .niche-stage {
-  position: relative; padding: 20px 16px 14px; display: flex; align-items: center; justify-content: center;
+  position: relative; padding: 28px 18px 22px; display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
   background:
-    radial-gradient(70% 80% at 50% 30%, color-mix(in srgb, var(--pc) 12%, #fff), transparent 70%),
-    color-mix(in srgb, var(--pc) 5%, #fff);
+    radial-gradient(58% 54% at 50% 42%, color-mix(in srgb, var(--pc) 15%, #fff), transparent 74%),
+    linear-gradient(180deg, color-mix(in srgb, var(--pc) 8%, #FFFDF7), color-mix(in srgb, var(--pc) 3%, #FFFCF4));
   border-bottom: 1px solid var(--line-soft);
 }
-/* toraṇa arch behind the piece */
-.niche-arch { position: absolute; inset: 0; margin: auto; width: 82%; height: 88%; pointer-events: none; }
-.niche-arch path, .niche-arch line { stroke: color-mix(in srgb, var(--pc) 45%, #fff); fill: none; stroke-width: 1.5; }
-.niche-obj { position: relative; width: 128px; height: 128px; z-index: 2; filter: drop-shadow(0 10px 14px rgba(60,40,15,.16)); }
+/* soft halo of the direction's light behind the object */
+.niche-halo {
+  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+  width: 56%; aspect-ratio: 1; border-radius: 50%; z-index: 1; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--pc) 30%, transparent) 0%, transparent 66%);
+  opacity: .75; transition: opacity .3s ease, transform .3s ease;
+}
+.niche:hover .niche-halo { opacity: 1; transform: translate(-50%, -53%) scale(1.07); }
+/* toraṇa arch (with finial) behind the piece */
+.niche-arch { position: absolute; inset: 0; margin: auto; width: 76%; height: 92%; pointer-events: none; z-index: 1; }
+.niche-arch path, .niche-arch line { stroke: color-mix(in srgb, var(--pc) 42%, #fff); fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.niche-arch circle { fill: color-mix(in srgb, var(--pc) 42%, #fff); stroke: none; }
+.niche-obj { position: relative; width: 128px; height: 128px; z-index: 2; filter: drop-shadow(0 12px 16px rgba(60,40,15,.2)); transition: transform .3s cubic-bezier(.2,.7,.3,1); }
+.niche:hover .niche-obj { transform: translateY(-5px); }
 .niche.compact .niche-obj { width: 104px; height: 104px; }
 
 .niche-badge {
@@ -295,20 +314,27 @@ main:has(.col-root) { max-width: 1340px; }
 .col-root .sa-wish:hover { color: var(--sold); border-color: var(--sold); transform: scale(1.08); }
 .col-root .sa-wish.is-saved { color: var(--sold); border-color: var(--sold); background: color-mix(in srgb, var(--sold) 10%, #fff); }
 
-.niche-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+.niche-body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
 .niche-dir {
   font-size: 10.5px; letter-spacing: .8px; text-transform: uppercase; font-weight: 700;
-  color: var(--pc-deep); display: inline-flex; align-items: center; gap: 6px;
+  color: var(--pc-deep); display: inline-flex; align-items: baseline; gap: 8px;
 }
-.niche-dir .deva { font-weight: 400; letter-spacing: 0; }
-.niche-name { font-family: var(--font-fraunces), Georgia, serif; font-size: 17px; line-height: 1.25; margin: 5px 0 0; }
+.niche-dir-deva { font-size: 15px; font-weight: 400; letter-spacing: 0; text-transform: none; line-height: 1; }
+.niche-name { font-family: var(--font-fraunces), Georgia, serif; font-size: 18px; line-height: 1.22; margin: 8px 0 0; color: var(--ink); }
+.niche.feature .niche-name { font-size: 23px; }
 .niche.compact .niche-name { font-size: 15px; }
-.niche-spec { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
-.niche-place { font-size: 12.5px; color: var(--ink-muted); line-height: 1.5; margin: 8px 0 0; }
-.niche-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft); }
-.niche-price { font-family: var(--font-fraunces), Georgia, serif; font-size: 19px; }
-.niche-gem { font-size: 11.5px; color: var(--ink-muted); display: inline-flex; align-items: center; gap: 6px; }
-.niche-gem .gdot { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--line); }
+.niche-rule { display: block; width: 46px; height: 2px; margin: 11px 0 0; border-radius: 2px; background: linear-gradient(90deg, var(--pc-deep), transparent); }
+.niche-place { font-size: 13px; color: var(--ink-muted); line-height: 1.55; margin: 11px 0 0; font-style: italic; }
+.niche-spec { font-size: 11px; letter-spacing: .4px; text-transform: uppercase; color: var(--ink-faint); margin-top: 9px; }
+.niche-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line-soft); }
+.niche-body > .niche-foot { margin-top: 14px; } /* keep spacing when body isn't stretched */
+.niche-price { font-family: var(--font-fraunces), Georgia, serif; font-size: 20px; color: var(--ink); }
+.niche-gem { font-size: 11.5px; color: var(--ink-muted); display: inline-flex; align-items: center; gap: 8px; }
+.niche-gem .gem {
+  width: 11px; height: 11px; transform: rotate(45deg); border-radius: 2px; flex-shrink: 0;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gem) 62%, #fff), var(--gem) 52%, color-mix(in srgb, var(--gem) 72%, #000));
+  box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px color-mix(in srgb, var(--gem) 40%, var(--line)), inset 1px 1px 1.5px rgba(255,255,255,.65);
+}
 .niche-sample { font-size: 10.5px; font-weight: 600; color: var(--gold-deep); }
 
 /* Add to cart (hover-revealed on desktop, always visible on touch) */

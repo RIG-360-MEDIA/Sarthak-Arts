@@ -59,6 +59,7 @@ export type PieceCard = {
   directionName: string;
   directionIast: string;
   directionDeity: string;
+  directionDeva: string;
   directionGoverns: string;
   color: string;
   colorDeep: string;
@@ -134,6 +135,7 @@ function toPiece(
     directionName: primaryDir?.name ?? "Center",
     directionIast: v.iast,
     directionDeity: v.deity,
+    directionDeva: v.deva,
     directionGoverns: primaryDir?.governs ?? "",
     color: v.color,
     colorDeep: v.colorDeep,

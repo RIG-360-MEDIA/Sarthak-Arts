@@ -24,8 +24,10 @@
 export type DirectionVisual = {
   /** IAST romanisation of the direction's Sanskrit name (e.g. "Uttara"). */
   iast: string;
-  /** Guardian Dikpāla, romanised (e.g. "Kubera"). Devanagari is in direction.ts. */
+  /** Guardian Dikpāla, romanised (e.g. "Kubera"). */
   deity: string;
+  /** Guardian Dikpāla in Devanagari (matches DEVA_BY_CODE in lib/direction.ts). */
+  deva: string;
   /** Brand accent for this zone (element-inspired). Drives card + compass colour. */
   color: string;
   /** A deeper shade of the accent, for text/borders on light washes. */
@@ -33,20 +35,20 @@ export type DirectionVisual = {
 };
 
 export const DIRECTION_VISUAL: Record<string, DirectionVisual> = {
-  north:     { iast: "Uttara",       deity: "Kubera",  color: "#2E9E5B", colorDeep: "#1E6E3E" },
-  northeast: { iast: "Īśānya",       deity: "Īśāna",   color: "#2BA8C4", colorDeep: "#1B7D95" },
-  east:      { iast: "Pūrva",        deity: "Indra",   color: "#F5911E", colorDeep: "#B4670E" },
-  southeast: { iast: "Āgneya",       deity: "Agni",    color: "#E0492E", colorDeep: "#A8321C" },
-  south:     { iast: "Dakṣiṇa",      deity: "Yama",    color: "#C0392B", colorDeep: "#8E2820" },
-  southwest: { iast: "Nairṛtya",     deity: "Nirṛti",  color: "#B5762E", colorDeep: "#855119" },
-  west:      { iast: "Paścima",      deity: "Varuṇa",  color: "#3B5BA5", colorDeep: "#29417A" },
-  northwest: { iast: "Vāyavya",      deity: "Vāyu",    color: "#1B9E8A", colorDeep: "#127365" },
-  center:    { iast: "Brahmasthāna", deity: "Brahmā",  color: "#E8A81C", colorDeep: "#B47D0C" },
+  north:     { iast: "Uttara",       deity: "Kubera",  deva: "कुबेर",    color: "#2E9E5B", colorDeep: "#1E6E3E" },
+  northeast: { iast: "Īśānya",       deity: "Īśāna",   deva: "ईशान",     color: "#2BA8C4", colorDeep: "#1B7D95" },
+  east:      { iast: "Pūrva",        deity: "Indra",   deva: "इन्द्र",    color: "#F5911E", colorDeep: "#B4670E" },
+  southeast: { iast: "Āgneya",       deity: "Agni",    deva: "अग्नि",     color: "#E0492E", colorDeep: "#A8321C" },
+  south:     { iast: "Dakṣiṇa",      deity: "Yama",    deva: "यम",       color: "#C0392B", colorDeep: "#8E2820" },
+  southwest: { iast: "Nairṛtya",     deity: "Nirṛti",  deva: "निर्ऋति",   color: "#B5762E", colorDeep: "#855119" },
+  west:      { iast: "Paścima",      deity: "Varuṇa",  deva: "वरुण",     color: "#3B5BA5", colorDeep: "#29417A" },
+  northwest: { iast: "Vāyavya",      deity: "Vāyu",    deva: "वायु",     color: "#1B9E8A", colorDeep: "#127365" },
+  center:    { iast: "Brahmasthāna", deity: "Brahmā",  deva: "ब्रह्म",    color: "#E8A81C", colorDeep: "#B47D0C" },
 };
 
 /** Safe fallback so an unknown code never crashes the render. */
 export const DIRECTION_VISUAL_FALLBACK: DirectionVisual = {
-  iast: "", deity: "", color: "#B8863E", colorDeep: "#8A6320",
+  iast: "", deity: "", deva: "", color: "#B8863E", colorDeep: "#8A6320",
 };
 
 export function visualFor(code: string): DirectionVisual {
