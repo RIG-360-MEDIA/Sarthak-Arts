@@ -156,10 +156,34 @@ export default async function CollectionPage({
               <p>Try another direction or type — or <Link href="/collection">see the full collection</Link>.</p>
             </div>
           ) : (
-            <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
-              {view.pieces.map((p) => (
-                <NicheCard key={p.slug} p={p} compact={density === "compact"} />
-              ))}
+            <div className="shrines">
+              {view.directions
+                .map((d) => ({ d, items: view.pieces.filter((p) => p.directionCode === d.code) }))
+                .filter((g) => g.items.length > 0)
+                .map(({ d, items }) => (
+                  <section
+                    key={d.code}
+                    className="shrine col-reveal"
+                    style={{ ["--pc" as string]: d.color, ["--pc-deep" as string]: d.colorDeep } as React.CSSProperties}
+                  >
+                    <header className="shrine-head">
+                      <span className="shrine-eyb">
+                        <span className="sa-deva">{d.deva}</span> {d.deity} · {d.iast}
+                      </span>
+                      <h2 className="shrine-name serif">{d.name}</h2>
+                      <div className="shrine-tags">
+                        {d.element && <span className="shrine-elem">{d.element}</span>}
+                        {d.governs && <span className="shrine-gov">{d.governs}</span>}
+                        <span className="shrine-count">{items.length} {items.length === 1 ? "piece" : "pieces"}</span>
+                      </div>
+                    </header>
+                    <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
+                      {items.map((p) => (
+                        <NicheCard key={p.slug} p={p} compact={density === "compact"} />
+                      ))}
+                    </div>
+                  </section>
+                ))}
             </div>
           )}
         </main>
