@@ -198,12 +198,13 @@ main:has(.col-root) { max-width: 1340px; }
 .catnav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .catpill {
   display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 500;
-  padding: 8px 15px; border-radius: 999px; text-decoration: none;
+  padding: 9px 16px; border-radius: 999px; text-decoration: none;
   background: var(--chalk-raised); color: var(--ink-muted); border: 1px solid var(--line);
-  transition: all .18s ease;
+  box-shadow: 0 1px 2px rgba(60,40,15,.04);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, color .18s ease, background .18s ease;
 }
-.catpill:hover { border-color: var(--gold); color: var(--ink); }
-.catpill.on { background: var(--ink); color: #FDFBF5; border-color: var(--ink); }
+.catpill:hover { border-color: var(--gold); color: var(--ink); transform: translateY(-1px); box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--gold) 42%, transparent); }
+.catpill.on { background: var(--ink); color: #FDFBF5; border-color: var(--ink); box-shadow: 0 6px 14px -6px rgba(43,33,26,.5); }
 .catpill .n { font-size: 11.5px; opacity: .7; }
 .catpill.on .n { opacity: .85; }
 
@@ -312,6 +313,13 @@ main:has(.col-root) { max-width: 1340px; }
 .niche-arch circle { fill: color-mix(in srgb, var(--pc) 42%, #fff); stroke: none; }
 .niche-obj { position: relative; width: 128px; height: 128px; z-index: 2; filter: drop-shadow(0 12px 16px rgba(60,40,15,.2)); }
 .niche.compact .niche-obj { width: 104px; height: 104px; }
+/* a sheen of light passes over the alcove on hover */
+.niche-stage::after {
+  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(114deg, transparent 34%, rgba(255,255,255,.42) 50%, transparent 66%);
+  transform: translateX(-116%); transition: transform .75s cubic-bezier(.4, 0, .2, 1);
+}
+.niche:hover .niche-stage::after { transform: translateX(116%); }
 
 .niche-badge {
   position: absolute; top: 12px; left: 12px; z-index: 3;
