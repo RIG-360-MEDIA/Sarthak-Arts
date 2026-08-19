@@ -14,6 +14,12 @@ export const metadata: Metadata = {
     "Browse handcrafted Vāstu pieces in copper, brass and silver, arranged by the nine directions of the home. Each piece is built for one zone and certified per piece.",
 };
 
+/** Compass-point abbreviation for the direction-strip medallions. */
+const DIR_ABBR: Record<string, string> = {
+  north: "N", northeast: "NE", east: "E", southeast: "SE",
+  south: "S", southwest: "SW", west: "W", northwest: "NW", center: "ॐ",
+};
+
 export default async function CollectionPage({
   searchParams,
 }: {
@@ -37,12 +43,6 @@ export default async function CollectionPage({
     filters.directions.length ? filters.directions.map(dirName).join(" · ")
     : filters.category ? (catName ?? "The collection")
     : "The full collection";
-
-  // When the shopper focuses a single direction, surface that zone's story
-  // (progressive disclosure) — otherwise the grid stays clean and product-first.
-  const selectedDir = filters.directions.length === 1
-    ? view.directions.find((d) => d.code === filters.directions[0]) ?? null
-    : null;
 
   // Eight auspicious symbols for the hero lotus — several echo the pieces this
   // page sells (kalasha, yantra, pyramid, bell), the rest are Sanātana maṅgala
@@ -162,27 +162,34 @@ export default async function CollectionPage({
               <p>Try another direction or type — or <Link href="/collection">see the full collection</Link>.</p>
             </div>
           ) : (
-            <>
-              {selectedDir && (
-                <div
-                  className="dir-banner col-reveal"
-                  style={{ ["--pc" as string]: selectedDir.color, ["--pc-deep" as string]: selectedDir.colorDeep } as React.CSSProperties}
-                >
-                  <span className="db-eyb"><span className="sa-deva">{selectedDir.deva}</span> {selectedDir.deity} · {selectedDir.iast}</span>
-                  <h2 className="db-name serif">{selectedDir.name}</h2>
-                  {selectedDir.microcopy && <p className="db-micro">{selectedDir.microcopy}</p>}
-                  <div className="db-tags">
-                    {selectedDir.element && <span className="db-elem">{selectedDir.element}</span>}
-                    {selectedDir.governs && <span className="db-gov">{selectedDir.governs}</span>}
-                  </div>
-                </div>
-              )}
-              <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
-                {view.pieces.map((p) => (
-                  <NicheCard key={p.slug} p={p} compact={density === "compact"} />
+            <div className="dir-sections">
+              {view.directions
+                .map((d) => ({ d, items: view.pieces.filter((p) => p.directionCode === d.code) }))
+                .filter((g) => g.items.length > 0)
+                .map(({ d, items }) => (
+                  <section
+                    key={d.code}
+                    className="dir-section col-reveal"
+                    style={{ ["--pc" as string]: d.color, ["--pc-deep" as string]: d.colorDeep } as React.CSSProperties}
+                  >
+                    <div className="dir-strip">
+                      <span className="ds-medal" aria-hidden="true">{DIR_ABBR[d.code] ?? "◈"}</span>
+                      <span className="ds-title">
+                        <span className="ds-name serif">{d.name}</span>
+                        <span className="ds-guardian">{d.iast} · {d.deity} <span className="sa-deva">{d.deva}</span></span>
+                      </span>
+                      {d.element && <span className="ds-elem">{d.element}</span>}
+                      {d.governs && <span className="ds-gov">{d.governs}</span>}
+                      <span className="ds-count">{items.length} {items.length === 1 ? "piece" : "pieces"}</span>
+                    </div>
+                    <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
+                      {items.map((p) => (
+                        <NicheCard key={p.slug} p={p} compact={density === "compact"} />
+                      ))}
+                    </div>
+                  </section>
                 ))}
-              </div>
-            </>
+            </div>
           )}
         </main>
       </div>
