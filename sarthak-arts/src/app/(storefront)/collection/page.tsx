@@ -14,12 +14,6 @@ export const metadata: Metadata = {
     "Browse handcrafted Vāstu pieces in copper, brass and silver, arranged by the nine directions of the home. Each piece is built for one zone and certified per piece.",
 };
 
-/** Compass-point abbreviation for the direction-group medallions. */
-const DIR_ABBR: Record<string, string> = {
-  north: "N", northeast: "NE", east: "E", southeast: "SE",
-  south: "S", southwest: "SW", west: "W", northwest: "NW", center: "ॐ",
-};
-
 export default async function CollectionPage({
   searchParams,
 }: {
@@ -162,33 +156,10 @@ export default async function CollectionPage({
               <p>Try another direction or type — or <Link href="/collection">see the full collection</Link>.</p>
             </div>
           ) : (
-            <div className="dirgroups">
-              {view.directions
-                .map((d) => ({ d, items: view.pieces.filter((p) => p.directionCode === d.code) }))
-                .filter((g) => g.items.length > 0)
-                .map(({ d, items }) => (
-                  <section
-                    key={d.code}
-                    className="dirgroup col-reveal"
-                    style={{ ["--pc" as string]: d.color, ["--pc-deep" as string]: d.colorDeep } as React.CSSProperties}
-                  >
-                    <header className="dg-head">
-                      <span className="dg-medal" aria-hidden="true">{DIR_ABBR[d.code] ?? "◈"}</span>
-                      <span className="dg-title">
-                        <span className="dg-en serif">{d.name}</span>
-                        <span className="dg-sk">{d.iast} · {d.deity} <span className="sa-deva">{d.deva}</span></span>
-                      </span>
-                      {d.element && <span className="dg-elem">{d.element}</span>}
-                      {d.governs && <span className="dg-gov">{d.governs}</span>}
-                      <span className="dg-count">{items.length} {items.length === 1 ? "piece" : "pieces"}</span>
-                    </header>
-                    <div className={`dg-field${density === "compact" ? " compact" : ""}`}>
-                      {items.map((p) => (
-                        <NicheCard key={p.slug} p={p} compact={density === "compact"} feature={density !== "compact"} />
-                      ))}
-                    </div>
-                  </section>
-                ))}
+            <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
+              {view.pieces.map((p) => (
+                <NicheCard key={p.slug} p={p} compact={density === "compact"} />
+              ))}
             </div>
           )}
         </main>

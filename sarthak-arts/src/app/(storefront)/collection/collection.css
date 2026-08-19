@@ -27,15 +27,15 @@
    beige with a chalk base, soft marigold/peacock/sindoor washes, and a faint
    dotted texture. Scoped to the collection page via :has(.col-root). */
 body:has(.col-root) {
-  background-color: #FAF4E6;
+  background-color: #F3E2BC;
   background-image:
-    radial-gradient(58% 42% at 4% 2%, rgba(232, 168, 28, 0.13), transparent 60%),
-    radial-gradient(54% 38% at 100% 18%, rgba(27, 158, 138, 0.09), transparent 60%),
-    radial-gradient(50% 34% at 92% 96%, rgba(224, 73, 46, 0.08), transparent 60%),
-    radial-gradient(48% 40% at 6% 88%, rgba(59, 91, 165, 0.07), transparent 60%),
-    radial-gradient(rgba(184, 134, 62, 0.06) 1px, transparent 1.5px);
-  background-size: auto, auto, auto, auto, 24px 24px;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg fill='none' stroke='%23B8863E' stroke-opacity='0.14'%3E%3Cpath d='M22 1 L43 22 L22 43 L1 22 Z'/%3E%3Cpath d='M22 11 L33 22 L22 33 L11 22 Z'/%3E%3C/g%3E%3Ccircle cx='22' cy='22' r='1.5' fill='%23B8863E' fill-opacity='0.12'/%3E%3C/svg%3E"),
+    radial-gradient(60% 46% at 3% 1%, rgba(232, 168, 28, 0.22), transparent 58%),
+    radial-gradient(56% 42% at 100% 15%, rgba(27, 158, 138, 0.15), transparent 60%),
+    radial-gradient(52% 38% at 94% 97%, rgba(224, 73, 46, 0.14), transparent 60%),
+    radial-gradient(50% 44% at 4% 92%, rgba(59, 91, 165, 0.12), transparent 60%);
+  background-size: 44px 44px, auto, auto, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat;
 }
 
 /* The collection uses more width than the default container so it doesn't leave
@@ -260,44 +260,39 @@ main:has(.col-root) { max-width: 1340px; }
 }
 .dg-count { margin-left: auto; font-size: 12.5px; color: var(--ink-muted); }
 
-/* Comfortable: each piece a full-width hero row. Compact: an even small grid. */
-.dg-field { display: grid; gap: 20px; }
-.dg-field.compact { grid-template-columns: repeat(auto-fill, minmax(180px, 210px)); gap: 14px; justify-content: start; }
-
-/* the lead piece in each direction — a full-width hero row: stage left, details right */
-.niche.feature { grid-column: 1 / -1; flex-direction: row; align-items: stretch; }
-.niche.feature .niche-stage { flex: 0 0 40%; border-bottom: none; border-right: 1px solid var(--line-soft); }
-.niche.feature .niche-obj { width: 168px; height: 168px; }
-.niche.feature .niche-body { flex: 1; justify-content: center; }
-.niche.feature .niche-name { font-size: 22px; }
-.niche.feature .niche-place { font-size: 13.5px; }
-@media (max-width: 640px) {
-  .niche.feature { grid-column: span 1; flex-direction: column; }
-  .niche.feature .niche-stage { flex: none; border-right: none; border-bottom: 1px solid var(--line-soft); }
+/* ── The festive shrine wall — a grid of arch-topped niches ──────────────── */
+.col-wall {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(244px, 288px));
+  gap: 28px; justify-content: center;
 }
+.col-wall.compact { grid-template-columns: repeat(auto-fill, minmax(178px, 210px)); gap: 16px; }
 
+/* An arch-topped temple niche (domed top), colour-coded to its direction */
 .niche {
   position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit;
-  background: var(--chalk-raised); border: 1px solid var(--line);
-  border-radius: 18px; overflow: hidden;
-  box-shadow: 0 2px 3px rgba(60,40,15,.04), 0 14px 28px -22px rgba(60,40,15,.5);
+  background: var(--chalk-raised);
+  border: 1px solid color-mix(in srgb, var(--pc) 34%, var(--line));
+  border-radius: 46% 46% 20px 20px / 30% 30% 20px 20px;
+  overflow: hidden;
+  box-shadow: 0 3px 6px rgba(60,40,15,.06), 0 22px 42px -24px color-mix(in srgb, var(--pc) 45%, rgba(60,40,15,.55));
   transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease, border-color .25s ease;
 }
 .niche:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 10px rgba(60,40,15,.05), 0 28px 52px -24px color-mix(in srgb, var(--pc) 62%, rgba(0,0,0,.35));
-  border-color: color-mix(in srgb, var(--pc) 45%, var(--line));
+  transform: translateY(-6px);
+  box-shadow: 0 8px 12px rgba(60,40,15,.07), 0 36px 66px -26px color-mix(in srgb, var(--pc) 65%, rgba(60,40,15,.4));
+  border-color: color-mix(in srgb, var(--pc) 60%, var(--line));
 }
+.niche.compact { border-radius: 40% 40% 16px 16px / 22% 22% 16px 16px; }
 .niche-hit { position: absolute; inset: 0; z-index: 1; } /* stretched link */
 
-/* The lit shrine niche the piece rests in */
+/* The lit niche the piece is enshrined in */
 .niche-stage {
-  position: relative; padding: 28px 18px 22px; display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
+  position: relative; padding: 42px 18px 22px; min-height: 214px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
   background:
-    radial-gradient(58% 54% at 50% 42%, color-mix(in srgb, var(--pc) 15%, #fff), transparent 74%),
-    linear-gradient(180deg, color-mix(in srgb, var(--pc) 8%, #FFFDF7), color-mix(in srgb, var(--pc) 3%, #FFFCF4));
-  border-bottom: 1px solid var(--line-soft);
+    radial-gradient(62% 58% at 50% 44%, color-mix(in srgb, var(--pc) 30%, #fff), transparent 72%),
+    linear-gradient(180deg, color-mix(in srgb, var(--pc) 17%, #FFFCF4), color-mix(in srgb, var(--pc) 6%, #FFFBF0));
+  border-bottom: 1px solid color-mix(in srgb, var(--pc) 22%, var(--line));
 }
 /* soft halo of the direction's light behind the object */
 .niche-halo {
@@ -311,8 +306,8 @@ main:has(.col-root) { max-width: 1340px; }
 .niche-arch { position: absolute; inset: 0; margin: auto; width: 76%; height: 92%; pointer-events: none; z-index: 1; }
 .niche-arch path, .niche-arch line { stroke: color-mix(in srgb, var(--pc) 42%, #fff); fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 .niche-arch circle { fill: color-mix(in srgb, var(--pc) 42%, #fff); stroke: none; }
-.niche-obj { position: relative; width: 128px; height: 128px; z-index: 2; filter: drop-shadow(0 12px 16px rgba(60,40,15,.2)); }
-.niche.compact .niche-obj { width: 104px; height: 104px; }
+.niche-obj { position: relative; width: 150px; height: 150px; z-index: 2; filter: drop-shadow(0 14px 18px rgba(60,40,15,.22)); }
+.niche.compact .niche-obj { width: 110px; height: 110px; }
 /* a sheen of light passes over the alcove on hover */
 .niche-stage::after {
   content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
@@ -321,11 +316,11 @@ main:has(.col-root) { max-width: 1340px; }
 }
 .niche:hover .niche-stage::after { transform: translateX(116%); }
 
+.niche-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .niche-badge {
-  position: absolute; top: 12px; left: 12px; z-index: 3;
-  font-size: 10.5px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
-  padding: 4px 9px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px;
-  background: #fff; border: 1px solid var(--line);
+  font-size: 10px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px;
+  background: #fff; border: 1px solid var(--line); color: var(--ok);
 }
 .niche-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
 .niche-badge.sold { color: var(--sold); }
@@ -336,8 +331,7 @@ main:has(.col-root) { max-width: 1340px; }
 
 /* Override the shared (dark) wishlist heart for the light Utsav card. */
 .col-root .sa-wish {
-  position: absolute; top: 10px; right: 10px; z-index: 3;
-  width: 34px; height: 34px; padding: 0; cursor: pointer;
+  position: static; width: 32px; height: 32px; padding: 0; cursor: pointer; flex-shrink: 0;
   display: grid; place-items: center;
   border-radius: 50%; background: #fff; border: 1px solid var(--line); color: var(--ink-muted);
   backdrop-filter: none; transition: color .18s ease, transform .18s ease, background .18s ease;
@@ -345,17 +339,16 @@ main:has(.col-root) { max-width: 1340px; }
 .col-root .sa-wish:hover { color: var(--sold); border-color: var(--sold); transform: scale(1.08); }
 .col-root .sa-wish.is-saved { color: var(--sold); border-color: var(--sold); background: color-mix(in srgb, var(--sold) 10%, #fff); }
 
-.niche-body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+.niche-body { padding: 16px 20px 20px; display: flex; flex-direction: column; flex: 1; }
 .niche-dir {
   font-size: 10.5px; letter-spacing: .8px; text-transform: uppercase; font-weight: 700;
   color: var(--pc-deep); display: inline-flex; align-items: baseline; gap: 8px;
 }
 .niche-dir-deva { font-size: 15px; font-weight: 400; letter-spacing: 0; text-transform: none; line-height: 1; }
 .niche-name { font-family: var(--font-fraunces), Georgia, serif; font-size: 18px; line-height: 1.22; margin: 8px 0 0; color: var(--ink); }
-.niche.feature .niche-name { font-size: 23px; }
 .niche.compact .niche-name { font-size: 15px; }
 .niche-rule { display: block; width: 46px; height: 2px; margin: 11px 0 0; border-radius: 2px; background: linear-gradient(90deg, var(--pc-deep), transparent); }
-.niche-place { font-size: 13px; color: var(--ink-muted); line-height: 1.55; margin: 11px 0 0; font-style: italic; }
+.niche-place { font-size: 13px; color: var(--ink-muted); line-height: 1.55; margin: 11px 0 0; font-style: italic; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .niche-spec { font-size: 11px; letter-spacing: .4px; text-transform: uppercase; color: var(--ink-faint); margin-top: 9px; }
 .niche-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line-soft); }
 .niche-body > .niche-foot { margin-top: 14px; } /* keep spacing when body isn't stretched */
@@ -422,7 +415,7 @@ main:has(.col-root) { max-width: 1340px; }
   .niche-obj { animation: colFloat 5s ease-in-out infinite; will-change: transform; }
   .niche:nth-child(2n) .niche-obj { animation-duration: 6.3s; animation-delay: -1.6s; }
   .niche:nth-child(3n) .niche-obj { animation-duration: 5.6s; animation-delay: -.9s; }
-  .dg-field > .niche:nth-child(2n) .niche-obj { animation-duration: 6s; animation-delay: -2.1s; }
+  .col-wall > .niche:nth-child(4n) .niche-obj { animation-duration: 6s; animation-delay: -2.1s; }
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
@@ -433,7 +426,7 @@ main:has(.col-root) { max-width: 1340px; }
 }
 @media (max-width: 560px) {
   .col-hero { padding: 54px 18px 48px; }
-  .dg-field { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .col-wall { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

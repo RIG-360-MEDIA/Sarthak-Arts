@@ -5,11 +5,13 @@ import { WishlistHeart } from "@/components/hero/WishlistHeart";
 import { AddToCart } from "./AddToCart";
 
 /**
- * NicheCard — a piece framed in a toraṇa (shrine niche), colour-coded to its
- * direction. The whole card is a stretched link to the product; the wishlist
- * heart and add-to-cart sit above it (so buttons aren't nested in the anchor).
+ * NicheCard — a piece enshrined in an arch-topped temple niche (dome top),
+ * colour-coded to its direction. The whole card is a stretched link to the
+ * product; the wishlist and add-to-cart sit above it so buttons aren't nested
+ * in the anchor. Badges/wishlist live in the body (the domed top would clip
+ * corner overlays).
  */
-export function NicheCard({ p, compact, feature }: { p: PieceCard; compact?: boolean; feature?: boolean }) {
+export function NicheCard({ p, compact }: { p: PieceCard; compact?: boolean }) {
   const style = { ["--pc" as string]: p.color, ["--pc-deep" as string]: p.colorDeep } as React.CSSProperties;
   const spec = [p.primaryMetalName, p.weightG != null ? `${p.weightG}g` : null, p.isSample ? "sample" : null]
     .filter(Boolean).join(" · ");
@@ -19,27 +21,26 @@ export function NicheCard({ p, compact, feature }: { p: PieceCard; compact?: boo
   const badgeClass = !p.inStock ? " sold" : low ? " low" : "";
 
   return (
-    <article className={`niche${compact ? " compact" : ""}${feature ? " feature" : ""}`} style={style}>
+    <article className={`niche${compact ? " compact" : ""}`} style={style}>
       <Link href={`/collection/${p.slug}`} className="niche-hit" aria-label={`${p.name} — ${p.directionName}`} />
-
-      <span className={`niche-badge${badgeClass}`}>
-        <span className="dot" />{badgeLabel}
-      </span>
-      <WishlistHeart slug={p.slug} pieceName={p.name} />
 
       <div className="niche-stage">
         <span className="niche-halo" aria-hidden="true" />
-        <svg className="niche-arch" viewBox="0 0 100 118" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-          <path d="M9 114 V46 Q9 13 50 13 Q91 13 91 46 V114" />
-          <path d="M50 13 V5" />
+        <svg className="niche-arch" viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <path d="M10 116 V48 Q10 14 50 14 Q90 14 90 48 V116" />
+          <path d="M50 14 V5" />
           <circle cx="50" cy="3.4" r="2.3" />
-          <line x1="5" y1="114" x2="95" y2="114" />
+          <line x1="6" y1="116" x2="94" y2="116" />
         </svg>
         <PieceRender glyph={p.glyph} metalGrad={p.metalGrad} gemHex={p.gemHex} className="niche-obj" />
         <AddToCart productId={p.productId} pieceName={p.name} inStock={p.inStock} />
       </div>
 
       <div className="niche-body">
+        <div className="niche-top">
+          <span className={`niche-badge${badgeClass}`}><span className="dot" />{badgeLabel}</span>
+          <WishlistHeart slug={p.slug} pieceName={p.name} />
+        </div>
         <span className="niche-dir">
           <span className="niche-dir-deva sa-deva">{p.directionDeva}</span>
           {p.directionDeity} · {p.directionIast}
