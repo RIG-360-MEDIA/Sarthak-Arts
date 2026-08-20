@@ -137,8 +137,10 @@ main:has(.col-root) { max-width: 1340px; }
 
 /* ── Filter card + compass ───────────────────────────────────────────────── */
 .fcard {
-  background: var(--chalk-raised); border: 1px solid var(--line);
-  border-radius: 18px; padding: 18px 18px 18px; box-shadow: 0 1px 0 #fff inset;
+  background: linear-gradient(180deg, #FFFDF8, #FBF3E1);
+  border: 1px solid color-mix(in srgb, var(--gold) 24%, var(--line));
+  border-radius: 20px; padding: 20px 18px 20px;
+  box-shadow: 0 1px 0 #fff inset, 0 20px 44px -28px rgba(60, 40, 15, .42);
 }
 .fcard-lbl {
   text-align: center; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
