@@ -181,6 +181,7 @@ export default async function CollectionPage({
                       {d.element && <span className="ds-elem">{d.element}</span>}
                       {d.governs && <span className="ds-gov">{d.governs}</span>}
                       <span className="ds-count">{items.length} {items.length === 1 ? "piece" : "pieces"}</span>
+                      <Link href={`/direction/${d.code}`} className="ds-explore">Explore the {d.name} →</Link>
                     </div>
                     <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
                       {items.map((p) => (

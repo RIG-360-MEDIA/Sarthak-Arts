@@ -245,6 +245,8 @@ main:has(.col-root) { max-width: 1340px; }
 .ds-elem { font-size: 10px; letter-spacing: .5px; text-transform: uppercase; font-weight: 700; color: var(--pc-deep); border: 1px solid color-mix(in srgb, var(--pc) 42%, #fff); background: #fff; padding: 4px 10px; border-radius: 999px; }
 .ds-gov { font-size: 10px; letter-spacing: .5px; text-transform: uppercase; font-weight: 700; color: #fff; background: var(--pc-deep); padding: 4px 10px; border-radius: 999px; }
 .ds-count { margin-left: auto; font-size: 12px; color: var(--ink-muted); }
+.ds-explore { font-size: 12px; font-weight: 700; letter-spacing: .3px; color: var(--pc-deep); text-decoration: none; white-space: nowrap; transition: opacity .18s ease; }
+.ds-explore:hover { text-decoration: underline; }
 
 /* ── The festive shrine wall — a grid of arch-topped niches ──────────────── */
 .col-wall {
