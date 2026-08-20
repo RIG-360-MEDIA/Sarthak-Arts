@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { PieceCard } from "@/lib/collection";
 import { PieceRender } from "./Piece";
 import { WishlistHeart } from "@/components/hero/WishlistHeart";
-import { AddToCart } from "./AddToCart";
+import { QuickView } from "./QuickView";
 
 /**
  * NicheCard — a piece enshrined in an arch-topped temple niche (dome top),
@@ -33,7 +33,7 @@ export function NicheCard({ p, compact }: { p: PieceCard; compact?: boolean }) {
           <line x1="6" y1="116" x2="94" y2="116" />
         </svg>
         <PieceRender glyph={p.glyph} metalGrad={p.metalGrad} gemHex={p.gemHex} className="niche-obj" />
-        <AddToCart productId={p.productId} pieceName={p.name} inStock={p.inStock} />
+        <QuickView p={p} />
       </div>
 
       <div className="niche-body">
@@ -49,6 +49,7 @@ export function NicheCard({ p, compact }: { p: PieceCard; compact?: boolean }) {
         <span className="niche-rule" aria-hidden="true" />
         <p className="niche-place">{p.positioningLine}</p>
         {spec && <div className="niche-spec">{spec}</div>}
+        <div className="niche-cert"><span aria-hidden="true">✦</span> Certified · Handcrafted</div>
         <div className="niche-foot">
           <span className="niche-price">{p.priceDisplay}</span>
           {p.gemName
