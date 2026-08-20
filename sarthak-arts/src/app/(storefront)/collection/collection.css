@@ -275,26 +275,26 @@ main:has(.col-root) { max-width: 1340px; }
 
 /* The lit niche the piece is enshrined in */
 .niche-stage {
-  position: relative; padding: 26px 18px 20px; min-height: 208px;
+  position: relative; padding: 44px 18px 26px; min-height: 236px;
   display: flex; align-items: center; justify-content: center; overflow: hidden;
   background:
-    radial-gradient(62% 58% at 50% 44%, color-mix(in srgb, var(--pc) 30%, #fff), transparent 72%),
-    linear-gradient(180deg, color-mix(in srgb, var(--pc) 17%, #FFFCF4), color-mix(in srgb, var(--pc) 6%, #FFFBF0));
-  border-bottom: 1px solid color-mix(in srgb, var(--pc) 22%, var(--line));
+    radial-gradient(66% 62% at 50% 40%, color-mix(in srgb, var(--pc) 40%, #251813), transparent 74%),
+    linear-gradient(180deg, #2c1d13 0%, #190f08 100%);
+  border-bottom: 1px solid color-mix(in srgb, var(--pc) 38%, #3a2a1e);
 }
 /* soft halo of the direction's light behind the object */
 .niche-halo {
-  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
-  width: 56%; aspect-ratio: 1; border-radius: 50%; z-index: 1; pointer-events: none;
-  background: radial-gradient(circle, color-mix(in srgb, var(--pc) 30%, transparent) 0%, transparent 66%);
-  opacity: .75; transition: opacity .3s ease, transform .3s ease;
+  position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%);
+  width: 66%; aspect-ratio: 1; border-radius: 50%; z-index: 1; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--pc) 60%, transparent) 0%, color-mix(in srgb, var(--pc) 22%, transparent) 42%, transparent 70%);
+  opacity: .9; transition: opacity .3s ease, transform .3s ease;
 }
 .niche:hover .niche-halo { opacity: 1; transform: translate(-50%, -53%) scale(1.07); }
 /* toraṇa arch (with finial) behind the piece */
 .niche-arch { position: absolute; inset: 0; margin: auto; width: 76%; height: 92%; pointer-events: none; z-index: 1; }
-.niche-arch path, .niche-arch line { stroke: color-mix(in srgb, var(--pc) 42%, #fff); fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-.niche-arch circle { fill: color-mix(in srgb, var(--pc) 42%, #fff); stroke: none; }
-.niche-obj { position: relative; width: 150px; height: 150px; z-index: 2; filter: drop-shadow(0 14px 18px rgba(60,40,15,.22)); }
+.niche-arch path, .niche-arch line { stroke: color-mix(in srgb, var(--pc) 42%, #FBE7A6); fill: none; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; opacity: .6; }
+.niche-arch circle { fill: color-mix(in srgb, var(--pc) 42%, #FBE7A6); stroke: none; opacity: .7; }
+.niche-obj { position: relative; width: 150px; height: 150px; z-index: 2; filter: drop-shadow(0 0 22px color-mix(in srgb, var(--pc) 42%, transparent)) drop-shadow(0 16px 20px rgba(0,0,0,.45)); }
 .niche.compact .niche-obj { width: 110px; height: 110px; }
 /* a sheen of light passes over the alcove on hover */
 .niche-stage::after {
@@ -358,12 +358,12 @@ main:has(.col-root) { max-width: 1340px; }
   position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 4;
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
-  padding: 10px; border-radius: 10px; border: none; cursor: pointer;
-  background: rgba(43, 33, 26, .9); color: #FDFBF5; backdrop-filter: blur(4px);
-  opacity: 0; transform: translateY(8px); transition: opacity .2s ease, transform .2s ease, background .18s ease;
+  padding: 10px; border-radius: 10px; cursor: pointer;
+  background: rgba(255, 246, 224, .12); color: #FBE7A6; border: 1px solid rgba(251, 231, 166, .38); backdrop-filter: blur(6px);
+  opacity: 0; transform: translateY(8px); transition: opacity .2s ease, transform .2s ease, background .18s ease, color .18s ease;
 }
 .niche:hover .niche-quick, .niche:focus-within .niche-quick { opacity: 1; transform: none; }
-.niche-quick:hover { background: var(--pc-deep); }
+.niche-quick:hover { background: #FBE7A6; color: #241812; border-color: #FBE7A6; }
 @media (hover: none) { .niche-quick { position: static; opacity: 1; transform: none; margin-top: 12px; } }
 
 /* ── Quick-view modal (portaled to <body> — tokens re-declared here) ─────── */
