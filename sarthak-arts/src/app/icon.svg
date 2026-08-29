@@ -1,5 +1,38 @@
-<svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="64" height="64" rx="14" fill="#0A0416"/>
-  <circle cx="32" cy="32" r="26" stroke="#E8B849" stroke-width="1.2" opacity="0.3"/>
-  <text x="32" y="44" text-anchor="middle" font-family="serif" font-size="36" fill="#FCD46F">&#x0950;</text>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sarthak Arts">
+  <defs>
+    <radialGradient id="sa-bg" cx="50%" cy="30%" r="85%">
+      <stop offset="0%" stop-color="#3A2140"/>
+      <stop offset="58%" stop-color="#1A0E1E"/>
+      <stop offset="100%" stop-color="#0A0512"/>
+    </radialGradient>
+    <linearGradient id="sa-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FCE7A0"/>
+      <stop offset="46%" stop-color="#F0B441"/>
+      <stop offset="100%" stop-color="#BE831A"/>
+    </linearGradient>
+    <filter id="sa-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+  </defs>
+
+  <!-- Sacred ground -->
+  <rect width="64" height="64" rx="15" fill="url(#sa-bg)"/>
+  <!-- Seal ring -->
+  <circle cx="32" cy="32" r="27.5" fill="none" stroke="#E8B849" stroke-width="1" opacity="0.32"/>
+
+  <!-- Warm halo -->
+  <g opacity="0.45" filter="url(#sa-glow)">
+    <rect x="15" y="15" width="34" height="34" rx="4" fill="#F0B441"/>
+    <rect x="15" y="15" width="34" height="34" rx="4" fill="#F0B441" transform="rotate(45 32 32)"/>
+  </g>
+
+  <!-- Star of Lakṣmī — two overlapping squares (eight points = eight directions) -->
+  <g fill="url(#sa-gold)">
+    <rect x="15" y="15" width="34" height="34" rx="4"/>
+    <rect x="15" y="15" width="34" height="34" rx="4" transform="rotate(45 32 32)"/>
+  </g>
+
+  <!-- Bindu (centre point) -->
+  <circle cx="32" cy="32" r="5" fill="#2A1236"/>
+  <circle cx="32" cy="32" r="2.1" fill="#FCE7A0"/>
 </svg>
