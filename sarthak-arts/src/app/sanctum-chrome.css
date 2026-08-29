@@ -83,7 +83,7 @@
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
   padding: 18px clamp(20px, 4vw, 44px);
   background: rgba(10, 4, 22, 0.85);
-  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
   border-bottom: 1px solid var(--line-dark);
 }
 .sa-nav-logo {
@@ -136,7 +136,7 @@
 .sa-cart-mini {
   position: absolute; top: calc(100% + 10px); right: -4px;
   min-width: 320px; max-width: 360px; padding: 22px 22px 20px;
-  background: rgba(10, 4, 22, 0.96); backdrop-filter: blur(14px);
+  background: rgba(10, 4, 22, 0.96); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   border: 1px solid var(--line-gold); border-radius: 4px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6); animation: sa-mini-in 0.22s var(--ease) both; color: var(--silk);
 }
@@ -155,7 +155,7 @@
 /* Search overlay */
 .sa-search-overlay {
   position: fixed; inset: 0; z-index: 90;
-  background: rgba(5, 2, 15, 0.72); backdrop-filter: blur(12px);
+  background: rgba(5, 2, 15, 0.72); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
   display: flex; justify-content: center; align-items: flex-start;
   padding: 88px clamp(16px, 5vw, 48px); animation: sa-fade 0.25s var(--ease) both;
 }
@@ -178,11 +178,11 @@
 /* Mobile burger + drawer */
 .sa-burger { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px; width: 36px; height: 36px; padding: 0; background: transparent; border: none; cursor: pointer; color: var(--silk); }
 .sa-burger span { display: block; width: 18px; height: 1.4px; background: currentColor; transition: transform 0.25s, opacity 0.2s; }
-.sa-drawer-scrim { position: fixed; inset: 0; z-index: 90; background: rgba(5, 2, 15, 0.65); backdrop-filter: blur(8px); animation: sa-fade 0.25s var(--ease) both; }
+.sa-drawer-scrim { position: fixed; inset: 0; z-index: 90; background: rgba(5, 2, 15, 0.65); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); animation: sa-fade 0.25s var(--ease) both; }
 .sa-drawer {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 95;
   width: min(360px, 92vw); padding: 24px 24px 32px;
-  background: rgba(10, 4, 22, 0.98); backdrop-filter: blur(14px);
+  background: rgba(10, 4, 22, 0.98); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   border-left: 1px solid var(--line-gold); display: flex; flex-direction: column;
   animation: sa-drawer-in 0.28s var(--ease) both; overflow-y: auto; color: var(--silk);
 }
@@ -220,13 +220,13 @@
 }
 .sa-btn-primary { color: #0A0416; background: linear-gradient(100deg, #A67816 0%, #FCD46F 45%, #E8B849 60%, #A67816 100%); box-shadow: 0 0 28px rgba(252, 212, 111, 0.3); }
 .sa-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 44px rgba(252, 212, 111, 0.55); }
-.sa-btn-ghost { color: var(--gold-lit); background: rgba(13, 6, 28, 0.5); backdrop-filter: blur(8px); border: 1px solid var(--gold); }
+.sa-btn-ghost { color: var(--gold-lit); background: rgba(13, 6, 28, 0.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border: 1px solid var(--gold); }
 .sa-btn-ghost:hover { transform: translateY(-2px); box-shadow: 0 0 22px rgba(232, 184, 73, 0.35); }
 
 /* Wishlist heart (base — pages may override position/palette) */
 .sa-wish {
   display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border-radius: 50%;
-  background: rgba(10, 4, 22, 0.72); backdrop-filter: blur(8px);
+  background: rgba(10, 4, 22, 0.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   border: 1px solid rgba(232, 184, 73, 0.3); color: var(--silk-muted); cursor: pointer;
   transition: color 0.25s, border-color 0.25s, transform 0.25s var(--ease), background 0.25s;
 }
@@ -239,7 +239,7 @@
 .sa-toast-tray { position: fixed; top: 92px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 10px; max-width: min(360px, calc(100vw - 32px)); pointer-events: none; }
 .sa-toast {
   display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px 14px 18px;
-  background: rgba(10, 4, 22, 0.94); backdrop-filter: blur(14px);
+  background: rgba(10, 4, 22, 0.94); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   border: 1px solid var(--line-gold); border-left-width: 3px; border-radius: 3px;
   color: var(--silk); font-family: var(--f-body); font-size: 13px; line-height: 1.5;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55); pointer-events: auto; animation: sa-toast-in 0.35s var(--ease) both;

@@ -138,7 +138,7 @@
   border: 1px solid rgba(232, 184, 73, 0.35);
   border-radius: 999px;
   background: rgba(13, 6, 28, 0.5);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   font-size: 11.5px; letter-spacing: 0.06em;
   color: var(--silk-muted);
   margin-bottom: 22px;
@@ -217,7 +217,7 @@
 .sa-btn-ghost {
   color: var(--gold-lit);
   background: rgba(13, 6, 28, 0.5);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   border: 1px solid var(--gold);
 }
 .sa-btn-ghost:hover { transform: translateY(-2px); box-shadow: 0 0 22px rgba(232, 184, 73, 0.35); }
@@ -240,7 +240,7 @@
   border-top: 1px solid var(--line-gold);
   border-bottom: 1px solid var(--line-gold);
   background: rgba(13, 6, 28, 0.62);
-  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
   position: relative;
 }
 .sa-panchang::before {
@@ -304,7 +304,7 @@
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
 }
 .sa-panchang-dialog::backdrop {
-  background: rgba(5, 2, 15, 0.72); backdrop-filter: blur(6px);
+  background: rgba(5, 2, 15, 0.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
 .sa-panchang-dialog-inner {
   padding: 26px 28px 22px; display: flex; flex-direction: column; gap: 18px;
@@ -500,7 +500,7 @@
 @media (max-width: 980px) { .sa-pieces-grid { grid-template-columns: 1fr; max-width: 400px; } }
 .sa-piece {
   background: var(--sanctum-panel);
-  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   border: 1px solid var(--line-gold);
   border-radius: 4px;
   overflow: hidden;
@@ -525,7 +525,7 @@
   display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none;
 }
 .sa-piece-badge {
-  background: rgba(10, 4, 22, 0.7); backdrop-filter: blur(6px);
+  background: rgba(10, 4, 22, 0.7); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   color: var(--gold-lit); font-size: 9px; letter-spacing: 0.22em;
   padding: 5px 10px; border-radius: 2px; text-transform: uppercase;
   border: 1px solid rgba(232, 184, 73, 0.3); font-weight: 700;
@@ -613,7 +613,7 @@
 @media (max-width: 720px) { .sa-consult-grid { grid-template-columns: 1fr; } }
 .sa-consult-card {
   background: var(--sanctum-panel);
-  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   border: 1px solid var(--line-gold);
   padding: 34px 30px;
   text-align: left;
@@ -652,7 +652,7 @@
 .sa-audit-copy h2 em { font-style: italic; color: var(--gold-lit); }
 .sa-audit-copy p { font-size: 14.5px; color: var(--silk-muted); line-height: 1.75; max-width: 42ch; margin-bottom: 26px; }
 .sa-quiz {
-  background: var(--sanctum-panel); backdrop-filter: blur(14px);
+  background: var(--sanctum-panel); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   border: 1px solid var(--line-gold); padding: 28px 26px;
 }
 .sa-quiz-lbl {
@@ -712,7 +712,7 @@
 .sa-wish {
   display: inline-flex; align-items: center; justify-content: center;
   width: 34px; height: 34px; border-radius: 50%;
-  background: rgba(10, 4, 22, 0.72); backdrop-filter: blur(8px);
+  background: rgba(10, 4, 22, 0.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   border: 1px solid rgba(232, 184, 73, 0.3);
   color: var(--silk-muted); cursor: pointer;
   transition: color 0.25s, border-color 0.25s, transform 0.25s var(--ease), background 0.25s;
@@ -738,7 +738,7 @@
 .sa-toast {
   display: flex; align-items: flex-start; gap: 12px;
   padding: 14px 16px 14px 18px;
-  background: rgba(10, 4, 22, 0.92); backdrop-filter: blur(14px);
+  background: rgba(10, 4, 22, 0.92); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   border: 1px solid var(--line-gold); border-left-width: 3px; border-radius: 3px;
   color: var(--silk); font-family: var(--f-body); font-size: 13px; line-height: 1.5;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
@@ -804,7 +804,7 @@
 .sa-bhak .who .place { font-size: 10px; color: var(--silk-faint); letter-spacing: 0.08em; margin-top: 2px; text-transform: uppercase; }
 .sa-bhak .piece {
   position: absolute; top: 12px; right: 12px; z-index: 3;
-  background: rgba(10, 4, 22, 0.72); backdrop-filter: blur(6px);
+  background: rgba(10, 4, 22, 0.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   color: var(--gold-lit); font-size: 9px; padding: 4px 9px; border-radius: 2px;
   letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
   border: 1px solid rgba(232, 184, 73, 0.3);
@@ -920,7 +920,7 @@
    -------------------------------------------------------------------------- */
 .sa-trust {
   border-top: 1px solid var(--line-gold); border-bottom: 1px solid var(--line-gold);
-  background: rgba(13, 6, 28, 0.62); backdrop-filter: blur(20px);
+  background: rgba(13, 6, 28, 0.62); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
   padding: 38px clamp(20px, 4vw, 44px);
 }
 .sa-trust-row {

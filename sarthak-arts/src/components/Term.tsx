@@ -34,7 +34,13 @@ export function Term({ name, children }: { name: string; children?: React.ReactN
   const show = useCallback(() => {
     cancelHide();
     const r = ref.current?.getBoundingClientRect();
-    if (r) setCoords({ x: r.left + r.width / 2, y: r.top });
+    if (r) {
+      // Clamp x so the (centred) card never spills past the screen edge on mobile.
+      const vw = document.documentElement.clientWidth;
+      const half = Math.min(130, vw * 0.46) + 8;
+      const x = Math.max(half, Math.min(r.left + r.width / 2, vw - half));
+      setCoords({ x, y: r.top });
+    }
     setOpen(true);
   }, [cancelHide]);
   const scheduleHide = useCallback(() => {

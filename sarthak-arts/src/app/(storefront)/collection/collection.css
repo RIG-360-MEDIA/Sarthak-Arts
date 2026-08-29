@@ -101,7 +101,7 @@ main:has(.col-root) { max-width: 1340px; }
 .col-hero .meta {
   display: inline-flex; flex-wrap: wrap; gap: 0; margin-top: 30px;
   border: 1px solid rgba(247,236,212,.22); border-radius: 999px; overflow: hidden;
-  background: rgba(255,255,255,.04); backdrop-filter: blur(4px);
+  background: rgba(255,255,255,.04); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
 }
 .col-hero .meta span {
   font-size: 13px; padding: 11px 20px; color: rgba(247,236,212,.86);
@@ -458,7 +458,7 @@ main:has(.col-root) { max-width: 1340px; }
   position: static; width: 32px; height: 32px; padding: 0; cursor: pointer; flex-shrink: 0;
   display: grid; place-items: center;
   border-radius: 50%; background: #fff; border: 1px solid var(--line); color: var(--ink-muted);
-  backdrop-filter: none; transition: color .18s ease, transform .18s ease, background .18s ease;
+  -webkit-backdrop-filter: none; backdrop-filter: none; transition: color .18s ease, transform .18s ease, background .18s ease;
 }
 .col-root .sa-wish:hover { color: var(--sold); border-color: var(--sold); transform: scale(1.08); }
 .col-root .sa-wish.is-saved { color: var(--sold); border-color: var(--sold); background: color-mix(in srgb, var(--sold) 10%, #fff); }
@@ -495,7 +495,7 @@ main:has(.col-root) { max-width: 1340px; }
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
   padding: 10px; border-radius: 10px; cursor: pointer;
-  background: rgba(255, 246, 224, .12); color: #FBE7A6; border: 1px solid rgba(251, 231, 166, .38); backdrop-filter: blur(6px);
+  background: rgba(255, 246, 224, .12); color: #FBE7A6; border: 1px solid rgba(251, 231, 166, .38); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   opacity: 0; transform: translateY(8px); transition: opacity .2s ease, transform .2s ease, background .18s ease, color .18s ease;
 }
 .niche:hover .niche-quick, .niche:focus-within .niche-quick { opacity: 1; transform: none; }
@@ -507,7 +507,7 @@ main:has(.col-root) { max-width: 1340px; }
   --chalk-raised: #FFFFFF; --ink: #2A2016; --ink-muted: #6B5E4E; --ink-faint: #9A8B76;
   --gold: #E8A81C; --gold-deep: #B47D0C; --line: #EADFCB; --line-soft: #F1E9D8; --ok: #1E8A5E; --sold: #B0492E;
   position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; padding: 22px;
-  background: rgba(20, 10, 6, .55); backdrop-filter: blur(6px);
+  background: rgba(20, 10, 6, .55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   animation: qvFade .2s ease both; font-family: var(--font-inter), system-ui, sans-serif; color: var(--ink);
 }
 @keyframes qvFade { from { opacity: 0; } to { opacity: 1; } }
@@ -550,7 +550,7 @@ main:has(.col-root) { max-width: 1340px; }
 .qv-actions .niche-cart button:hover { background: var(--ink); }
 .qv-actions .sa-wish {
   position: static; width: 46px; height: 46px; padding: 0; display: grid; place-items: center; flex-shrink: 0;
-  border-radius: 12px; background: #fff; border: 1px solid var(--line); color: var(--ink-muted); backdrop-filter: none;
+  border-radius: 12px; background: #fff; border: 1px solid var(--line); color: var(--ink-muted); -webkit-backdrop-filter: none; backdrop-filter: none;
 }
 .qv-actions .sa-wish:hover { color: var(--sold); border-color: var(--sold); }
 .qv-actions .sa-wish.is-saved { color: var(--sold); border-color: var(--sold); }
