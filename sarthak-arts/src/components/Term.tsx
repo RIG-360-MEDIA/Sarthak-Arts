@@ -4,19 +4,27 @@ import { createPortal } from "react-dom";
 import { getTerm } from "@/lib/glossary";
 
 /**
- * Term — wraps a devotional/Sanskrit word with a gentle plain-language tooltip.
- * Works on hover (desktop), tap (mobile) and keyboard focus; the popover is
- * rendered in a portal so it's never clipped by the hero or panchang pill, and
- * stays open while the pointer is over it so "Learn more" stays clickable.
+ * Term — wraps a devotional/Sanskrit word with a plain-language tooltip.
  *
- * If the term isn't in the glossary it simply renders its text — safe anywhere.
+ * Interaction:
+ *  - hover (desktop) shows a preview; moving onto the card keeps it open
+ *  - click / tap PINS it open so the "Learn more" link is easy to reach
+ *  - click the term again, click anywhere outside, or press Escape to close
+ *
+ * The card is rendered in a portal so it's never clipped by the hero/pill, and
+ * the close-on-outside-click explicitly ignores clicks on the card itself
+ * (that was the bug that made "Learn more" un-clickable).
+ *
+ * If the term isn't in the glossary it renders plain text — safe anywhere.
  */
 export function Term({ name, children }: { name: string; children?: React.ReactNode }) {
   const entry = getTerm(name);
   const id = useId();
   const ref = useRef<HTMLButtonElement>(null);
+  const popRef = useRef<HTMLSpanElement>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [open, setOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);
   const [coords, setCoords] = useState<{ x: number; y: number } | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -29,13 +37,22 @@ export function Term({ name, children }: { name: string; children?: React.ReactN
     if (r) setCoords({ x: r.left + r.width / 2, y: r.top });
     setOpen(true);
   }, [cancelHide]);
-  const scheduleHide = useCallback(() => { cancelHide(); hideTimer.current = setTimeout(() => setOpen(false), 120); }, [cancelHide]);
+  const scheduleHide = useCallback(() => {
+    if (pinned) return; // stay open once pinned by a click
+    cancelHide();
+    hideTimer.current = setTimeout(() => setOpen(false), 140);
+  }, [pinned, cancelHide]);
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
-    const onMove = () => setOpen(false); // scroll/resize invalidates the position
-    const onDown = (e: Event) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    const doClose = () => { cancelHide(); setPinned(false); setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") doClose(); };
+    const onMove = () => doClose(); // scroll/resize invalidates the anchored position
+    const onDown = (e: Event) => {
+      const t = e.target as Node;
+      if (ref.current?.contains(t) || popRef.current?.contains(t)) return; // ignore the term & the card
+      doClose();
+    };
     window.addEventListener("keydown", onKey);
     window.addEventListener("scroll", onMove, true);
     window.addEventListener("resize", onMove);
@@ -46,7 +63,7 @@ export function Term({ name, children }: { name: string; children?: React.ReactN
       window.removeEventListener("resize", onMove);
       document.removeEventListener("pointerdown", onDown);
     };
-  }, [open]);
+  }, [open, cancelHide]);
 
   if (!entry) return <>{children ?? name}</>;
 
@@ -55,19 +72,21 @@ export function Term({ name, children }: { name: string; children?: React.ReactN
       <button
         ref={ref}
         type="button"
-        className="sa-term"
+        className={`sa-term${open ? " is-open" : ""}`}
         aria-describedby={open ? id : undefined}
+        aria-expanded={open}
         onMouseEnter={show}
         onMouseLeave={scheduleHide}
         onFocus={show}
         onBlur={scheduleHide}
-        onClick={(e) => { e.preventDefault(); open ? setOpen(false) : show(); }}
+        onClick={(e) => { e.preventDefault(); if (pinned) { cancelHide(); setPinned(false); setOpen(false); } else { setPinned(true); show(); } }}
       >
         {children ?? entry.term}
       </button>
 
       {mounted && open && coords && createPortal(
         <span
+          ref={popRef}
           id={id}
           role="tooltip"
           className="sa-term-pop"

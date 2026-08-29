@@ -42,11 +42,16 @@ a { color: var(--ink); }
 /* ── Glossary term tooltip (plain-language help for devotional terms) ─────── */
 .sa-term {
   font: inherit; color: inherit; background: none; border: none; padding: 0; margin: 0;
-  line-height: inherit; vertical-align: baseline; cursor: help;
-  border-bottom: 1px dotted currentColor; text-underline-offset: 2px; opacity: .95;
-  transition: opacity .15s ease;
+  line-height: inherit; vertical-align: baseline; cursor: help; white-space: nowrap;
+  border-bottom: 1px dashed color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 2px; transition: border-color .15s ease;
 }
-.sa-term:hover, .sa-term:focus-visible { opacity: 1; outline: none; }
+.sa-term::after {
+  content: "ⓘ"; font-size: .62em; vertical-align: super; margin-left: 2px;
+  opacity: .5; font-style: normal; font-weight: 400; transition: opacity .15s ease;
+}
+.sa-term:hover, .sa-term:focus-visible, .sa-term.is-open { border-bottom-color: currentColor; outline: none; }
+.sa-term:hover::after, .sa-term:focus-visible::after, .sa-term.is-open::after { opacity: .95; }
 .sa-term-pop {
   position: fixed; transform: translate(-50%, -100%); z-index: 9999;
   width: max-content; max-width: 260px;
@@ -67,3 +72,5 @@ a { color: var(--ink); }
 .sa-term-pop-more:hover { text-decoration: underline; }
 @keyframes saTermIn { from { opacity: 0; transform: translate(-50%, -100%) translateY(5px); } to { opacity: 1; transform: translate(-50%, -100%); } }
 @media (prefers-reduced-motion: reduce) { .sa-term-pop { animation: none; } }
+.sa-panchang-hint { text-align: center; font-size: 11.5px; opacity: .62; margin: 10px 0 0; }
+.sa-panchang-hint b { font-weight: 600; border-bottom: 1px dashed currentColor; }

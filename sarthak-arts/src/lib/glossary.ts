@@ -177,3 +177,26 @@ export const GLOSSARY_GROUPS: { key: GlossaryEntry["group"]; title: string; blur
 export function getTerm(key: string): GlossaryEntry | undefined {
   return GLOSSARY[key.toLowerCase()];
 }
+
+/**
+ * Distinctive terms that are safe to auto-detect inside free text (product
+ * descriptions, placement notes, page copy) and turn into tooltips. Only
+ * unambiguous, multi-syllable Sanskrit terms are listed — short/common words
+ * (yoga, kāla, chara…) are left out so we never mislabel ordinary English.
+ * Patterns are matched case-insensitively; list longer forms first so
+ * "Śrī Yantra" wins over "Yantra". Each glossary key is linked once per block.
+ */
+export const AUTO_TERMS: { key: string; patterns: string[] }[] = [
+  { key: "sri-yantra", patterns: ["śrī yantra", "shri yantra", "sri yantra"] },
+  { key: "vastu", patterns: ["vāstu śāstra", "vastu shastra", "vāstu", "vastu"] },
+  { key: "ashtadhatu", patterns: ["aṣṭadhātu", "ashtadhatu", "asht dhatu"] },
+  { key: "panchadhatu", patterns: ["pañcadhātu", "panchadhatu", "panch dhatu"] },
+  { key: "dikpala", patterns: ["dikpāla", "dikpala"] },
+  { key: "choghadiya", patterns: ["choghadiya", "chogadiya"] },
+  { key: "muhurta", patterns: ["muhūrta", "muhurta", "muhurat"] },
+  { key: "kalash", patterns: ["kalasha", "kalash"] },
+  { key: "nakshatra", patterns: ["nakṣatra", "nakshatra"] },
+  { key: "amavasya", patterns: ["amāvāsyā", "amavasya"] },
+  { key: "purnima", patterns: ["pūrṇimā", "purnima"] },
+  { key: "yantra", patterns: ["yantra"] },
+];

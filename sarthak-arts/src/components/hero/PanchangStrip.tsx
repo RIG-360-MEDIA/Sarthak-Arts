@@ -75,6 +75,7 @@ export async function PanchangStrip() {
           <div className="sa-panchang-val"><Term name="rahu-kala">Rāhu Kāla</Term><b>{fmtIST(p.rahuKala.start)} – {fmtIST(p.rahuKala.end)}</b></div>
         </div>
       </div>
+      <p className="sa-panchang-hint">New to these words? Tap any <b>underlined</b> term for a plain-English meaning.</p>
       <div className="sa-panchang-cite">
         Live via <b>mhah-panchang</b> · Lahiri Ayanamsa · {p.city.name} · {p.masaSystem === "purnimanta" ? "Pūrṇimānta" : "Amānta"} reckoning · verified against Drik Panchang
         {" "}

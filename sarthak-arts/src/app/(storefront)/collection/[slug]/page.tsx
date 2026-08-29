@@ -11,6 +11,7 @@ import { AddToCart } from "@/components/collection/AddToCart";
 import { WishlistHeart } from "@/components/hero/WishlistHeart";
 import { ProductGallery } from "./ProductGallery";
 import { ProductSectionNav } from "./ProductSectionNav";
+import { GlossaryText } from "@/components/GlossaryText";
 import { isShopifyEnabled } from "@/lib/shopify/config";
 import { getShopifyProduct } from "@/lib/shopify/products";
 
@@ -393,7 +394,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {product.deity && (
               <div className="pdp-deity">
                 <span className="pdp-deity-name">This piece honours {product.deity.name}</span>
-                <p>{product.deity.placementGuidance}</p>
+                <p><GlossaryText>{product.deity.placementGuidance}</GlossaryText></p>
               </div>
             )}
             <div className="pdp-place-cta">
@@ -458,7 +459,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <section id="story" className="pdp-story bleed">
         <div className="pdp-story-in">
           <span className="pdp-kicker light">The story of this piece</span>
-          <p className="pdp-story-body serif">{product.description}</p>
+          <p className="pdp-story-body serif"><GlossaryText>{product.description}</GlossaryText></p>
           <div className="pdp-story-sign">
             <span className="pss-om sa-deva" aria-hidden="true">ॐ</span>
             <span>Made by hand · placed with intention · Sarthak Arts</span>
