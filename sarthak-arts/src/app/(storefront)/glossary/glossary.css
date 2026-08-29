@@ -1,0 +1,56 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Glossary — "Understanding the terms". A calm, welcoming reference for the
+   Sanskrit / devotional words used across the platform. Same warm sacred
+   palette as About / Legal so it feels part of the whole.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.glo-root {
+  --chalk-raised: #FFFFFF; --ink: #2A2016; --ink-muted: #6B5E4E; --ink-faint: #9A8B76;
+  --gold: #E8A81C; --gold-deep: #B47D0C; --line: #EADFCB; --line-soft: #F1E9D8;
+  --deep-1: #2A140E; --deep-2: #21110E; --deep-cream: #FBE7A6;
+  color: var(--ink); font-family: var(--font-inter), system-ui, sans-serif;
+}
+body:has(.glo-root) {
+  background-color: #F5EAD0;
+  background-image:
+    radial-gradient(46% 60% at 8% 0%, rgba(245,175,40,.12), transparent 60%),
+    radial-gradient(50% 60% at 100% 12%, rgba(190,70,40,.08), transparent 62%);
+  background-attachment: fixed;
+}
+.glo-root .sa-deva { font-family: 'Noto Serif Devanagari', 'Nirmala UI', serif; }
+
+/* Hero */
+.glo-hero { position: relative; overflow: hidden; color: #F7ECD4; padding: 66px 24px 54px; text-align: center;
+  background: radial-gradient(70% 60% at 50% 6%, rgba(245,145,30,.18), transparent 60%), radial-gradient(90% 95% at 50% -14%, #3E1B38 0%, #260F2A 46%, #170A1C 100%); }
+.glo-hero .eyebrow { font-size: 11px; letter-spacing: 2.6px; text-transform: uppercase; font-weight: 700; color: var(--gold); }
+.glo-hero h1 { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(30px, 4.6vw, 52px); font-weight: 500; color: #FBEFD6; margin: 14px 0 12px; }
+.glo-hero p { font-size: 16px; line-height: 1.7; color: rgba(247,236,212,.82); max-width: 56ch; margin: 0 auto; }
+
+/* Body */
+.glo-wrap { max-width: 880px; margin: 0 auto; padding: 50px 24px 70px; }
+
+/* Quick jump chips */
+.glo-jump { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 40px; }
+.glo-jump a { font-size: 12.5px; font-weight: 600; color: var(--gold-deep); text-decoration: none; padding: 8px 15px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--gold) 40%, var(--line)); background: var(--chalk-raised); transition: background .15s ease; }
+.glo-jump a:hover { background: color-mix(in srgb, var(--gold) 12%, #fff); }
+
+.glo-group { margin-bottom: 40px; scroll-margin-top: 90px; }
+.glo-group-head { border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 20px; }
+.glo-group-head h2 { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(22px, 3vw, 30px); font-weight: 500; color: var(--ink); margin: 0; }
+.glo-group-head p { font-size: 14px; color: var(--ink-muted); margin: 6px 0 0; }
+
+.glo-terms { display: grid; gap: 14px; }
+.glo-term { background: linear-gradient(180deg, #FFFDF8, #FBF3E1); border: 1px solid color-mix(in srgb, var(--gold) 16%, var(--line)); border-radius: 16px; padding: 18px 20px; scroll-margin-top: 90px; }
+.glo-term-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.glo-term-h .name { font-family: var(--font-fraunces), Georgia, serif; font-size: 19px; color: var(--ink); }
+.glo-term-h .deva { font-family: 'Noto Serif Devanagari','Nirmala UI',serif; font-size: 17px; color: var(--gold-deep); }
+.glo-term-h .short { font-size: 12.5px; color: var(--ink-faint); font-style: italic; }
+.glo-term p { font-size: 14.5px; line-height: 1.65; color: var(--ink-muted); margin: 9px 0 0; }
+.glo-term:target { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(232,168,28,.18); }
+
+/* Closing CTA */
+.glo-cta { text-align: center; margin-top: 46px; padding: 30px 24px; border-radius: 18px; color: #F7ECD4;
+  background: radial-gradient(70% 120% at 50% 0%, rgba(232,168,28,.16), transparent 60%), linear-gradient(110deg, var(--deep-1), var(--deep-2)); }
+.glo-cta h3 { font-family: var(--font-fraunces), Georgia, serif; font-size: 22px; font-weight: 500; color: var(--deep-cream); margin: 0 0 6px; }
+.glo-cta p { font-size: 14px; color: rgba(247,236,212,.8); margin: 0 0 16px; }
+.glo-cta a { display: inline-block; font-size: 14px; font-weight: 700; color: #23150c; text-decoration: none; padding: 13px 26px; border-radius: 12px;
+  background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 64%, var(--gold-deep)); box-shadow: 0 14px 30px -14px rgba(232,168,28,.7); }

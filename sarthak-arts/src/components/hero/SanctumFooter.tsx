@@ -9,7 +9,7 @@ import { CurrencySwitcher } from "@/components/CurrencySwitcher";
  */
 const COLS: Array<{ title: string; links: Array<[string, string]> }> = [
   { title: "Shop", links: [["The Collection", "/collection"], ["Consultations", "/consultation"]] },
-  { title: "Learn", links: [["Our Craft", "/our-craft"], ["Home audit", "/home-audit"], ["About", "/about"]] },
+  { title: "Learn", links: [["Our Craft", "/our-craft"], ["Understanding the terms", "/glossary"], ["Home audit", "/home-audit"], ["About", "/about"]] },
   { title: "Help", links: [["Track / return an order", "/order-lookup"], ["Shipping & Returns", "/shipping-returns"], ["Terms of Service", "/terms"], ["Privacy Policy", "/privacy"]] },
 ];
 

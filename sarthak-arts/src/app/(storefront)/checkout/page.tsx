@@ -67,7 +67,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         {error && (
           <div className="co-error" role="alert">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16.5v.5" strokeLinecap="round" /></svg>
-            Please check your details — some fields need a valid entry (email, phone, and a 6-digit PIN code).
+            {error === "payment"
+              ? "We couldn't start the payment just now. Please try again in a moment — your order and details are safe."
+              : "Please check your details — some fields need a valid entry (email, phone, and a 6-digit PIN code)."}
           </div>
         )}
 

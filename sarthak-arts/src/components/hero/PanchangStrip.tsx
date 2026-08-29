@@ -2,6 +2,13 @@ import { computePanchang, fmtIST } from "@/lib/panchang";
 import { readPanchangPreferences } from "@/lib/panchang/preferences";
 import { isSolarNativeRegion, nativeCalendarLabel } from "@/lib/panchang/cities";
 import { PanchangSwitcher } from "./PanchangSwitcher";
+import { Term } from "@/components/Term";
+
+/** Map a Choghadiya label to its glossary key. */
+const CHOGHADIYA_KEY: Record<string, string> = {
+  "Amṛta": "amrta", "Śubha": "shubha", "Lābha": "labha", "Cala": "chala",
+  "Udvega": "udvega", "Roga": "roga", "Kāla": "kala",
+};
 
 /**
  * Live panchang strip — five cells + citation with a switcher.
@@ -46,26 +53,26 @@ export async function PanchangStrip() {
           <div className="sa-panchang-val">{dateFmt}<b>{fortnight}</b></div>
         </div>
         <div className="sa-panchang-cell">
-          <div className="sa-panchang-lbl">Tithi</div>
+          <div className="sa-panchang-lbl"><Term name="tithi">Tithi</Term></div>
           <div className="sa-panchang-val">
             {p.tithi.paksha === "śukla" ? "Śukla" : "Kṛṣṇa"}
             <b lang="sa">{p.tithi.deva}</b>
           </div>
         </div>
         <div className="sa-panchang-cell">
-          <div className="sa-panchang-lbl">Nakshatra</div>
+          <div className="sa-panchang-lbl"><Term name="nakshatra">Nakshatra</Term></div>
           <div className="sa-panchang-val">{p.nakshatra.iast}<b lang="sa">{p.nakshatra.deva}</b></div>
         </div>
         <div className={`sa-panchang-cell ${auspiciousClass}`}>
-          <div className="sa-panchang-lbl">Now · Choghadiya</div>
+          <div className="sa-panchang-lbl">Now · <Term name="choghadiya">Choghadiya</Term></div>
           <div className="sa-panchang-val">
             {now ? (now.auspicious ? "Auspicious" : "Inauspicious") : "—"}
-            <b lang="sa">{now ? `${now.deva} · ${now.iast}` : ""}</b>
+            <b lang="sa">{now ? <>{now.deva} · <Term name={CHOGHADIYA_KEY[now.label] ?? "choghadiya"}>{now.iast}</Term></> : ""}</b>
           </div>
         </div>
         <div className="sa-panchang-cell avoid">
           <div className="sa-panchang-lbl">Avoid</div>
-          <div className="sa-panchang-val">Rāhu Kāla<b>{fmtIST(p.rahuKala.start)} – {fmtIST(p.rahuKala.end)}</b></div>
+          <div className="sa-panchang-val"><Term name="rahu-kala">Rāhu Kāla</Term><b>{fmtIST(p.rahuKala.start)} – {fmtIST(p.rahuKala.end)}</b></div>
         </div>
       </div>
       <div className="sa-panchang-cite">
@@ -101,7 +108,7 @@ export async function HeroAnnouncement() {
     <div className="sa-hero-anno">
       <span className="dot" aria-hidden="true" />
       <span>
-        <b>{now.iast} Choghadiya</b> · {meaning} · until {fmtIST(now.end)}
+        <b><Term name={CHOGHADIYA_KEY[now.label] ?? "choghadiya"}>{now.iast}</Term> <Term name="choghadiya">Choghadiya</Term></b> · {meaning} · until {fmtIST(now.end)}
       </span>
     </div>
   );

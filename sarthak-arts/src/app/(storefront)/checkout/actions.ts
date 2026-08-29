@@ -48,28 +48,39 @@ export async function beginCheckout(formData: FormData): Promise<void> {
     }));
   }
 
-  const gatewayOrder = await createGatewayOrder(totals.totalMinor, "INR", `cart_${cart.id.slice(0, 12)}`);
-  const intent = await prisma.checkoutIntent.create({
-    data: {
-      cartId: cart.id,
-      cartSnapshot: items.map((i) => ({ ...i, composition: compositionByProduct[i.productId] })) as unknown as Prisma.InputJsonValue,
-      email: input.email,
-      phone: input.phone,
-      shippingAddress: {
-        name: input.name,
-        line1: input.line1,
-        city: input.city,
-        state: input.state,
-        postalCode: input.postalCode,
-        country,
+  // Open a payment with the gateway and record the intent. If the gateway is
+  // unreachable or misconfigured, fail gracefully back to checkout with a
+  // friendly message instead of a raw server-error page.
+  let intentId: string;
+  try {
+    const gatewayOrder = await createGatewayOrder(totals.totalMinor, "INR", `cart_${cart.id.slice(0, 12)}`);
+    const intent = await prisma.checkoutIntent.create({
+      data: {
+        cartId: cart.id,
+        cartSnapshot: items.map((i) => ({ ...i, composition: compositionByProduct[i.productId] })) as unknown as Prisma.InputJsonValue,
+        email: input.email,
+        phone: input.phone,
+        shippingAddress: {
+          name: input.name,
+          line1: input.line1,
+          city: input.city,
+          state: input.state,
+          postalCode: input.postalCode,
+          country,
+        },
+        currency: "INR",
+        ...totals,
+        isGift: formData.get("isGift") === "on",
+        giftNote: (formData.get("giftNote") as string)?.trim() || null,
+        gatewayCode: "razorpay",
+        gatewayOrderId: String(gatewayOrder.id),
       },
-      currency: "INR",
-      ...totals,
-      isGift: formData.get("isGift") === "on",
-      giftNote: (formData.get("giftNote") as string)?.trim() || null,
-      gatewayCode: "razorpay",
-      gatewayOrderId: String(gatewayOrder.id),
-    },
-  });
-  redirect(`/checkout/pay/${intent.id}`);
+    });
+    intentId = intent.id;
+  } catch (err) {
+    console.error("[checkout] could not start payment:", err instanceof Error ? err.message : err);
+    redirect("/checkout?error=payment");
+  }
+
+  redirect(`/checkout/pay/${intentId}`);
 }
