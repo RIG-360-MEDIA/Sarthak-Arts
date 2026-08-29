@@ -13,6 +13,7 @@ import { getFeaturedPieces, formatINR } from "@/lib/home-featured";
 import { getNextFestival } from "@/lib/home-festivals";
 import { computePanchang } from "@/lib/panchang";
 import { readPanchangPreferences } from "@/lib/panchang/preferences";
+import { SITE_URL } from "@/lib/site";
 import "./home.css";
 
 // Map a Product's category.code to one of the procedural Product3D kinds.
@@ -28,7 +29,6 @@ function jsonLd(data: unknown): string {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
-const SITE_URL = "https://sarthakarts.com";
 const OG_TITLE = "Sarthak Arts — Made by hand. Placed with intention.";
 const OG_DESC =
   "Murtis and Vastu instruments in copper, brass and silver — each piece built for one direction, one purpose, one home. Certified per piece.";
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
   title: OG_TITLE,
   description: OG_DESC,
   metadataBase: new URL(SITE_URL),
-  openGraph: { title: OG_TITLE, description: OG_DESC, url: SITE_URL, siteName: "Sarthak Arts", locale: "en_IN", type: "website" },
-  twitter: { card: "summary_large_image", title: OG_TITLE, description: OG_DESC },
+  openGraph: { title: OG_TITLE, description: OG_DESC, url: SITE_URL, siteName: "Sarthak Arts", locale: "en_IN", type: "website", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Sarthak Arts — Handcrafted Vastu pieces" }] },
+  twitter: { card: "summary_large_image", title: OG_TITLE, description: OG_DESC, images: ["/opengraph-image"] },
   alternates: { canonical: SITE_URL },
 };
 
