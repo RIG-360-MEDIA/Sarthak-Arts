@@ -56,12 +56,17 @@
 }
 .sa-link-line:hover { color: var(--silk); border-color: var(--gold-lit); }
 
-/* Focus rings — a distinctive gold outline every interactive element earns */
+/* Focus rings — keyboard-only (`:focus-visible`). A soft gold ring that hugs
+   each element's shape rather than a hard floating box, so the accessibility
+   cue stays clear without looking like a stray outline on click. */
 .sa-chrome a:focus-visible,
 .sa-chrome button:focus-visible,
 .sa-chrome input:focus-visible,
 .sa-chrome select:focus-visible {
-  outline: 2px solid var(--gold-lit); outline-offset: 3px; border-radius: 2px;
+  outline: 2px solid color-mix(in srgb, var(--gold-lit) 78%, transparent);
+  outline-offset: 2px;
+  border-radius: 8px;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--gold-lit) 15%, transparent);
 }
 
 /* ── Announcement strip ──────────────────────────────────────────────────── */
