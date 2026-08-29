@@ -1,0 +1,261 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Consultation — "book an expert for your corners". Same sacred, Vāstu-led
+   language as the collection & product pages: warm haldi ground, candlelit dark
+   bands for the emotive moments, calm light cards for choosing and booking.
+   Adapts Astrotalk's proven structure (choose → book → how-it-works → trust →
+   FAQ) onto our real booking system (type + slot + private video session).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.cons-root {
+  --chalk: #FDFBF5; --chalk-raised: #FFFFFF; --ink: #2A2016; --ink-muted: #6B5E4E; --ink-faint: #9A8B76;
+  --gold: #E8A81C; --gold-deep: #B47D0C; --line: #EADFCB; --line-soft: #F1E9D8; --ok: #1E8A5E; --sold: #B0492E;
+  --deep-1: #2A140E; --deep-2: #21110E; --deep-3: #1A0C0B; --deep-cream: #FBE7A6;
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+body:has(.cons-root) {
+  background-color: #F5EAD0;
+  background-image:
+    radial-gradient(46% 60% at 8% 0%, rgba(245,175,40,.12), transparent 60%),
+    radial-gradient(50% 60% at 100% 12%, rgba(190,70,40,.08), transparent 62%),
+    radial-gradient(60% 70% at 50% 100%, rgba(232,168,28,.08), transparent 66%);
+  background-attachment: fixed;
+}
+.cons-root .sa-deva { font-family: 'Noto Serif Devanagari', 'Nirmala UI', serif; }
+.cons-root .serif { font-family: var(--font-fraunces), Georgia, serif; }
+
+/* ── Hero (dark editorial — split: copy left, portrait ovals right) ───────── */
+.cons-hero {
+  position: relative; overflow: hidden; color: #F3E7CE; padding: 58px 24px 64px;
+  background:
+    radial-gradient(58% 80% at 84% 42%, rgba(232,168,28,.15), transparent 60%),
+    linear-gradient(158deg, #1B120A 0%, #130C07 58%, #0C0906 100%);
+}
+.cons-hero::after { /* faint constellation field */
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image: radial-gradient(rgba(232,184,120,.16) 1px, transparent 1.5px);
+  background-size: 44px 44px;
+}
+.cons-hero-grid { position: relative; z-index: 2; max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 1.05fr .95fr; gap: 44px; align-items: center; }
+
+.cons-live { display: inline-flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 600; color: rgba(247,236,212,.88); padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(232,168,28,.28); background: rgba(20,12,6,.45); backdrop-filter: blur(6px); }
+.cons-live .dot { width: 8px; height: 8px; border-radius: 50%; background: #3FD07A; box-shadow: 0 0 8px #3FD07A; }
+.cons-live b { color: var(--gold-lit, #FCD46F); font-weight: 700; }
+
+.cons-hero h1 { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(34px, 5vw, 58px); line-height: 1.04; margin: 20px 0 0; font-weight: 500; color: #FBF3E1; letter-spacing: -.01em; }
+.cons-hero h1 em { font-style: normal; background: linear-gradient(180deg, #FCD46F 0%, #E8A81C 55%, #B47D0C 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.cons-checks { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 14px; }
+.cons-checks li { display: flex; align-items: center; gap: 12px; font-size: 16px; color: rgba(247,236,212,.9); }
+.cons-checks .ck { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; color: #23150c; background: radial-gradient(130% 130% at 30% 20%, #FCD46F, #E8A81C 66%, #B47D0C); }
+.cons-checks .ck svg { width: 14px; height: 14px; }
+
+.cons-hero-cta {
+  display: inline-flex; align-items: center; gap: 12px; text-decoration: none; margin-top: 30px;
+  font-size: 15px; font-weight: 700; letter-spacing: .2px; color: #23150c; padding: 16px 34px; border-radius: 999px;
+  background: linear-gradient(180deg, #FCD46F 0%, #E8B849 55%, #D69A1A 100%);
+  box-shadow: 0 18px 40px -16px rgba(232,168,28,.6), inset 0 1px 1px rgba(255,255,255,.5);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.cons-hero-cta:hover { transform: translateY(-2px); box-shadow: 0 24px 48px -16px rgba(232,168,28,.7); }
+.cons-hero-cta svg { width: 17px; height: 17px; }
+
+.cons-stats { display: flex; flex-wrap: wrap; gap: 26px 38px; margin-top: 46px; }
+.cons-stat b { display: block; font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(24px, 3vw, 36px); color: #FBF3E1; line-height: 1; font-weight: 500; }
+.cons-stat span { display: block; font-size: 11.5px; letter-spacing: .3px; color: rgba(247,236,212,.58); margin-top: 7px; }
+
+/* Portrait ovals — each turns forward in a repeating cycle. Holds brand renders
+   until real photos are dropped into /public/consultants (1.jpg, 2.jpg, 3.jpg). */
+.cons-hero-right { position: relative; perspective: 1300px; min-height: 540px; }
+.cons-hero-right::before { /* faint natal-chart ring behind, like the reference */
+  content: ""; position: absolute; inset: 0; margin: auto; width: 76%; aspect-ratio: 1; border-radius: 50%;
+  border: 1px solid rgba(232,168,28,.14); box-shadow: 0 0 0 30px rgba(232,168,28,.05);
+}
+/* Revolving carousel: each card enters from the right, sweeps to the centre
+   (facing front, largest), continues to the left, then fades out and wraps. */
+.cons-oval {
+  position: absolute; inset: 0; margin: auto; overflow: hidden;
+  width: 41%; aspect-ratio: .6; border-radius: 50% / 30%; /* capsule: rounded top/bottom, straight sides */
+  display: grid; place-items: center;
+  background: radial-gradient(70% 70% at 50% 38%, #2c1d13, #160d08);
+  border: 1px solid rgba(232,168,28,.3);
+  will-change: transform, opacity;
+  animation: cardShuffle 6.6s ease-in-out infinite;
+}
+.cons-oval:nth-child(1) { animation-delay: -4.4s; }
+.cons-oval:nth-child(2) { animation-delay: -2.2s; }
+.cons-oval:nth-child(3) { animation-delay: 0s; }
+.cons-oval .obj { width: 58%; height: 58%; filter: drop-shadow(0 0 18px rgba(232,168,28,.4)) drop-shadow(0 14px 18px rgba(0,0,0,.5)); }
+.cons-oval .oval-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 3; }
+
+/* Card shuffle: three capsules stacked at the centre. The front card holds
+   upfront, then lifts and flicks to the back of the stack while the ones behind
+   rise forward — a deck being shuffled, looping. */
+@keyframes cardShuffle {
+  0%   { transform: translate(0,0)      rotate(0deg)  scale(1);    opacity: 1;   z-index: 30; border-color: rgba(232,168,28,.85); box-shadow: 0 0 0 3px rgba(232,168,28,.2), 0 44px 78px -28px rgba(0,0,0,.8); }
+  28%  { transform: translate(0,0)      rotate(0deg)  scale(1);    opacity: 1;   z-index: 30; border-color: rgba(232,168,28,.85); box-shadow: 0 0 0 3px rgba(232,168,28,.2), 0 44px 78px -28px rgba(0,0,0,.8); }
+  38%  { transform: translate(6%,-17%)  rotate(8deg)  scale(1.03); opacity: 1;   z-index: 40; box-shadow: 0 40px 70px -24px rgba(0,0,0,.7); }
+  47%  { transform: translate(0,-13%)   rotate(-5deg) scale(.8);   opacity: .58; z-index: 9;  border-color: rgba(232,168,28,.25); box-shadow: 0 14px 30px -26px rgba(0,0,0,.6); }
+  66%  { transform: translate(0,-13%)   rotate(-5deg) scale(.8);   opacity: .58; z-index: 9;  border-color: rgba(232,168,28,.25); box-shadow: 0 14px 30px -26px rgba(0,0,0,.6); }
+  82%  { transform: translate(0,-7%)    rotate(4deg)  scale(.9);   opacity: .8;  z-index: 19; border-color: rgba(232,168,28,.32); box-shadow: 0 20px 40px -28px rgba(0,0,0,.6); }
+  100% { transform: translate(0,0)      rotate(0deg)  scale(1);    opacity: 1;   z-index: 30; border-color: rgba(232,168,28,.85); box-shadow: 0 0 0 3px rgba(232,168,28,.2), 0 44px 78px -28px rgba(0,0,0,.8); }
+}
+
+@media (max-width: 860px) {
+  .cons-hero-grid { grid-template-columns: 1fr; gap: 34px; text-align: center; }
+  .cons-checks { justify-items: center; }
+  .cons-checks li { justify-content: center; }
+  .cons-stats { justify-content: center; }
+  .cons-hero-right { order: -1; }
+}
+
+/* ── Section shell ───────────────────────────────────────────────────────── */
+.cons-section { padding: 52px 0; }
+.cons-h { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(22px, 2.6vw, 30px); color: var(--ink); margin: 0 0 8px; font-weight: 500; }
+.cons-sub { font-size: 15px; color: var(--ink-muted); margin: 0 0 26px; max-width: 60ch; }
+.cons-kicker { font-size: 11px; letter-spacing: 2.4px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }
+.cons-kicker.light { color: var(--gold); }
+
+/* ── Consultation type cards ─────────────────────────────────────────────── */
+.ctype-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.ctype {
+  position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit;
+  background: linear-gradient(180deg, #FFFDF8, #FBF3E1);
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--line));
+  border-radius: 20px; padding: 22px 22px 20px;
+  box-shadow: 0 1px 0 #fff inset, 0 20px 44px -30px rgba(60,40,15,.4);
+  transition: transform .2s cubic-bezier(.2,.7,.3,1), box-shadow .2s ease, border-color .2s ease;
+}
+.ctype:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--gold) 46%, var(--line)); box-shadow: 0 1px 0 #fff inset, 0 30px 54px -30px rgba(60,40,15,.5); }
+.ctype.on { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 26px 50px -28px color-mix(in srgb, var(--gold) 55%, rgba(60,40,15,.5)); }
+.ctype-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.ctype-name { font-family: var(--font-fraunces), Georgia, serif; font-size: 20px; line-height: 1.15; color: var(--ink); }
+.ctype-credit { flex-shrink: 0; font-size: 10px; letter-spacing: .4px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); background: color-mix(in srgb, var(--gold) 14%, #fff); border: 1px solid color-mix(in srgb, var(--gold) 34%, var(--line)); padding: 4px 9px; border-radius: 999px; }
+.ctype-desc { font-size: 13.5px; color: var(--ink-muted); line-height: 1.6; margin: 10px 0 0; flex: 1; }
+.ctype-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line-soft); }
+.ctype-dur { font-size: 12.5px; color: var(--ink-faint); }
+.ctype-fee { font-family: var(--font-fraunces), Georgia, serif; font-size: 20px; color: var(--ink); }
+.ctype-cta { margin-top: 16px; text-align: center; font-size: 13px; font-weight: 700; letter-spacing: .3px; padding: 11px; border-radius: 12px; color: var(--gold-deep); border: 1px solid color-mix(in srgb, var(--gold) 40%, var(--line)); transition: background .18s ease, color .18s ease; }
+.ctype:hover .ctype-cta { background: color-mix(in srgb, var(--gold) 12%, #fff); }
+.ctype.on .ctype-cta { background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 64%, var(--gold-deep)); color: #23150c; border-color: transparent; }
+
+/* ── Booking panel ───────────────────────────────────────────────────────── */
+.cons-book { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 32px; margin-top: 34px; align-items: start; scroll-margin-top: 24px; }
+.cons-book-main { background: var(--chalk-raised); border: 1px solid var(--line); border-radius: 20px; padding: 26px; }
+.cons-book-sel { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }
+.cons-book-name { font-family: var(--font-fraunces), Georgia, serif; font-size: 22px; color: var(--ink); margin: 6px 0 20px; }
+.cons-field-lbl { display: block; font-size: 12px; letter-spacing: .4px; text-transform: uppercase; font-weight: 700; color: var(--ink-muted); margin: 20px 0 10px; }
+.cons-field-lbl:first-of-type { margin-top: 0; }
+
+/* Slot picker — chips grouped by day */
+.slot-day { margin-bottom: 14px; }
+.slot-day-h { font-size: 12.5px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.slot-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.slot-chip { position: relative; cursor: pointer; }
+.slot-chip input { position: absolute; opacity: 0; pointer-events: none; }
+.slot-chip span { display: inline-block; font-size: 13px; font-weight: 600; color: var(--ink); padding: 8px 14px; border-radius: 10px; background: #fff; border: 1px solid var(--line); transition: all .16s ease; }
+.slot-chip:hover span { border-color: color-mix(in srgb, var(--gold) 50%, var(--line)); }
+.slot-chip input:checked + span { background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 66%, var(--gold-deep)); color: #23150c; border-color: transparent; box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--gold) 70%, transparent); }
+.slot-chip input:focus-visible + span { outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+.slot-empty { font-size: 14px; color: var(--ink-muted); font-style: italic; padding: 8px 0; }
+
+.cons-inputs { display: grid; gap: 4px; }
+.cons-inputs input {
+  width: 100%; font: inherit; font-size: 14.5px; color: var(--ink);
+  padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: #fff;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.cons-inputs input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 18%, transparent); }
+.cons-submit {
+  width: 100%; margin-top: 22px; padding: 15px; border-radius: 14px; border: none; cursor: pointer;
+  font-size: 14px; font-weight: 700; letter-spacing: .3px; color: #23150c;
+  background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 62%, var(--gold-deep));
+  box-shadow: 0 14px 28px -14px color-mix(in srgb, var(--gold) 70%, transparent), inset 0 1px 1px rgba(255,255,255,.5);
+  transition: transform .18s ease, filter .18s ease;
+}
+.cons-submit:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.04); }
+.cons-submit:disabled { background: var(--line); color: var(--ink-faint); box-shadow: none; cursor: not-allowed; }
+
+.cons-summary { background: linear-gradient(180deg, #FFFDF8, #FBF3E1); border: 1px solid color-mix(in srgb, var(--gold) 22%, var(--line)); border-radius: 18px; padding: 22px; position: sticky; top: 24px; }
+.cons-sum-k { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }
+.cons-sum-fee { font-family: var(--font-fraunces), Georgia, serif; font-size: 30px; color: var(--ink); margin: 6px 0 4px; }
+.cons-sum-dur { font-size: 13px; color: var(--ink-muted); }
+.cons-sum-note { font-size: 12.5px; color: var(--ink-muted); line-height: 1.55; margin: 16px 0 0; padding-top: 16px; border-top: 1px solid var(--line-soft); }
+.cons-sum-note b { color: var(--gold-deep); }
+
+/* ── How it works (deep band) ────────────────────────────────────────────── */
+.cons-how { position: relative; overflow: hidden; color: #F7ECD4; padding: 56px 24px; margin: 8px 0; }
+.cons-how { background: radial-gradient(60% 120% at 12% 0%, rgba(245,160,40,.16), transparent 58%), linear-gradient(120deg, var(--deep-1), var(--deep-2) 55%, var(--deep-3)); }
+.cons-how::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(232,168,28,.6), transparent); }
+.cons-how-in { position: relative; max-width: 1080px; margin: 0 auto; }
+.cons-how h2 { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(24px, 3vw, 34px); color: var(--deep-cream); margin: 10px 0 30px; font-weight: 500; }
+.chow-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 22px; }
+.chow-step { position: relative; }
+.chow-num { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; font-family: var(--font-fraunces), Georgia, serif; font-size: 18px; color: #23150c; margin-bottom: 12px; background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 66%, var(--gold-deep)); box-shadow: 0 0 18px -4px rgba(232,168,28,.7); }
+.chow-title { font-family: var(--font-fraunces), Georgia, serif; font-size: 17px; color: var(--deep-cream); margin-bottom: 6px; }
+.chow-body { font-size: 13.5px; line-height: 1.6; color: rgba(247,236,212,.75); }
+
+/* ── Why book with us ────────────────────────────────────────────────────── */
+.cwhy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; }
+.cwhy { background: var(--chalk-raised); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
+.cwhy-icon { display: inline-grid; place-items: center; width: 46px; height: 46px; border-radius: 13px; margin-bottom: 14px; color: var(--gold-deep); background: color-mix(in srgb, var(--gold) 12%, #fff); border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--line)); }
+.cwhy-icon svg { width: 22px; height: 22px; }
+.cwhy-title { font-family: var(--font-fraunces), Georgia, serif; font-size: 18px; color: var(--ink); margin-bottom: 6px; }
+.cwhy-body { font-size: 13.5px; line-height: 1.6; color: var(--ink-muted); }
+
+/* ── Cross-link to the free audit ────────────────────────────────────────── */
+.cons-audit { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; background: linear-gradient(180deg, #FFFDF8, #FBF3E1); border: 1px solid color-mix(in srgb, var(--gold) 22%, var(--line)); border-radius: 20px; padding: 24px 28px; }
+.cons-audit-copy .t { font-family: var(--font-fraunces), Georgia, serif; font-size: 19px; color: var(--ink); }
+.cons-audit-copy .s { font-size: 13.5px; color: var(--ink-muted); margin-top: 4px; }
+.cons-audit-link { flex-shrink: 0; font-size: 13.5px; font-weight: 700; color: var(--gold-deep); text-decoration: none; padding: 12px 22px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line)); transition: background .18s ease; white-space: nowrap; }
+.cons-audit-link:hover { background: color-mix(in srgb, var(--gold) 12%, #fff); }
+
+/* ── FAQ ─────────────────────────────────────────────────────────────────── */
+.cons-faq-list { max-width: 860px; }
+.cons-faq-list details { border-bottom: 1px solid var(--line); }
+.cons-faq-list summary { cursor: pointer; list-style: none; padding: 18px 2px; font-size: 15.5px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.cons-faq-list summary::-webkit-details-marker { display: none; }
+.cons-faq-list summary::after { content: "+"; color: var(--gold-deep); font-size: 20px; font-weight: 400; transition: transform .2s ease; flex-shrink: 0; }
+.cons-faq-list details[open] summary::after { transform: rotate(45deg); }
+.cons-faq-body { padding: 0 2px 18px; font-size: 14px; line-height: 1.65; color: var(--ink-muted); }
+
+/* ── Sacred close ────────────────────────────────────────────────────────── */
+.cons-close { text-align: center; color: #F7ECD4; padding: 52px 24px; background: radial-gradient(70% 120% at 50% 0%, rgba(232,168,28,.14), transparent 62%), linear-gradient(110deg, var(--deep-2), var(--deep-3)); }
+.cons-close .om { font-family: 'Noto Serif Devanagari','Nirmala UI',serif; font-size: 40px; color: var(--gold); opacity: .9; }
+.cons-close .l { font-family: var(--font-fraunces), Georgia, serif; font-size: 20px; color: var(--deep-cream); margin: 10px 0 4px; }
+.cons-close .s { font-size: 13px; color: rgba(247,236,212,.62); }
+
+/* ── Confirmed page ──────────────────────────────────────────────────────── */
+.cons-confirm { max-width: 620px; margin: 0 auto; text-align: center; padding: 64px 24px; }
+.cons-confirm-seal { width: 84px; height: 84px; margin: 0 auto 20px; display: grid; place-items: center; border-radius: 50%; color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, #fff); border: 1px solid color-mix(in srgb, var(--ok) 30%, var(--line)); }
+.cons-confirm-seal svg { width: 40px; height: 40px; }
+.cons-confirm h1 { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(26px, 3.4vw, 36px); color: var(--ink); margin: 0 0 10px; font-weight: 500; }
+.cons-confirm-card { background: linear-gradient(180deg, #FFFDF8, #FBF3E1); border: 1px solid color-mix(in srgb, var(--gold) 22%, var(--line)); border-radius: 18px; padding: 22px 24px; margin: 24px 0; text-align: left; }
+.cons-confirm-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line-soft); font-size: 14px; }
+.cons-confirm-row:last-child { border-bottom: none; }
+.cons-confirm-row .k { color: var(--ink-muted); }
+.cons-confirm-row .v { color: var(--ink); font-weight: 600; text-align: right; }
+.cons-confirm-note { font-size: 13px; color: var(--ink-faint); }
+.cons-confirm-sub { font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); text-align: left; max-width: 460px; margin: 26px auto 12px; }
+.cons-confirm-next { text-align: left; max-width: 460px; margin: 0 auto; display: grid; gap: 12px; }
+.cons-next-item { display: flex; gap: 12px; align-items: flex-start; font-size: 13.5px; color: var(--ink-muted); }
+.cons-next-item .ic { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--gold) 12%, #fff); border: 1px solid color-mix(in srgb, var(--gold) 26%, var(--line)); color: var(--gold-deep); }
+.cons-next-item .ic svg { width: 16px; height: 16px; }
+.cons-next-item b { color: var(--ink); display: block; font-size: 13.5px; margin-bottom: 1px; }
+.cons-confirm-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
+.cons-confirm-actions a { font-size: 13.5px; font-weight: 700; text-decoration: none; padding: 12px 24px; border-radius: 12px; }
+.cons-confirm-actions .primary { color: #23150c; background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 64%, var(--gold-deep)); }
+.cons-confirm-actions .ghost { color: var(--gold-deep); border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line)); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .cons-book { grid-template-columns: 1fr; }
+  .cons-summary { position: static; order: -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cons-root *, .cons-root *::before, .cons-root *::after { animation: none !important; transition: none !important; }
+  .cons-oval { opacity: 1 !important; }
+  .cons-oval:nth-child(1) { transform: translate(0,-13%) rotate(-5deg) scale(.8) !important; opacity: .58 !important; z-index: 9; }
+  .cons-oval:nth-child(2) { transform: translate(0,-7%) rotate(4deg) scale(.9) !important; opacity: .8 !important; z-index: 19; }
+  .cons-oval:nth-child(3) { transform: translate(0,0) scale(1) !important; z-index: 30; border-color: rgba(232,168,28,.85) !important; }
+}

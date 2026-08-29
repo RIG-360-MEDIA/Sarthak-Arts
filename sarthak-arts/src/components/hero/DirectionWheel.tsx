@@ -125,7 +125,7 @@ export function DirectionWheel() {
   };
 
   const enter = (key: string) => {
-    window.location.href = `/direction/${key}`;
+    window.location.href = `/collection?direction=${key}`;
   };
   const onClick = () => {
     if (hovered) enter(hovered.key);
@@ -136,7 +136,7 @@ export function DirectionWheel() {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       if (hovered) enter(hovered.key);
-      else window.location.href = "/direction";
+      else window.location.href = "/collection";
     }
   };
 

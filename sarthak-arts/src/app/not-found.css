@@ -1,0 +1,35 @@
+/* Branded 404 — self-contained (renders outside the storefront chrome), in the
+   platform's candlelit sacred language so a dead link never feels off-brand. */
+.nf-root {
+  position: relative; min-height: 100vh; display: grid; place-items: center;
+  text-align: center; padding: 96px 24px 48px; color: #F7ECD4;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background:
+    radial-gradient(70% 55% at 50% 12%, rgba(245,145,30,.16), transparent 60%),
+    radial-gradient(95% 95% at 50% -12%, #3E1B38 0%, #260F2A 46%, #120814 100%);
+}
+.nf-root::after { /* fine grain */
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+.nf-deva { font-family: 'Noto Serif Devanagari', 'Nirmala UI', serif; }
+.nf-brand {
+  position: absolute; top: 28px; left: 50%; transform: translateX(-50%); z-index: 2;
+  font-family: var(--font-fraunces), Georgia, serif; font-size: 18px; letter-spacing: .4px;
+  color: #E8A81C; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+}
+.nf-brand .m { font-size: 20px; }
+.nf-in { position: relative; z-index: 2; max-width: 560px; }
+.nf-om { font-size: 60px; color: #E8A81C; opacity: .92; line-height: 1; text-shadow: 0 0 34px rgba(232,168,28,.4); }
+.nf-code { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: rgba(247,236,212,.5); margin-top: 12px; }
+.nf-title { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(28px, 4vw, 44px); color: #FBEFD6; margin: 12px 0 12px; font-weight: 500; }
+.nf-sub { font-size: 16px; line-height: 1.7; color: rgba(247,236,212,.76); max-width: 46ch; margin: 0 auto; }
+.nf-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+.nf-btn { text-decoration: none; font-size: 14px; font-weight: 700; letter-spacing: .3px; padding: 14px 28px; border-radius: 12px; transition: transform .18s ease; }
+.nf-btn:hover { transform: translateY(-2px); }
+.nf-btn.primary { color: #23150c; background: radial-gradient(130% 130% at 30% 20%, #FBE7A6, #E8A81C 64%, #B47D0C); box-shadow: 0 16px 34px -16px rgba(232,168,28,.6); }
+.nf-btn.ghost { color: #FBE7A6; border: 1px solid rgba(232,168,28,.42); }
+.nf-links { margin-top: 26px; font-size: 13px; color: rgba(247,236,212,.5); }
+.nf-links a { color: rgba(247,236,212,.75); text-decoration: none; }
+.nf-links a:hover { color: #FBE7A6; }

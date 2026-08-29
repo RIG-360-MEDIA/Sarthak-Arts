@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./collection.css";
-import { getCollectionView, parseFilters, toQuery } from "@/lib/collection";
+import { getCollectionView, parseFilters, toQuery, PAGE_SIZE } from "@/lib/collection";
 import { PieceDefs } from "@/components/collection/Piece";
 import { NicheCard } from "@/components/collection/NicheCard";
 import { CollectionCompass } from "@/components/collection/CollectionCompass";
 import { Toolbar } from "@/components/collection/Toolbar";
 import { BackToTop } from "@/components/collection/BackToTop";
+import { RitualCalendar } from "@/components/collection/RitualCalendar";
+import { getNextFestival, type NextFestival } from "@/lib/home-festivals";
 
 export const metadata: Metadata = {
   title: "The Collection — Handcrafted Vāstu Pieces by Direction | Sarthak Arts",
@@ -29,6 +31,14 @@ export default async function CollectionPage({
   const filters = parseFilters(sp);
   const density = sp.density === "compact" ? "compact" : "comfortable";
   const view = await getCollectionView(filters);
+
+  // Next festival — fail soft (Neon may be asleep); absent beats stale.
+  let festival: NextFestival | null = null;
+  try {
+    festival = await getNextFestival("north");
+  } catch {
+    festival = null;
+  }
 
   // Shared param bags for URL-driven links.
   const sortParam = filters.sort === "newest" ? undefined : filters.sort;
@@ -121,6 +131,9 @@ export default async function CollectionPage({
         </div>
       </div>
 
+      {/* ── Living ritual calendar (occasion + gifting) ── */}
+      <RitualCalendar festival={festival} />
+
       <div className="col-layout">
         {/* ── Rail: compass filter + guide ── */}
         <aside className="col-rail">
@@ -153,44 +166,68 @@ export default async function CollectionPage({
             ))}
           </nav>
 
-          <Toolbar lead={lead} count={view.pieces.length} sort={filters.sort} density={density} current={currentAll} />
+          <Toolbar
+            lead={lead}
+            count={view.mode === "grid" ? view.shown : view.totalLive}
+            total={view.mode === "grid" ? view.matchCount : undefined}
+            sort={filters.sort}
+            density={density}
+            current={currentAll}
+          />
 
-          {view.pieces.length === 0 ? (
+          {(view.mode === "overview" ? view.overview.length === 0 : view.pieces.length === 0) ? (
             <div className="col-empty">
               <div className="om sa-deva" aria-hidden="true">ॐ</div>
               <h3>No pieces in this corner yet</h3>
               <p>Try another direction or type — or <Link href="/collection">see the full collection</Link>.</p>
             </div>
-          ) : (
+          ) : view.mode === "overview" ? (
+            /* ── Landing overview: a capped preview per direction, scales forever ── */
             <div className="dir-sections">
-              {view.directions
-                .map((d) => ({ d, items: view.pieces.filter((p) => p.directionCode === d.code) }))
-                .filter((g) => g.items.length > 0)
-                .map(({ d, items }) => (
-                  <section
-                    key={d.code}
-                    className="dir-section col-reveal"
-                    style={{ ["--pc" as string]: d.color, ["--pc-deep" as string]: d.colorDeep } as React.CSSProperties}
-                  >
-                    <div className="dir-strip">
-                      <span className="ds-medal" aria-hidden="true">{DIR_ABBR[d.code] ?? "◈"}</span>
-                      <span className="ds-title">
-                        <span className="ds-name serif">{d.name}</span>
-                        <span className="ds-guardian">{d.iast} · {d.deity} <span className="sa-deva">{d.deva}</span></span>
-                      </span>
-                      {d.element && <span className="ds-elem">{d.element}</span>}
-                      {d.governs && <span className="ds-gov">{d.governs}</span>}
-                      <span className="ds-count">{items.length} {items.length === 1 ? "piece" : "pieces"}</span>
-                      <Link href={`/direction/${d.code}`} className="ds-explore">Explore the {d.name} →</Link>
-                    </div>
-                    <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
-                      {items.map((p) => (
-                        <NicheCard key={p.slug} p={p} compact={density === "compact"} />
-                      ))}
-                    </div>
-                  </section>
-                ))}
+              {view.overview.map(({ direction: d, items, hasMore }) => (
+                <section
+                  key={d.code}
+                  className="dir-section col-reveal"
+                  style={{ ["--pc" as string]: d.color, ["--pc-deep" as string]: d.colorDeep } as React.CSSProperties}
+                >
+                  <div className="dir-strip">
+                    <span className="ds-medal" aria-hidden="true">{DIR_ABBR[d.code] ?? "◈"}</span>
+                    <span className="ds-title">
+                      <span className="ds-name serif">{d.name}</span>
+                      <span className="ds-guardian">{d.iast} · {d.deity} <span className="sa-deva">{d.deva}</span></span>
+                    </span>
+                    {d.element && <span className="ds-elem">{d.element}</span>}
+                    {d.governs && <span className="ds-gov">{d.governs}</span>}
+                    <span className="ds-count">{d.liveCount} {d.liveCount === 1 ? "piece" : "pieces"}</span>
+                    <Link href={`/collection?direction=${d.code}`} className="ds-explore">
+                      {hasMore ? `Explore all ${d.liveCount}` : `Explore the ${d.name}`} →
+                    </Link>
+                  </div>
+                  <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
+                    {items.map((p) => (
+                      <NicheCard key={p.slug} p={p} compact={density === "compact"} />
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
+          ) : (
+            /* ── Filtered grid: database-paginated, constant page weight ── */
+            <>
+              <div className={`col-wall${density === "compact" ? " compact" : ""}${view.shown > 18 ? " col-dense" : ""}`}>
+                {view.pieces.map((p) => (
+                  <NicheCard key={p.slug} p={p} compact={density === "compact"} />
+                ))}
+              </div>
+              {view.hasMore && (
+                <div className="col-more">
+                  <Link href={toQuery({ ...currentAll, show: String(filters.show + PAGE_SIZE) })} className="col-more-btn" scroll={false}>
+                    Show more pieces
+                    <span className="col-more-n">{view.shown} of {view.matchCount}</span>
+                  </Link>
+                </div>
+              )}
+            </>
           )}
         </main>
       </div>

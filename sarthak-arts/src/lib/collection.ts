@@ -1,18 +1,26 @@
 import { prisma } from "@/lib/db";
-import { getAllDirections, type DirectionCard } from "@/lib/direction";
+import type { DirectionCard } from "@/lib/direction";
 import { visualFor, DIRECTION_ANGLE } from "@/lib/direction-visual";
 import { resolveDisplayCurrency, formatDisplay } from "@/lib/currency";
+import { isShopifyEnabled } from "@/lib/shopify/config";
 
 /**
- * Collection view model — everything the (storefront)/collection page needs,
- * shaped once here so the page and its components stay declarative.
+ * Collection view model — everything the (storefront)/collection page needs.
  *
- * Filtering is URL-driven (the page passes parsed searchParams). Directions may
- * be multi-selected (comma-separated in the URL); category/metal/purpose are
- * single. The product set is small, so we fetch all live pieces once and filter
- * in-memory — this keeps counts, representative pieces, and the grid consistent
- * from a single source, and avoids duplicating the Prisma `where` shape.
+ * Built to scale to a large catalogue across nine directions:
+ *   • Counts (per-direction, per-category, total) come from cheap COUNT/groupBy
+ *     queries — never by loading every product.
+ *   • The page has TWO modes:
+ *       - "overview" (no filters): each direction shows a capped preview
+ *         (OVERVIEW_PER_DIR) plus "explore all N", so the landing view stays
+ *         fast and scannable no matter how big the catalogue grows.
+ *       - "grid" (any filter active): a single database-paginated grid using
+ *         skip/take, so page weight is constant regardless of total products.
+ * Filtering is URL-driven (the page passes parsed searchParams).
  */
+
+export const OVERVIEW_PER_DIR = 6;   // preview cards per direction on the landing view
+export const PAGE_SIZE = 24;          // grid page size; "show more" grows in these steps
 
 export type CollectionFilters = {
   directions: string[];      // e.g. ["north","east"] — empty = all
@@ -20,41 +28,29 @@ export type CollectionFilters = {
   metal?: string;
   purpose?: string;
   sort: "newest" | "price-asc" | "price-desc";
+  show: number;              // how many to render in grid mode (paginated)
 };
 
-/** Map a product's leaf category to a metallic render silhouette. */
-const GLYPH_BY_CATEGORY: Record<string, string> = {
-  kalash: "kalash", yantra: "yantra", pyramid: "pyramid",
-  panel: "panel", chime: "chime", murtis: "vessel",
-};
-export function glyphForCategory(code: string): string {
-  return GLYPH_BY_CATEGORY[code] ?? "vessel";
-}
-
-/** Pick the metallic gradient id from the primary metal's name. */
-export function gradForMetal(metalName: string | null | undefined): string {
-  const m = (metalName ?? "").toLowerCase();
-  if (m.startsWith("silver")) return "gSilver";
-  if (m.startsWith("brass")) return "gBrass";
-  if (m.startsWith("copper")) return "gCopper";
-  return "gAlloy";
-}
+// Pure piece-visual helpers now live in a server-free module; re-exported here
+// so existing callers (and the Shopify adapter, and tests) share one source.
+export { glyphForCategory, gradForMetal } from "@/lib/piece-visual";
+import { glyphForCategory, gradForMetal } from "@/lib/piece-visual";
 
 export type PieceCard = {
   productId: number;
+  /** Shopify variant id — present only in headless Shopify mode; used for cart. */
+  variantId?: string;
   slug: string;
   name: string;
   priceDisplay: string;
   priceMinor: number;
   createdAtMs: number;
-  /** render props */
   glyph: string;
   metalGrad: string;
   gemHex: string;
   gemName: string | null;
   primaryMetalName: string | null;
   weightG: number | null;
-  /** primary direction */
   directionCode: string;
   directionName: string;
   directionIast: string;
@@ -63,7 +59,6 @@ export type PieceCard = {
   directionGoverns: string;
   color: string;
   colorDeep: string;
-  /** copy + state */
   positioningLine: string;
   placementNote: string;
   inStock: boolean;
@@ -77,15 +72,23 @@ export type DirectionView = DirectionCard & {
   deity: string;
   color: string;
   colorDeep: string;
-  angle: number;          // screen-space bearing; center = null-ish (0)
+  angle: number;          // screen-space bearing
   liveCount: number;      // live pieces that list this direction
-  sample: { glyph: string; metalGrad: string; gemHex: string } | null;
 };
 
 export type CategoryView = { code: string; name: string; count: number };
 
+export type OverviewGroup = { direction: DirectionView; items: PieceCard[]; hasMore: boolean };
+
 export type CollectionView = {
+  mode: "overview" | "grid";
+  /** overview mode: capped preview per direction */
+  overview: OverviewGroup[];
+  /** grid mode: the current (paginated) page of matching pieces */
   pieces: PieceCard[];
+  matchCount: number;     // grid mode: total matching the filters
+  shown: number;          // grid mode: how many are rendered now
+  hasMore: boolean;       // grid mode: are there more to load?
   totalLive: number;
   directions: DirectionView[];
   categories: CategoryView[];
@@ -93,24 +96,21 @@ export type CollectionView = {
   filters: CollectionFilters;
 };
 
-type LiveProduct = Awaited<ReturnType<typeof loadLiveProducts>>[number];
+const PIECE_INCLUDE = {
+  category: true,
+  composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" as const } },
+  directions: { include: { direction: true } },
+} as const;
 
-function loadLiveProducts() {
-  return prisma.product.findMany({
-    where: { status: "live" },
-    orderBy: { createdAt: "asc" },
-    include: {
-      category: true,
-      composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" } },
-      directions: { include: { direction: true } },
-    },
-  });
+type LiveProduct = Awaited<ReturnType<typeof loadOne>>;
+async function loadOne() {
+  return prisma.product.findFirst({ where: { status: "live" }, include: PIECE_INCLUDE });
 }
 
 const BRAND_GEM = "#B8863E";
 
 function toPiece(
-  p: LiveProduct,
+  p: NonNullable<LiveProduct>,
   currency: { code: string; ratePerBase: number },
 ): PieceCard {
   const primaryDir = p.directions[0]?.direction;
@@ -150,76 +150,100 @@ function toPiece(
 
 const EMPTY_CURRENCY = { code: "INR", ratePerBase: 1 };
 
+function emptyView(filters: CollectionFilters): CollectionView {
+  return {
+    mode: "overview", overview: [], pieces: [], matchCount: 0, shown: 0, hasMore: false,
+    totalLive: 0, directions: [], categories: [], currency: EMPTY_CURRENCY, filters,
+  };
+}
+
+/** Prisma `where` for the active filters (excluding status, added by callers). */
+function filterWhere(filters: CollectionFilters) {
+  const and: Record<string, unknown>[] = [];
+  if (filters.directions.length)
+    and.push({ directions: { some: { direction: { code: { in: filters.directions } } } } });
+  if (filters.category) and.push({ category: { code: filters.category } });
+  if (filters.metal) and.push({ composition: { some: { metal: { name: { equals: filters.metal, mode: "insensitive" } } } } });
+  return and.length ? { AND: and } : {};
+}
+
+function orderByFor(sort: CollectionFilters["sort"]) {
+  if (sort === "price-asc") return { basePriceMinor: "asc" as const };
+  if (sort === "price-desc") return { basePriceMinor: "desc" as const };
+  return { createdAt: "desc" as const };
+}
+
 export async function getCollectionView(filters: CollectionFilters): Promise<CollectionView> {
-  // Fail soft when the DB is unreachable (e.g. Neon asleep) — the page still
-  // renders its hero and an honest empty state rather than a 500.
-  let products: LiveProduct[], dirCards: Awaited<ReturnType<typeof getAllDirections>>,
-      currency: { code: string; ratePerBase: number };
+  // Headless Shopify: when configured, the catalogue comes from Shopify. The
+  // page and its components are unchanged — the view shape is identical. Dynamic
+  // import keeps the Shopify (server-only) module out of the built-in path.
+  if (isShopifyEnabled()) {
+    const { getShopifyCollectionView } = await import("@/lib/shopify/collection-view");
+    return getShopifyCollectionView(filters);
+  }
+
+  const hasFilters = filters.directions.length > 0 || !!filters.category || !!filters.metal;
+
   try {
-    [products, dirCards, currency] = await Promise.all([
-      loadLiveProducts(),
-      getAllDirections(),
+    // ── Cheap aggregates: counts only, never the whole catalogue ──────────
+    const [totalLive, dirRecords, dirCountRows, catCountRows, currency] = await Promise.all([
+      prisma.product.count({ where: { status: "live" } }),
+      prisma.direction.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }),
+      prisma.productDirection.groupBy({ by: ["directionId"], where: { product: { status: "live" } }, _count: { _all: true } }),
+      prisma.product.groupBy({ by: ["categoryId"], where: { status: "live" }, _count: { _all: true } }),
       resolveDisplayCurrency(),
     ]);
+
+    const dirCount = new Map(dirCountRows.map((r) => [r.directionId, r._count._all]));
+    const directions: DirectionView[] = dirRecords.map((d) => {
+      const v = visualFor(d.code);
+      return {
+        code: d.code, name: d.name, sanskritName: d.sanskritName, deva: v.deva,
+        element: d.element, governs: d.governs, microcopy: d.microcopy,
+        productCount: dirCount.get(d.id) ?? 0, realProductCount: dirCount.get(d.id) ?? 0,
+        iast: v.iast, deity: v.deity, color: v.color, colorDeep: v.colorDeep,
+        angle: DIRECTION_ANGLE[d.code] ?? 0, liveCount: dirCount.get(d.id) ?? 0,
+      };
+    });
+
+    // Category chips (leaf categories with live pieces).
+    const catRecords = await prisma.category.findMany({ where: { id: { in: catCountRows.map((r) => r.categoryId) } } });
+    const catName = new Map(catRecords.map((c) => [c.id, c]));
+    const categories: CategoryView[] = catCountRows
+      .map((r) => ({ code: catName.get(r.categoryId)?.code ?? "", name: catName.get(r.categoryId)?.name ?? "", count: r._count._all }))
+      .filter((c) => c.code)
+      .sort((a, b) => b.count - a.count);
+
+    const base = { totalLive, directions, categories, currency, filters };
+
+    // ── Grid mode: database-paginated set of matching pieces ──────────────
+    if (hasFilters) {
+      const where = { status: "live", ...filterWhere(filters) };
+      const [matchCount, rows] = await Promise.all([
+        prisma.product.count({ where }),
+        prisma.product.findMany({ where, include: PIECE_INCLUDE, orderBy: orderByFor(filters.sort), take: filters.show }),
+      ]);
+      const pieces = rows.map((p) => toPiece(p, currency));
+      return { ...base, mode: "grid", overview: [], pieces, matchCount, shown: pieces.length, hasMore: matchCount > pieces.length };
+    }
+
+    // ── Overview mode: one capped preview query per non-empty direction ───
+    const active = directions.filter((d) => d.liveCount > 0);
+    const groups = await Promise.all(
+      active.map(async (d) => {
+        const rows = await prisma.product.findMany({
+          where: { status: "live", directions: { some: { direction: { code: d.code } } } },
+          include: PIECE_INCLUDE, orderBy: { createdAt: "desc" }, take: OVERVIEW_PER_DIR,
+        });
+        return { direction: d, items: rows.map((p) => toPiece(p, currency)), hasMore: d.liveCount > OVERVIEW_PER_DIR };
+      }),
+    );
+
+    return { ...base, mode: "overview", overview: groups, pieces: [], matchCount: totalLive, shown: totalLive, hasMore: false };
   } catch (err) {
     console.warn("[collection] load failed, rendering empty:", err instanceof Error ? err.message : err);
-    return { pieces: [], totalLive: 0, directions: [], categories: [], currency: EMPTY_CURRENCY, filters };
+    return emptyView(filters);
   }
-
-  const allPieces = products.map((p) => toPiece(p, currency));
-
-  // Per-direction live counts + a representative piece (real preferred over sample).
-  const codesByProduct = new Map(products.map((p) => [p.id, p.directions.map((d) => d.direction.code)]));
-  const directions: DirectionView[] = dirCards.map((dc) => {
-    const v = visualFor(dc.code);
-    const inZone = allPieces.filter((pc) => codesByProduct.get(pc.productId)?.includes(dc.code));
-    const rep = inZone.find((pc) => !pc.isSample) ?? inZone[0] ?? null;
-    return {
-      ...dc,
-      iast: v.iast,
-      deity: v.deity,
-      color: v.color,
-      colorDeep: v.colorDeep,
-      angle: DIRECTION_ANGLE[dc.code] ?? 0,
-      liveCount: inZone.length,
-      sample: rep ? { glyph: rep.glyph, metalGrad: rep.metalGrad, gemHex: rep.gemHex } : null,
-    };
-  });
-
-  // Category chips (leaf categories that actually have live pieces).
-  const catMap = new Map<string, CategoryView>();
-  for (const p of products) {
-    const c = p.category;
-    const cur = catMap.get(c.code) ?? { code: c.code, name: c.name, count: 0 };
-    cur.count += 1;
-    catMap.set(c.code, cur);
-  }
-  const categories = [...catMap.values()].sort((a, b) => b.count - a.count);
-
-  // Apply filters in-memory.
-  let pieces = allPieces;
-  if (filters.directions.length)
-    pieces = pieces.filter((pc) => {
-      const codes = codesByProduct.get(pc.productId) ?? [];
-      return filters.directions.some((d) => codes.includes(d));
-    });
-  if (filters.category)
-    pieces = pieces.filter((pc) => pc.categoryCode === filters.category);
-  if (filters.metal)
-    pieces = pieces.filter((pc) => (pc.primaryMetalName ?? "").toLowerCase() === filters.metal!.toLowerCase());
-
-  if (filters.sort === "price-asc") pieces = [...pieces].sort((a, b) => a.priceMinor - b.priceMinor);
-  else if (filters.sort === "price-desc") pieces = [...pieces].sort((a, b) => b.priceMinor - a.priceMinor);
-  else pieces = [...pieces].sort((a, b) => b.createdAtMs - a.createdAtMs); // newest
-
-  return {
-    pieces,
-    totalLive: allPieces.length,
-    directions,
-    categories,
-    currency,
-    filters,
-  };
 }
 
 // URL helpers live in a client-safe module; re-exported here for server callers.
@@ -227,11 +251,10 @@ export { toQuery, toggleDirection } from "@/lib/collection-url";
 
 /** Parse raw searchParams into typed CollectionFilters. */
 export function parseFilters(sp: Record<string, string | undefined>): CollectionFilters {
-  const directions = (sp.direction ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+  const directions = (sp.direction ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const sort: CollectionFilters["sort"] =
     sp.sort === "price-asc" || sp.sort === "price-desc" ? sp.sort : "newest";
-  return { directions, category: sp.category, metal: sp.metal, purpose: sp.purpose, sort };
+  const showRaw = Number(sp.show);
+  const show = Number.isFinite(showRaw) && showRaw >= PAGE_SIZE ? Math.min(showRaw, 480) : PAGE_SIZE;
+  return { directions, category: sp.category, metal: sp.metal, purpose: sp.purpose, sort, show };
 }

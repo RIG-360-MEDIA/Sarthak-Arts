@@ -10,9 +10,9 @@ import { useToast } from "@/components/hero/Toast";
  * Guards against double-submits and gates on stock.
  */
 export function AddToCart({
-  productId, pieceName, inStock,
+  productId, variantId, pieceName, inStock,
 }: {
-  productId: number; pieceName: string; inStock: boolean;
+  productId: number; variantId?: string; pieceName: string; inStock: boolean;
 }) {
   const [busy, setBusy] = useState(false);
   const router = useRouter();
@@ -24,7 +24,7 @@ export function AddToCart({
     if (busy || !inStock) return;
     setBusy(true);
     try {
-      await addToCartInline(productId);
+      await addToCartInline(productId, variantId);
       push({ tone: "ok", message: `${pieceName} added to your cart.` });
       router.refresh();
     } catch {

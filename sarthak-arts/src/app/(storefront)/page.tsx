@@ -13,7 +13,7 @@ import { getFeaturedPieces, formatINR } from "@/lib/home-featured";
 import { getNextFestival } from "@/lib/home-festivals";
 import { computePanchang } from "@/lib/panchang";
 import { readPanchangPreferences } from "@/lib/panchang/preferences";
-import "@/app/(storefront)/home.css";
+import "./home.css";
 
 // Map a Product's category.code to one of the procedural Product3D kinds.
 type Product3DKind = "kalash" | "yantra" | "pyramid";
@@ -107,7 +107,7 @@ export default async function HomePage() {
             </p>
             <div className="sa-hero-mantra" lang="sa">॥ शुभं भवतु ॥</div>
             <div className="sa-hero-ctas">
-              <a className="sa-btn sa-btn-primary" href="/direction">Enter the shrine</a>
+              <a className="sa-btn sa-btn-primary" href="/collection">Enter the shrine</a>
               <a className="sa-btn sa-btn-ghost" href="/home-audit">Two-minute audit</a>
             </div>
           </div>
@@ -134,14 +134,14 @@ export default async function HomePage() {
           <div className="sa-reveal"><DirectionWheel /></div>
 
           <div className="sa-dir-index sa-reveal">
-            <a href="/direction/north"     className="sa-dir-row"><span className="c">N</span><span className="d"><span className="sa-deva" lang="sa">कुबेर</span>Kubera</span><span className="e">Wealth · Water</span></a>
-            <a href="/direction/northeast" className="sa-dir-row"><span className="c">NE</span><span className="d"><span className="sa-deva" lang="sa">ईशान</span>Īśāna</span><span className="e">Clarity · Water</span></a>
-            <a href="/direction/east"      className="sa-dir-row"><span className="c">E</span><span className="d"><span className="sa-deva" lang="sa">इन्द्र</span>Indra</span><span className="e">Energy · Space</span></a>
-            <a href="/direction/southeast" className="sa-dir-row"><span className="c">SE</span><span className="d"><span className="sa-deva" lang="sa">अग्नि</span>Agni</span><span className="e">Vitality · Fire</span></a>
-            <a href="/direction/south"     className="sa-dir-row"><span className="c">S</span><span className="d"><span className="sa-deva" lang="sa">यम</span>Yama</span><span className="e">Dharma · Earth</span></a>
-            <a href="/direction/southwest" className="sa-dir-row"><span className="c">SW</span><span className="d"><span className="sa-deva" lang="sa">निर्ऋति</span>Nirṛti</span><span className="e">Stability · Earth</span></a>
-            <a href="/direction/west"      className="sa-dir-row"><span className="c">W</span><span className="d"><span className="sa-deva" lang="sa">वरुण</span>Varuṇa</span><span className="e">Relations · Water</span></a>
-            <a href="/direction/northwest" className="sa-dir-row"><span className="c">NW</span><span className="d"><span className="sa-deva" lang="sa">वायु</span>Vāyu</span><span className="e">Movement · Air</span></a>
+            <a href="/collection?direction=north"     className="sa-dir-row"><span className="c">N</span><span className="d"><span className="sa-deva" lang="sa">कुबेर</span>Kubera</span><span className="e">Wealth · Water</span></a>
+            <a href="/collection?direction=northeast" className="sa-dir-row"><span className="c">NE</span><span className="d"><span className="sa-deva" lang="sa">ईशान</span>Īśāna</span><span className="e">Clarity · Water</span></a>
+            <a href="/collection?direction=east"      className="sa-dir-row"><span className="c">E</span><span className="d"><span className="sa-deva" lang="sa">इन्द्र</span>Indra</span><span className="e">Energy · Space</span></a>
+            <a href="/collection?direction=southeast" className="sa-dir-row"><span className="c">SE</span><span className="d"><span className="sa-deva" lang="sa">अग्नि</span>Agni</span><span className="e">Vitality · Fire</span></a>
+            <a href="/collection?direction=south"     className="sa-dir-row"><span className="c">S</span><span className="d"><span className="sa-deva" lang="sa">यम</span>Yama</span><span className="e">Dharma · Earth</span></a>
+            <a href="/collection?direction=southwest" className="sa-dir-row"><span className="c">SW</span><span className="d"><span className="sa-deva" lang="sa">निर्ऋति</span>Nirṛti</span><span className="e">Stability · Earth</span></a>
+            <a href="/collection?direction=west"      className="sa-dir-row"><span className="c">W</span><span className="d"><span className="sa-deva" lang="sa">वरुण</span>Varuṇa</span><span className="e">Relations · Water</span></a>
+            <a href="/collection?direction=northwest" className="sa-dir-row"><span className="c">NW</span><span className="d"><span className="sa-deva" lang="sa">वायु</span>Vāyu</span><span className="e">Movement · Air</span></a>
           </div>
 
           <div className="sa-cite">

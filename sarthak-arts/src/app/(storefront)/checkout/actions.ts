@@ -6,11 +6,22 @@ import { prisma } from "@/lib/db";
 import { getCartWithItems, cartSubtotalMinor } from "@/lib/cart";
 import { computeTotals, zoneConfigForCountry } from "@/lib/totals";
 import { createGatewayOrder } from "@/lib/payments/razorpay";
+import { validateCheckout } from "@/lib/validation";
 
 export async function beginCheckout(formData: FormData): Promise<void> {
   const cartId = (await cookies()).get("cart_id")?.value;
   const cart = cartId ? await getCartWithItems(cartId) : null;
   if (!cart || cart.items.length === 0) redirect("/cart");
+
+  // Authoritative server-side validation — the browser's required/type hints
+  // are UX only and can be bypassed.
+  const parsed = validateCheckout({
+    name: formData.get("name"), email: formData.get("email"), phone: formData.get("phone"),
+    line1: formData.get("line1"), city: formData.get("city"), state: formData.get("state"),
+    postalCode: formData.get("postalCode"), country: formData.get("country"),
+  });
+  if (!parsed.ok) redirect("/checkout?error=1");
+  const input = parsed.value;
 
   const items = cart.items.map((i) => ({
     productId: i.productId,
@@ -19,7 +30,7 @@ export async function beginCheckout(formData: FormData): Promise<void> {
     quantity: i.quantity,
   }));
   const subtotal = cartSubtotalMinor(items);
-  const country = String(formData.get("country") ?? "IN");
+  const country = input.country;
   const totals = computeTotals(subtotal, await zoneConfigForCountry(country));
 
   const compositionByProduct: Record<number, unknown> = {};
@@ -42,14 +53,14 @@ export async function beginCheckout(formData: FormData): Promise<void> {
     data: {
       cartId: cart.id,
       cartSnapshot: items.map((i) => ({ ...i, composition: compositionByProduct[i.productId] })) as unknown as Prisma.InputJsonValue,
-      email: String(formData.get("email")),
-      phone: String(formData.get("phone")),
+      email: input.email,
+      phone: input.phone,
       shippingAddress: {
-        name: String(formData.get("name")),
-        line1: String(formData.get("line1")),
-        city: String(formData.get("city")),
-        state: String(formData.get("state")),
-        postalCode: String(formData.get("postalCode")),
+        name: input.name,
+        line1: input.line1,
+        city: input.city,
+        state: input.state,
+        postalCode: input.postalCode,
         country,
       },
       currency: "INR",

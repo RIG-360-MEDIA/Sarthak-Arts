@@ -8,8 +8,8 @@ import { CurrencySwitcher } from "@/components/CurrencySwitcher";
  * from the storefront layout so every page closes the same way.
  */
 const COLS: Array<{ title: string; links: Array<[string, string]> }> = [
-  { title: "Shop", links: [["The Collection", "/collection"], ["Shop by Direction", "/direction"], ["Consultations", "/consultation"]] },
-  { title: "Learn", links: [["Vāstu, briefly", "/vastu-shastra"], ["Our Craft", "/our-craft"], ["Home audit", "/home-audit"], ["About", "/about"]] },
+  { title: "Shop", links: [["The Collection", "/collection"], ["Consultations", "/consultation"]] },
+  { title: "Learn", links: [["Our Craft", "/our-craft"], ["Home audit", "/home-audit"], ["About", "/about"]] },
   { title: "Help", links: [["Track / return an order", "/order-lookup"], ["Shipping & Returns", "/shipping-returns"], ["Terms of Service", "/terms"], ["Privacy Policy", "/privacy"]] },
 ];
 

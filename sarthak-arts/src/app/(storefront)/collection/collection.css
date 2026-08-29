@@ -128,6 +128,96 @@ main:has(.col-root) { max-width: 1340px; }
 .col-trust-in svg { width: 18px; height: 18px; color: var(--gold-deep); }
 .col-trust-in b { color: var(--ink); font-weight: 600; }
 
+/* ── Living ritual calendar (occasion + gifting band) ────────────────────── */
+.rcal {
+  position: relative; overflow: hidden;
+  color: #F7ECD4;
+  padding: 34px 24px;
+  background:
+    radial-gradient(60% 120% at 14% 0%, rgba(245,160,40,.20), transparent 58%),
+    radial-gradient(80% 140% at 92% 100%, rgba(190,40,60,.18), transparent 60%),
+    linear-gradient(104deg, #2A140E 0%, #22110E 52%, #1A0C0B 100%);
+  border-top: 1px solid rgba(232,168,28,.28);
+  border-bottom: 1px solid rgba(0,0,0,.4);
+}
+.rcal::before { /* a hairline of candlelight along the top edge */
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,168,28,.65), transparent);
+}
+.rcal-in {
+  position: relative; z-index: 1; max-width: 1080px; margin: 0 auto;
+  display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.15fr);
+  gap: 26px 44px; align-items: center;
+}
+.rcal-head { min-width: 0; }
+.rcal-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; letter-spacing: 2.4px; text-transform: uppercase; font-weight: 700;
+  color: var(--gold);
+}
+.rcal-spark {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--gold);
+  box-shadow: 0 0 10px 1px rgba(232,168,28,.9);
+  animation: rcalPulse 2.6s ease-in-out infinite;
+}
+@keyframes rcalPulse { 0%,100% { opacity: .5; transform: scale(.82); } 50% { opacity: 1; transform: scale(1.1); } }
+.rcal-name {
+  margin: 10px 0 6px; line-height: 1.06;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: clamp(28px, 3.4vw, 40px); font-weight: 500;
+  color: #FBE7A6;
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+}
+.rcal-deva {
+  font-size: .82em; color: var(--gold);
+  text-shadow: 0 0 22px rgba(232,168,28,.4);
+}
+.rcal-tag { margin: 0; font-size: 14.5px; color: rgba(247,236,212,.72); max-width: 46ch; }
+.rcal-when { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.rcal-count {
+  font-size: 12.5px; font-weight: 800; letter-spacing: .3px; color: #1A0C0B;
+  padding: 6px 14px; border-radius: 999px;
+  background: radial-gradient(120% 120% at 30% 20%, #FBE7A6, var(--gold) 70%, var(--gold-deep));
+  box-shadow: 0 0 18px -4px rgba(232,168,28,.8), inset 0 1px 1px rgba(255,255,255,.45);
+}
+.rcal-date { font-size: 13px; color: #F7ECD4; font-weight: 600; }
+.rcal-tithi {
+  font-size: 10.5px; letter-spacing: .5px; text-transform: uppercase; font-weight: 700;
+  color: rgba(247,236,212,.75); border: 1px solid rgba(247,236,212,.28);
+  padding: 4px 10px; border-radius: 999px;
+}
+
+.rcal-picks { min-width: 0; }
+.rcal-picks-lbl {
+  display: block; margin-bottom: 12px;
+  font-size: 10.5px; letter-spacing: 1.8px; text-transform: uppercase; font-weight: 700;
+  color: rgba(247,236,212,.5);
+}
+.rcal-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.rcal-pick {
+  display: flex; flex-direction: column; gap: 4px; height: 100%;
+  padding: 14px 15px; border-radius: 13px; text-decoration: none;
+  background: linear-gradient(180deg, rgba(255,241,214,.09), rgba(255,241,214,.03));
+  border: 1px solid rgba(232,168,28,.24);
+  transition: transform .22s cubic-bezier(.2,.7,.3,1), border-color .22s ease, background .22s ease, box-shadow .22s ease;
+}
+.rcal-pick:hover {
+  transform: translateY(-4px);
+  border-color: rgba(232,168,28,.6);
+  background: linear-gradient(180deg, rgba(255,241,214,.14), rgba(255,241,214,.05));
+  box-shadow: 0 18px 30px -20px rgba(0,0,0,.7), 0 0 22px -8px rgba(232,168,28,.5);
+}
+.rcal-pick-name { font-family: var(--font-fraunces), Georgia, serif; font-size: 15.5px; color: #FBE7A6; line-height: 1.15; }
+.rcal-pick-line { font-size: 11.5px; color: rgba(247,236,212,.62); line-height: 1.3; flex: 1; }
+.rcal-pick-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.rcal-pick-price { font-size: 13.5px; font-weight: 700; color: var(--gold); }
+.rcal-pick-arw { color: var(--gold); transition: transform .2s ease; }
+.rcal-pick:hover .rcal-pick-arw { transform: translateX(4px); }
+
+@media (max-width: 860px) {
+  .rcal-in { grid-template-columns: 1fr; gap: 22px; }
+}
+
 /* ── Layout: rail + main ─────────────────────────────────────────────────── */
 .col-layout {
   display: grid; grid-template-columns: 300px 1fr; gap: 34px;
@@ -258,6 +348,24 @@ main:has(.col-root) { max-width: 1340px; }
 }
 .col-wall.compact { grid-template-columns: repeat(auto-fill, minmax(178px, 210px)); gap: 16px; }
 
+/* "Show more" — grid mode pagination */
+.col-more { display: flex; justify-content: center; margin-top: 34px; }
+.col-more-btn {
+  display: inline-flex; align-items: center; gap: 12px; text-decoration: none;
+  padding: 13px 26px; border-radius: 999px;
+  font-size: 14px; font-weight: 700; letter-spacing: .3px; color: var(--gold-deep);
+  background: linear-gradient(180deg, #FFFDF8, #FBF3E1);
+  border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+  box-shadow: 0 1px 0 #fff inset, 0 16px 34px -24px rgba(60,40,15,.5);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.col-more-btn:hover { transform: translateY(-2px); border-color: var(--gold); box-shadow: 0 1px 0 #fff inset, 0 22px 40px -22px color-mix(in srgb, var(--gold) 60%, rgba(60,40,15,.5)); }
+.col-more-n { font-size: 12px; font-weight: 600; color: var(--ink-faint); padding-left: 12px; border-left: 1px solid var(--line); }
+
+/* Motion budget: when the grid is dense, drop the per-card float (keeps hover
+   tilt + scroll reveal, which are on-demand / in-view only). */
+.col-wall.col-dense .niche-obj { animation: none !important; will-change: auto; }
+
 /* An arch-topped temple niche (domed top), colour-coded to its direction */
 .niche {
   position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit;
@@ -299,6 +407,31 @@ main:has(.col-root) { max-width: 1340px; }
 .niche-arch circle { fill: color-mix(in srgb, var(--pc) 42%, #FBE7A6); stroke: none; opacity: .7; }
 .niche-obj { position: relative; width: 150px; height: 150px; z-index: 2; filter: drop-shadow(0 0 22px color-mix(in srgb, var(--pc) 42%, transparent)) drop-shadow(0 16px 20px rgba(0,0,0,.45)); }
 .niche.compact .niche-obj { width: 110px; height: 110px; }
+
+/* "Hold the piece" — the alcove tilts toward the cursor (vars set by TiltStage).
+   Perspective lives on this decorative, click-through layer — NOT on .niche-stage
+   — so the stage stays free of a stacking context and the Quick-view button (z4)
+   still sits above the stretched card link, while object-area clicks fall through
+   to that link. */
+.niche-persp {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  perspective: 720px;
+}
+.niche-scene {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform .35s cubic-bezier(.2, .7, .3, 1);
+}
+/* a sliver of candlelight that follows the pointer across the alcove */
+.niche-glare {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0;
+  background: radial-gradient(38% 38% at var(--gx, 50%) var(--gy, 50%), rgba(255,240,205,.22), transparent 70%);
+  transition: opacity .3s ease;
+}
+.niche-stage:hover .niche-glare { opacity: 1; }
+@media (hover: none) { .niche-scene { transform: none !important; } }
 /* a sheen of light passes over the alcove on hover */
 .niche-stage::after {
   content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
@@ -499,4 +632,5 @@ main:has(.col-root) { max-width: 1340px; }
 
 @media (prefers-reduced-motion: reduce) {
   .col-root *, .col-root *::before, .col-root *::after { animation: none !important; transition: none !important; }
+  .niche-scene { transform: none !important; }
 }

@@ -13,7 +13,8 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:prod": "cross-env SEED_DEMO=false tsx prisma/seed.ts",
-    "simulate:webhook": "tsx scripts/simulate-webhook.ts"
+    "simulate:webhook": "tsx scripts/simulate-webhook.ts",
+    "shopify:check": "node scripts/shopify-check.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1080.0",
@@ -22,6 +23,7 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",
+    "@shopify/storefront-api-client": "^2.0.0",
     "@types/suncalc": "^1.9.2",
     "bcryptjs": "^3.0.3",
     "gsap": "^3.15.0",

@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { saveImage, deleteImageByUrl } from "@/lib/uploads";
 
 function slugify(s: string): string {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -27,7 +28,7 @@ export async function createProduct(formData: FormData): Promise<void> {
   });
   const directionId = Number(formData.get("directionId"));
   if (directionId) await prisma.productDirection.create({ data: { productId: product.id, directionId } });
-  redirect(`/admin/products/${product.id}`);
+  redirect(`/admin/products/${product.id}?flash=created`);
 }
 
 export async function updateProduct(formData: FormData): Promise<void> {
@@ -56,7 +57,7 @@ export async function updateProduct(formData: FormData): Promise<void> {
       data: { productId: id, oldPriceMinor: existing.basePriceMinor, newPriceMinor },
     });
   }
-  revalidatePath(`/admin/products/${id}`);
+  redirect(`/admin/products/${id}?flash=saved`);
 }
 
 export async function addComposition(formData: FormData): Promise<void> {
@@ -80,5 +81,43 @@ export async function removeComposition(formData: FormData): Promise<void> {
   const compositionId = Number(formData.get("compositionId"));
   const productId = Number(formData.get("productId"));
   await prisma.productComposition.delete({ where: { id: compositionId } });
+  revalidatePath(`/admin/products/${productId}`);
+}
+
+// ── Product images ─────────────────────────────────────────────────────────
+
+export async function uploadProductImage(formData: FormData): Promise<void> {
+  const productId = Number(formData.get("productId"));
+  const file = formData.get("file") as File | null;
+  const product = await prisma.product.findUniqueOrThrow({ where: { id: productId }, select: { name: true } });
+  if (!file || file.size === 0) return;
+
+  const saved = await saveImage(file, `products/${productId}`);
+  const count = await prisma.productImage.count({ where: { productId } });
+  await prisma.productImage.create({
+    data: { productId, url: saved.url, alt: product.name, sortOrder: count },
+  });
+  revalidatePath(`/admin/products/${productId}`);
+}
+
+export async function removeProductImage(formData: FormData): Promise<void> {
+  const imageId = Number(formData.get("imageId"));
+  const productId = Number(formData.get("productId"));
+  const image = await prisma.productImage.findUnique({ where: { id: imageId } });
+  await prisma.productImage.delete({ where: { id: imageId } });
+
+  // Best-effort: remove the stored object (local disk or R2/S3).
+  if (image?.url) {
+    try { await deleteImageByUrl(image.url); } catch { /* already gone — fine */ }
+  }
+  revalidatePath(`/admin/products/${productId}`);
+}
+
+export async function makePrimaryImage(formData: FormData): Promise<void> {
+  const imageId = Number(formData.get("imageId"));
+  const productId = Number(formData.get("productId"));
+  const images = await prisma.productImage.findMany({ where: { productId }, orderBy: { sortOrder: "asc" } });
+  const reordered = [images.find((i) => i.id === imageId)!, ...images.filter((i) => i.id !== imageId)].filter(Boolean);
+  await prisma.$transaction(reordered.map((img, i) => prisma.productImage.update({ where: { id: img.id }, data: { sortOrder: i } })));
   revalidatePath(`/admin/products/${productId}`);
 }

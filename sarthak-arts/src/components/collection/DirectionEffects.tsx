@@ -196,6 +196,7 @@ function DhvajaScene({ visible, amt }: { visible: boolean; amt: number }) {
 
   return (
     <group ref={groupRef} visible={false}>
+      {/* @ts-expect-error R3F <line> conflicts with the SVG <line> intrinsic in TS; at runtime this is a THREE.Line. */}
       <line ref={bannerRef} geometry={geo}>
         <lineBasicMaterial color={AIR_HOT} transparent opacity={0} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} linewidth={2} />
       </line>
@@ -254,6 +255,7 @@ function VajraScene({ visible, amt }: { visible: boolean; amt: number }) {
 
   return (
     <group ref={groupRef} visible={false}>
+      {/* @ts-expect-error R3F <line> conflicts with the SVG <line> intrinsic in TS; at runtime this is a THREE.Line. */}
       <line ref={boltRef} geometry={geo}>
         <lineBasicMaterial color={new THREE.Color(1.95, 1.55, 0.75)} transparent opacity={0} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} />
       </line>
@@ -453,6 +455,7 @@ function VarunaScene({ visible, amt }: { visible: boolean; amt: number }) {
 
   return (
     <group ref={groupRef} visible={false}>
+      {/* @ts-expect-error R3F <line> conflicts with the SVG <line> intrinsic in TS; at runtime this is a THREE.Line. */}
       <line ref={waveRef} geometry={geo}>
         <lineBasicMaterial color={WATER_HOT} transparent opacity={0} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} />
       </line>

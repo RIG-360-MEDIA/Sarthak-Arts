@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
+import { Icon } from "../../_ui/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -24,39 +25,60 @@ export default async function Analytics() {
   const byDirection = [...unitsByDirection.entries()].sort((a, b) => b[1] - a[1]);
   const totalUnits = [...unitsByDirection.values()].reduce((a, b) => a + b, 0) || 1;
 
-  const card = (label: string, value: string) => (
-    <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: 8, padding: "14px 16px" }}>
-      <div style={{ fontSize: 11, color: "var(--ink-faint)", textTransform: "uppercase" }}>{label}</div>
-      <div className="serif" style={{ fontSize: 22, marginTop: 6 }}>{value}</div>
-    </div>
-  );
+  const kpis: [string, string, string][] = [
+    ["rupee", "Revenue · 30 days", formatMoney(revenue30, "INR")],
+    ["orders", "Orders · 30 days", String(orders.length)],
+    ["consultations", "Consultations booked", String(bookings)],
+    ["reviews", "Reviews", String(reviews)],
+  ];
 
   return (
-    <div style={{ padding: "22px 26px" }}>
-      <h1>Analytics</h1>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, margin: "16px 0 22px" }}>
-        {card("Revenue, 30 days", formatMoney(revenue30, "INR"))}
-        {card("Orders, 30 days", String(orders.length))}
-        {card("Consultations booked", String(bookings))}
-        {card("Reviews", String(reviews))}
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-        <div style={{ border: "1px solid var(--line)", borderRadius: 8, padding: 16 }}>
-          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "var(--brass)", fontWeight: 600, marginBottom: 8 }}>Top products</div>
-          {topProducts.length === 0 && <p style={{ fontSize: 13, color: "var(--ink-muted)" }}>No sales yet.</p>}
-          {topProducts.map(([name, units]) => (
-            <div key={name} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "5px 0" }}><span>{name}</span><span className="num">{units} sold</span></div>
-          ))}
+    <div className="adm-page">
+      <div className="adm-page-head">
+        <div>
+          <h1>Analytics</h1>
+          <p className="lead">How your shop is doing over the last 30 days.</p>
         </div>
-        <div style={{ border: "1px solid var(--line)", borderRadius: 8, padding: 16 }}>
-          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "var(--brass)", fontWeight: 600, marginBottom: 8 }}>Sales by direction</div>
-          {byDirection.length === 0 && <p style={{ fontSize: 13, color: "var(--ink-muted)" }}>No sales yet.</p>}
-          {byDirection.map(([dir, units]) => (
-            <div key={dir} style={{ padding: "5px 0" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}><span>{dir}</span><span className="num">{Math.round((units / totalUnits) * 100)}%</span></div>
-              <div style={{ height: 4, background: "var(--ground-raised)", borderRadius: 2, marginTop: 3 }}><div style={{ width: `${(units / totalUnits) * 100}%`, height: 4, background: "var(--brass)", borderRadius: 2 }} /></div>
+      </div>
+
+      <div className="adm-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", marginBottom: 22 }}>
+        {kpis.map(([icon, label, value]) => (
+          <div key={label} className="adm-kpi">
+            <div className="k-label"><Icon name={icon} /> {label}</div>
+            <div className="k-value num">{value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="adm-grid adm-grid-2">
+        <div className="adm-card">
+          <div className="adm-card-head"><span className="adm-card-title">Top products</span></div>
+          {topProducts.length === 0 ? (
+            <div className="adm-empty" style={{ padding: "34px 20px" }}><div className="em-ic"><Icon name="analytics" /></div><h3>No sales yet</h3><p>Your best sellers will appear here once orders come in.</p></div>
+          ) : (
+            <div className="adm-table-scroll"><table className="adm-table"><tbody>
+              {topProducts.map(([name, units]) => <tr key={name}><td className="r-strong">{name}</td><td className="num right">{units} sold</td></tr>)}
+            </tbody></table></div>
+          )}
+        </div>
+
+        <div className="adm-card adm-card-pad">
+          <div className="adm-card-title" style={{ marginBottom: 12 }}>Sales by direction</div>
+          {byDirection.length === 0 ? (
+            <p style={{ fontSize: 13, color: "var(--ink-muted)", margin: 0 }}>No sales yet.</p>
+          ) : (
+            <div style={{ display: "grid", gap: 12 }}>
+              {byDirection.map(([dir, units]) => {
+                const pct = Math.round((units / totalUnits) * 100);
+                return (
+                  <div key={dir}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 5 }}><span>{dir}</span><span className="num" style={{ color: "var(--ink-muted)" }}>{pct}%</span></div>
+                    <div style={{ height: 8, background: "var(--surface-sink)", borderRadius: 999, overflow: "hidden" }}><div style={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg, var(--gold), var(--brass-deep))", borderRadius: 999 }} /></div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>

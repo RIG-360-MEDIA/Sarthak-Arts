@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
+import { isShopifyEnabled } from "@/lib/shopify/config";
 
 export function cartSubtotalMinor(items: Array<{ unitPriceMinor: number; quantity: number }>): number {
   return items.reduce((sum, i) => sum + i.unitPriceMinor * i.quantity, 0);
@@ -50,6 +51,14 @@ const CART_COUNT_COOKIE = "cart_n_cache";
 const CART_COUNT_TTL = 30; // seconds
 
 export async function getCartItemCount(): Promise<number> {
+  if (isShopifyEnabled()) {
+    try {
+      const { getSessionShopifyCart } = await import("@/lib/shopify/cart-session");
+      return (await getSessionShopifyCart())?.totalQuantity ?? 0;
+    } catch {
+      return 0;
+    }
+  }
   const jar = await cookies();
   const id = jar.get(CART_COOKIE)?.value;
   if (!id) return 0;
@@ -58,13 +67,20 @@ export async function getCartItemCount(): Promise<number> {
     const n = Number(cached);
     if (Number.isFinite(n) && n >= 0) return n;
   }
-  const agg = await prisma.cartItem.aggregate({
-    where: { cartId: id },
-    _sum: { quantity: true },
-  });
-  const count = agg._sum.quantity ?? 0;
-  jar.set(CART_COUNT_COOKIE, String(count), { sameSite: "lax", maxAge: CART_COUNT_TTL, path: "/" });
-  return count;
+  try {
+    const agg = await prisma.cartItem.aggregate({
+      where: { cartId: id },
+      _sum: { quantity: true },
+    });
+    const count = agg._sum.quantity ?? 0;
+    // Best-effort cache. Setting cookies during a render throws ("can only be
+    // modified in a Server Action") — swallow it; the count is still correct.
+    try { jar.set(CART_COUNT_COOKIE, String(count), { sameSite: "lax", maxAge: CART_COUNT_TTL, path: "/" }); } catch { /* not in an action — skip caching */ }
+    return count;
+  } catch {
+    // DB unreachable (Neon asleep) — a nav badge must never 500 the page.
+    return 0;
+  }
 }
 
 /**

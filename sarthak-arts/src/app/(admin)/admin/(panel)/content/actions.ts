@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 
 export async function saveBlock(formData: FormData): Promise<void> {
@@ -10,4 +11,5 @@ export async function saveBlock(formData: FormData): Promise<void> {
   });
   revalidatePath("/admin/content");
   revalidatePath("/", "layout");
+  redirect("/admin/content?flash=content-saved");
 }

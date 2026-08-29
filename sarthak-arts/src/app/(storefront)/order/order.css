@@ -1,0 +1,149 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Order tracking — "where's my piece?" answered calmly and clearly. Same sacred
+   language as cart & checkout (warm haldi ground, gold, Fraunces serif). The
+   centrepiece is a vertical fulfillment timeline; below it, each piece with its
+   own review / return actions. Scoped under .ot-root.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ot-root {
+  --chalk: #FDFBF5; --chalk-raised: #FFFFFF; --ink: #2A2016; --ink-muted: #6B5E4E; --ink-faint: #9A8B76;
+  --gold: #E8A81C; --gold-deep: #B47D0C; --line: #EADFCB; --line-soft: #F1E9D8;
+  --ok: #1E8A5E; --sold: #B0492E; --deep-cream: #FBE7A6;
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+body:has(.ot-root) {
+  background-color: #F5EAD0;
+  background-image:
+    radial-gradient(46% 60% at 8% 0%, rgba(245,175,40,.12), transparent 60%),
+    radial-gradient(50% 60% at 100% 12%, rgba(190,70,40,.08), transparent 62%);
+  background-attachment: fixed;
+}
+.ot-root .sa-deva { font-family: 'Noto Serif Devanagari', 'Nirmala UI', serif; }
+.ot-root .serif { font-family: var(--font-fraunces), Georgia, serif; }
+
+.ot-wrap { max-width: 760px; margin: 0 auto; padding: 30px 0 64px; }
+
+/* Shared input styling */
+.ot-root input, .ot-root select, .ot-root textarea {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #FCF8EF;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.ot-root input::placeholder { color: var(--ink-faint); }
+.ot-root input:focus, .ot-root select:focus, .ot-root textarea:focus { outline: none; border-color: var(--gold); background: #fff; box-shadow: 0 0 0 3px rgba(232,168,28,.18); }
+.ot-root textarea { resize: vertical; line-height: 1.6; }
+.ot-field { margin-top: 14px; }
+.ot-field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+
+/* Primary / ghost buttons */
+.ot-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 14.5px; font-weight: 700; letter-spacing: .3px; cursor: pointer; border: none; text-decoration: none; padding: 14px 22px; border-radius: 13px; transition: transform .18s ease, filter .18s ease, background .18s ease; }
+.ot-btn.primary { color: #23150c; background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 62%, var(--gold-deep)); box-shadow: 0 16px 32px -16px rgba(232,168,28,.7); }
+.ot-btn.primary:hover { transform: translateY(-2px); filter: brightness(1.04); }
+.ot-btn.ghost { color: var(--gold-deep); background: #fff; border: 1px solid color-mix(in srgb, var(--gold) 40%, var(--line)); }
+.ot-btn.ghost:hover { background: #FCF8EF; }
+.ot-btn.sm { padding: 9px 16px; font-size: 13px; border-radius: 10px; }
+
+/* ── Lookup ──────────────────────────────────────────────────────────────── */
+.ot-lookup { max-width: 440px; margin: 10px auto 0; }
+.ot-lookup-card { background: var(--chalk-raised); border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--line)); border-radius: 22px; box-shadow: 0 1px 0 #fff inset, 0 30px 60px -34px rgba(60,40,15,.45); padding: 30px 28px; }
+.ot-lookup-badge { width: 58px; height: 58px; margin: 0 auto 16px; border-radius: 17px; display: grid; place-items: center; background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 60%, var(--gold-deep)); color: #23150c; box-shadow: 0 16px 34px -16px rgba(232,168,28,.7); }
+.ot-lookup-badge svg { width: 28px; height: 28px; }
+.ot-lookup h1 { font-family: var(--font-fraunces), Georgia, serif; font-size: 25px; color: var(--ink); text-align: center; margin: 0 0 6px; font-weight: 500; }
+.ot-lookup .sub { font-size: 13.5px; color: var(--ink-muted); text-align: center; line-height: 1.6; margin: 0 0 20px; }
+.ot-lookup .ot-btn { width: 100%; margin-top: 18px; }
+.ot-lookup .foot { text-align: center; font-size: 12.5px; color: var(--ink-muted); margin-top: 16px; }
+.ot-lookup .foot a { color: var(--gold-deep); font-weight: 600; text-decoration: none; }
+
+/* ── Status header ───────────────────────────────────────────────────────── */
+.ot-head { margin-bottom: 22px; }
+.ot-head .eyebrow { font-size: 11px; letter-spacing: 2.2px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }
+.ot-head h1 { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(26px, 3.4vw, 34px); color: var(--ink); font-weight: 500; margin: 6px 0 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ot-head .meta { font-size: 13.5px; color: var(--ink-muted); }
+
+.ot-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .2px; padding: 5px 12px; border-radius: 999px; border: 1px solid; }
+.ot-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.ot-pill.ok { color: var(--ok); background: #E4F3EB; border-color: #BCE3CD; }
+.ot-pill.info { color: #35618E; background: #E7EFF8; border-color: #C6D8ec; }
+.ot-pill.warn { color: #A9720A; background: #FBEFCE; border-color: #F0DCA3; }
+.ot-pill.crit { color: var(--sold); background: #F8E5DE; border-color: #EEC7B9; }
+.ot-pill.neutral { color: var(--ink-muted); background: #EFE7D6; border-color: #E0D5BF; }
+
+/* ── Card shell ──────────────────────────────────────────────────────────── */
+.ot-card { background: var(--chalk-raised); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 1px 0 #fff inset, 0 20px 44px -34px rgba(60,40,15,.4); padding: 22px 24px; margin-bottom: 18px; }
+.ot-card-title { font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); margin-bottom: 16px; }
+
+/* Gift / cancelled banners */
+.ot-banner { display: flex; gap: 11px; align-items: flex-start; padding: 14px 16px; border-radius: 13px; font-size: 13.5px; line-height: 1.55; margin-bottom: 18px; border: 1px solid; }
+.ot-banner svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+.ot-banner.gift { background: color-mix(in srgb, var(--gold) 9%, #fff); border-color: color-mix(in srgb, var(--gold) 34%, var(--line)); color: var(--gold-deep); }
+.ot-banner.gift b { color: var(--ink); }
+.ot-banner.gift .note { color: var(--ink-muted); font-style: italic; margin-top: 5px; }
+.ot-banner.crit { background: #F8E5DE; border-color: #EEC7B9; color: var(--sold); }
+
+/* ── Vertical timeline ───────────────────────────────────────────────────── */
+.ot-timeline { position: relative; }
+.ot-tstep { position: relative; display: grid; grid-template-columns: 40px 1fr; gap: 16px; padding-bottom: 24px; }
+.ot-tstep:last-child { padding-bottom: 0; }
+.ot-tstep::before { content: ""; position: absolute; left: 19px; top: 40px; bottom: 2px; width: 2px; background: var(--line); }
+.ot-tstep:last-child::before { display: none; }
+.ot-tstep.done::before { background: linear-gradient(180deg, var(--gold), var(--gold-deep)); }
+.ot-tdot { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; z-index: 1; background: var(--chalk-raised); border: 2px solid var(--line); color: var(--ink-faint); }
+.ot-tdot svg { width: 18px; height: 18px; }
+.ot-tstep.done .ot-tdot { background: color-mix(in srgb, var(--gold) 16%, #fff); border-color: var(--gold); color: var(--gold-deep); }
+.ot-tstep.current .ot-tdot { background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 60%, var(--gold-deep)); border-color: var(--gold-deep); color: #23150c; box-shadow: 0 0 0 5px rgba(232,168,28,.18); animation: otPulse 2.2s ease-in-out infinite; }
+@keyframes otPulse { 0%,100% { box-shadow: 0 0 0 5px rgba(232,168,28,.18); } 50% { box-shadow: 0 0 0 9px rgba(232,168,28,.06); } }
+.ot-tbody { padding-top: 7px; min-width: 0; }
+.ot-tlabel { font-family: var(--font-fraunces), Georgia, serif; font-size: 16px; color: var(--ink-faint); font-weight: 500; }
+.ot-tstep.done .ot-tlabel, .ot-tstep.current .ot-tlabel { color: var(--ink); }
+.ot-tdesc { font-size: 12.5px; color: var(--ink-muted); margin-top: 2px; }
+.ot-tdate { font-size: 11.5px; color: var(--ink-faint); margin-top: 3px; font-variant-numeric: tabular-nums; }
+.ot-tstep.current .ot-tdate { color: var(--gold-deep); font-weight: 600; }
+
+/* ── Item cards ──────────────────────────────────────────────────────────── */
+.ot-item { display: grid; grid-template-columns: 64px 1fr; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line-soft); }
+.ot-item:first-of-type { border-top: none; }
+.ot-item-thumb { width: 64px; height: 64px; border-radius: 12px; overflow: hidden; display: grid; place-items: center; background: radial-gradient(66% 62% at 50% 42%, color-mix(in srgb, var(--pc, #B8863E) 34%, #251813), transparent 74%), linear-gradient(180deg, #2c1d13, #190f08); border: 1px solid color-mix(in srgb, var(--pc, #B8863E) 30%, #3a2a1e); }
+.ot-item-thumb .obj { width: 74%; height: 74%; }
+.ot-item-main { min-width: 0; }
+.ot-item-top { display: flex; justify-content: space-between; gap: 14px; align-items: baseline; }
+.ot-item-name { font-family: var(--font-fraunces), Georgia, serif; font-size: 16px; color: var(--ink); }
+.ot-item-qty { font-size: 12.5px; color: var(--ink-faint); }
+.ot-item-price { font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ot-item-note { font-size: 12.5px; color: var(--ink-muted); margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; }
+.ot-item-note svg { width: 14px; height: 14px; color: var(--ok); }
+
+/* Inline action forms (review / return) */
+.ot-form { margin-top: 12px; padding: 14px; background: #FCF8EF; border: 1px solid var(--line); border-radius: 12px; }
+.ot-form .ot-form-title { font-size: 12.5px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.ot-form .ot-form-sub { font-size: 12px; color: var(--ink-muted); margin-bottom: 8px; }
+.ot-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ot-form .ot-btn { margin-top: 10px; }
+.ot-stars-input { display: inline-flex; gap: 4px; }
+
+/* Details / summary */
+.ot-dl { display: grid; gap: 2px; }
+.ot-dl .row { display: flex; justify-content: space-between; gap: 14px; font-size: 13.5px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); }
+.ot-dl .row:last-child { border-bottom: none; }
+.ot-dl .row .k { color: var(--ink-muted); }
+.ot-dl .row .v { color: var(--ink); font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+.ot-dl .row.total .k, .ot-dl .row.total .v { font-family: var(--font-fraunces), Georgia, serif; font-size: 16px; color: var(--ink); }
+.ot-addr { font-size: 13.5px; line-height: 1.65; color: var(--ink); }
+.ot-addr b { font-weight: 600; }
+
+.ot-back { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--gold-deep); text-decoration: none; }
+.ot-back:hover { text-decoration: underline; }
+
+/* Not found */
+.ot-empty { max-width: 460px; margin: 0 auto; text-align: center; padding: 50px 24px; }
+.ot-empty .om { font-family: 'Noto Serif Devanagari','Nirmala UI',serif; font-size: 44px; color: var(--gold); opacity: .85; }
+.ot-empty h1 { font-family: var(--font-fraunces), Georgia, serif; font-size: 26px; color: var(--ink); margin: 10px 0 8px; font-weight: 500; }
+.ot-empty p { font-size: 14.5px; color: var(--ink-muted); line-height: 1.65; margin: 0 0 20px; }
+
+@media (max-width: 560px) {
+  .ot-form-row { grid-template-columns: 1fr; }
+  .ot-item-top { flex-direction: column; gap: 2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ot-root *, .ot-root *::before, .ot-root *::after { animation: none !important; transition: none !important; }
+}

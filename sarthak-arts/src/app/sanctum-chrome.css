@@ -66,6 +66,7 @@
 
 /* ── Announcement strip ──────────────────────────────────────────────────── */
 .sa-announce {
+  position: relative; z-index: 30; /* sit above the homepage's fixed WebGL hero */
   text-align: center; font-size: 12px; letter-spacing: 0.02em;
   padding: 7px 20px; color: var(--silk-muted);
   background: #0A0416; border-bottom: 1px solid var(--line-dark);

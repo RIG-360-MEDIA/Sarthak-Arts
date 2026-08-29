@@ -1,38 +1,35 @@
-import Link from "next/link";
-import { logout } from "./actions";
+import { redirect } from "next/navigation";
+import "../admin.css";
+import { prisma } from "@/lib/db";
+import { currentSession } from "@/lib/session";
+import { AdminShell } from "./AdminShell";
 
-const NAV = [
-  ["Dashboard", "/admin"],
-  ["Products", "/admin/products"],
-  ["Orders", "/admin/orders"],
-  ["Consultations", "/admin/consultations"],
-  ["Reviews", "/admin/reviews"],
-  ["Returns", "/admin/returns"],
-  ["Content", "/admin/content"],
-  ["Social", "/admin/social"],
-  ["Analytics", "/admin/analytics"],
-  ["Settings", "/admin/settings"],
-];
+export const dynamic = "force-dynamic";
 
-export default function PanelLayout({ children }: { children: React.ReactNode }) {
+export default async function PanelLayout({ children }: { children: React.ReactNode }) {
+  const session = await currentSession();
+  if (!session) redirect("/admin/login");
+
+  const [user, openOrders, pendingReturns, pendingReviews, upcomingConsults] = await Promise.all([
+    prisma.user.findUnique({ where: { id: session.userId }, select: { name: true, email: true } }),
+    prisma.order.count({ where: { status: { code: { in: ["confirmed", "packed"] } } } }).catch(() => 0),
+    prisma.returnRequest.count({ where: { status: "requested" } }).catch(() => 0),
+    prisma.review.count({ where: { status: "pending" } }).catch(() => 0),
+    prisma.booking.count({ where: { status: "booked" } }).catch(() => 0),
+  ]);
+
+  const badges: Record<string, number> = {
+    "/admin/orders": openOrders,
+    "/admin/returns": pendingReturns,
+    "/admin/reviews": pendingReviews,
+    "/admin/consultations": upcomingConsults,
+  };
+
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      <aside style={{ width: 200, background: "var(--focus-panel)", padding: "20px 12px", flexShrink: 0 }}>
-        <div className="serif" style={{ color: "var(--focus-text)", fontSize: 16, padding: "0 8px 18px" }}>Sarthak Arts</div>
-        {NAV.map(([label, href]) => (
-          <Link
-            key={href}
-            href={href}
-            style={{ display: "block", padding: "10px 12px", fontSize: 14, color: "var(--focus-muted)", textDecoration: "none", borderRadius: 6 }}
-          >
-            {label}
-          </Link>
-        ))}
-        <form action={logout} style={{ marginTop: 20, padding: "0 8px" }}>
-          <button className="btn-ghost" style={{ color: "var(--focus-muted)", borderColor: "var(--focus-muted)", fontSize: 12, padding: "6px 12px" }}>Sign out</button>
-        </form>
-      </aside>
-      <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+    <div className="admin">
+      <AdminShell user={{ name: user?.name ?? "", email: user?.email ?? "" }} badges={badges}>
+        {children}
+      </AdminShell>
     </div>
   );
 }

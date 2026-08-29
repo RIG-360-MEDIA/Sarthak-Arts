@@ -1,0 +1,64 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Consultant Portal — the private space where a consultant manages their own
+   sessions and availability. It reuses the admin design system (admin.css,
+   scoped under `.admin`) for cards / forms / pills / tables, so it feels part
+   of the same family — but wears a lighter top-bar chrome instead of the
+   owner's full sidebar, since a consultant only needs two places to go.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Top bar */
+.portal-bar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 20px;
+  padding: 0 26px; height: 62px;
+  background: linear-gradient(180deg, #241B14, #1B140E);
+  border-bottom: 1px solid #0d0906;
+}
+.portal-brand { display: flex; align-items: center; gap: 11px; color: var(--side-text); text-decoration: none; }
+.portal-brand .mark { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: radial-gradient(120% 120% at 30% 20%, var(--gold-soft), var(--brass) 70%); color: #2a1c06; flex-shrink: 0; box-shadow: 0 6px 16px -8px rgba(232,168,28,.7); }
+.portal-brand .mark svg { width: 18px; height: 18px; }
+.portal-brand .name { font-family: var(--font-fraunces), Georgia, serif; font-size: 16px; line-height: 1.05; }
+.portal-brand .name small { display: block; font-family: var(--font-inter), sans-serif; font-size: 9.5px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--side-muted); margin-top: 1px; }
+
+.portal-nav { display: flex; gap: 4px; }
+.portal-nav a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 9px; font-size: 13.5px; color: var(--side-muted); text-decoration: none; transition: background .15s ease, color .15s ease; }
+.portal-nav a svg { width: 16px; height: 16px; }
+.portal-nav a:hover { background: rgba(255,255,255,.05); color: var(--side-text); }
+.portal-nav a.is-active { background: var(--side-active); color: #FBEFD4; }
+
+.portal-bar .spacer { flex: 1; }
+.portal-who { display: flex; align-items: center; gap: 10px; }
+.portal-who .av { width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(120% 120% at 30% 20%, var(--brass), var(--brass-deep)); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.portal-who .meta { line-height: 1.15; }
+.portal-who .meta b { display: block; font-size: 12.5px; color: var(--side-text); font-weight: 600; white-space: nowrap; }
+.portal-who .meta span { font-size: 10.5px; color: var(--side-muted); }
+.portal-signout { background: transparent; border: 1px solid var(--side-line); color: var(--side-muted); font-size: 12px; padding: 8px 13px; border-radius: 9px; cursor: pointer; transition: border-color .15s ease, color .15s ease; }
+.portal-signout:hover { border-color: var(--side-muted); color: var(--side-text); }
+
+/* Session card (dashboard) */
+.pf-session { padding: 18px 20px; }
+.pf-session-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.pf-session-type { font-family: var(--font-fraunces), Georgia, serif; font-size: 17px; color: var(--ink); }
+.pf-session-cust { font-size: 12.5px; color: var(--ink-muted); margin-top: 3px; display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.pf-session-cust a { color: var(--brass-deep); text-decoration: none; }
+.pf-session-when { text-align: right; flex-shrink: 0; }
+.pf-session-when .t { font-size: 13.5px; color: var(--ink); font-weight: 600; }
+.pf-session-when .d { font-size: 11.5px; color: var(--ink-faint); margin-top: 2px; }
+.pf-session-do { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; align-items: flex-end; padding-top: 14px; border-top: 1px solid var(--line-soft); }
+.pf-linkform { display: flex; gap: 8px; align-items: flex-end; flex: 1; min-width: 240px; }
+.pf-linkform .adm-field { margin: 0; flex: 1; }
+
+/* Availability slot rows */
+.pf-slot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line-soft); }
+.pf-slot:last-child { border-bottom: none; }
+.pf-slot.past { opacity: .55; }
+.pf-slot .when { font-size: 13.5px; color: var(--ink); display: flex; align-items: center; gap: 10px; }
+
+.portal-hero-note { font-size: 12.5px; color: var(--ink-muted); }
+
+@media (max-width: 620px) {
+  .portal-bar { padding: 0 14px; gap: 10px; height: auto; min-height: 58px; flex-wrap: wrap; }
+  .portal-brand .name small { display: none; }
+  .portal-who .meta { display: none; }
+  .portal-nav a span { display: none; }
+}

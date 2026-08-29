@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 
 export async function saveGeneralSettings(formData: FormData): Promise<void> {
@@ -12,4 +13,5 @@ export async function saveGeneralSettings(formData: FormData): Promise<void> {
   await prisma.setting.upsert({ where: { key: "announcement_lines" }, update: { value: announcementLines }, create: { key: "announcement_lines", value: announcementLines } });
   revalidatePath("/", "layout");
   revalidatePath("/admin/settings");
+  redirect("/admin/settings?flash=saved");
 }

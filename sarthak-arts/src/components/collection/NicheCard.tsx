@@ -3,6 +3,7 @@ import type { PieceCard } from "@/lib/collection";
 import { PieceRender } from "./Piece";
 import { WishlistHeart } from "@/components/hero/WishlistHeart";
 import { QuickView } from "./QuickView";
+import { TiltStage } from "./TiltStage";
 
 /**
  * NicheCard — a piece enshrined in an arch-topped temple niche (dome top),
@@ -24,17 +25,22 @@ export function NicheCard({ p, compact }: { p: PieceCard; compact?: boolean }) {
     <article className={`niche${compact ? " compact" : ""}`} style={style}>
       <Link href={`/collection/${p.slug}`} className="niche-hit" aria-label={`${p.name} — ${p.directionName}`} />
 
-      <div className="niche-stage">
+      <TiltStage className="niche-stage">
         <span className="niche-halo" aria-hidden="true" />
-        <svg className="niche-arch" viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-          <path d="M10 116 V48 Q10 14 50 14 Q90 14 90 48 V116" />
-          <path d="M50 14 V5" />
-          <circle cx="50" cy="3.4" r="2.3" />
-          <line x1="6" y1="116" x2="94" y2="116" />
-        </svg>
-        <PieceRender glyph={p.glyph} metalGrad={p.metalGrad} gemHex={p.gemHex} className="niche-obj" />
+        <div className="niche-persp" aria-hidden="true">
+          <div className="niche-scene">
+            <svg className="niche-arch" viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet">
+              <path d="M10 116 V48 Q10 14 50 14 Q90 14 90 48 V116" />
+              <path d="M50 14 V5" />
+              <circle cx="50" cy="3.4" r="2.3" />
+              <line x1="6" y1="116" x2="94" y2="116" />
+            </svg>
+            <PieceRender glyph={p.glyph} metalGrad={p.metalGrad} gemHex={p.gemHex} className="niche-obj" />
+          </div>
+        </div>
+        <span className="niche-glare" aria-hidden="true" />
         <QuickView p={p} />
-      </div>
+      </TiltStage>
 
       <div className="niche-body">
         <div className="niche-top">

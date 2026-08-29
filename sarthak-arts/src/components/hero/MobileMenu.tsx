@@ -78,9 +78,8 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
             <nav className="sa-drawer-links" aria-label="Menu">
               <Link href="/" onClick={() => setOpen(false)}>Home</Link>
               <Link href="/collection" onClick={() => setOpen(false)}>The Collection</Link>
-              <Link href="/direction" onClick={() => setOpen(false)}>Shop by Direction</Link>
               <Link href="/consultation" onClick={() => setOpen(false)}>Consultations</Link>
-              <Link href="/vastu-shastra" onClick={() => setOpen(false)}>Journal</Link>
+              <Link href="/about" onClick={() => setOpen(false)}>About</Link>
               <Link href="/home-audit" onClick={() => setOpen(false)}>The two-minute audit</Link>
             </nav>
 
@@ -92,7 +91,7 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
             </div>
 
             <div className="sa-drawer-cta">
-              <Link href="/direction" className="sa-btn sa-btn-primary" onClick={() => setOpen(false)}>
+              <Link href="/collection" className="sa-btn sa-btn-primary" onClick={() => setOpen(false)}>
                 Enter the shrine
               </Link>
             </div>

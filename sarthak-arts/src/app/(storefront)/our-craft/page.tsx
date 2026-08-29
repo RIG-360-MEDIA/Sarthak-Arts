@@ -1,8 +1,17 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import "../content-pages.css";
 import { getBlock } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Our Craft — Sarthak Arts" };
 
-const STEPS: [string, string][] = [["design", "◐"], ["shape", "◇"], ["set", "●"], ["certify", "✓"]];
+const STEPS = [
+  { name: "Design", desc: "Each piece begins as a drawing — aligned to its direction, deity and element.", icon: (<><circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2.3 5.2-5.2 2.3 2.3-5.2z" /></>) },
+  { name: "Shape", desc: "Cast and hand-worked in copper, brass or silver by artisans.", icon: (<><path d="M12 3v4M6 21h12M9 21V10a3 3 0 0 1 6 0v11" /><path d="M8 7h8" /></>) },
+  { name: "Set", desc: "Gemstones set by hand, where the tradition calls for them.", icon: (<path d="M6 3h12l3 6-9 12L3 9z M3 9h18 M9 3 6 9l6 12 6-12-3-6" />) },
+  { name: "Certify", desc: "Weighed, verified and issued a certificate of composition.", icon: (<><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" /><path d="M9 12l2 2 4-4" /></>) },
+];
 
 export default async function OurCraft() {
   const [intro, materials, stones] = await Promise.all([
@@ -10,28 +19,43 @@ export default async function OurCraft() {
     getBlock("our-craft.materials"),
     getBlock("our-craft.stones"),
   ]);
+
   return (
-    <div style={{ paddingTop: 24, maxWidth: 720 }}>
-      <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: "var(--brass)", fontWeight: 600 }}>Our craft</div>
-      <h1>{intro.title}</h1>
-      <p style={{ fontSize: 15, color: "var(--ink-muted)", lineHeight: 1.8 }}>{intro.body}</p>
+    <div className="pg-root">
+      <div className="pg-wrap narrow">
+        <div className="pg-hero">
+          <div className="pg-eyebrow">Our craft</div>
+          <h1 className="serif">{intro.title ?? "Made by hand, for a purpose"}</h1>
+          <p className="pg-lead">{intro.body}</p>
+        </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 0, maxWidth: 560, margin: "24px 0" }}>
-        {STEPS.map(([name, icon], i) => (
-          <div key={name} style={{ display: "flex", alignItems: "center", flex: 1 }}>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ width: 44, height: 44, border: "1px solid var(--brass)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "var(--brass)", margin: "0 auto" }}>{icon}</div>
-              <div style={{ fontSize: 11, color: "var(--ink-muted)", marginTop: 6, textTransform: "capitalize" }}>{name}</div>
+        <div className="craft-process">
+          {STEPS.map((s, i) => (
+            <div key={s.name} className="craft-step">
+              <span className="n">{i + 1}</span>
+              <span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{s.icon}</svg></span>
+              <h3>{s.name}</h3>
+              <p>{s.desc}</p>
             </div>
-            {i < STEPS.length - 1 && <div style={{ flex: 1, height: 1, background: "var(--line)", margin: "0 8px 22px" }} />}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <h3>{materials.title}</h3>
-      <p style={{ fontSize: 14, color: "var(--ink-muted)", lineHeight: 1.8 }}>{materials.body}</p>
-      <h3>{stones.title}</h3>
-      <p style={{ fontSize: 14, color: "var(--ink-muted)", lineHeight: 1.8 }}>{stones.body}</p>
+        <div className="craft-block">
+          <h2 className="serif">{materials.title ?? "The metals"}</h2>
+          <p>{materials.body}</p>
+        </div>
+
+        <div className="craft-band">
+          <h2 className="serif">{stones.title ?? "The stones"}</h2>
+          <p>{stones.body}</p>
+        </div>
+
+        <div className="craft-cta">
+          <Link href="/collection" className="pg-btn primary">Explore the collection
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

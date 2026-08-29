@@ -1,10 +1,15 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
 import { nextStatusCode, FULFILLMENT_FLOW } from "@/lib/orderflow";
+import { Icon } from "../../../_ui/icons";
+import { OrderStatusPill } from "../../../_ui/status";
 import { advanceStatus } from "../actions";
 
 export const dynamic = "force-dynamic";
+
+const NEXT_LABEL: Record<string, string> = { packed: "Mark as packed", shipped: "Mark as shipped", delivered: "Mark as delivered" };
 
 export default async function AdminOrderDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,48 +20,90 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
   if (!order) notFound();
   const addr = order.shippingAddress as { name: string; line1: string; city: string; state: string; postalCode: string; country: string };
   const next = nextStatusCode(order.status.code, FULFILLMENT_FLOW);
+  const doneCodes = new Set(order.statusHistory.map((h) => h.status.code));
 
   return (
-    <div style={{ padding: "22px 26px", display: "grid", gridTemplateColumns: "1fr 300px", gap: 28 }}>
-      <div>
-        <h1>{order.orderNumber} — {order.status.name}</h1>
-        <p style={{ color: "var(--ink-muted)" }}>{order.email} · {order.phone}</p>
-        <p style={{ fontSize: 14 }}>{addr.name}, {addr.line1}, {addr.city}, {addr.state} {addr.postalCode}, {addr.country}</p>
-        {order.isGift && (
-          <div style={{ border: "1px solid var(--brass)", background: "var(--ground-raised)", borderRadius: 8, padding: "12px 14px", marginTop: 12 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: "var(--brass)" }}>🎁 Gift order — enclose the message, no prices in the parcel</div>
-            {order.giftNote && <p style={{ fontSize: 14, marginTop: 6, whiteSpace: "pre-wrap" }}>“{order.giftNote}”</p>}
-          </div>
-        )}
-        <table style={{ marginTop: 12 }}>
-          <tbody>
-            {order.items.map((i) => (
-              <tr key={i.id}><td>{i.name} × {i.quantity}</td><td className="num" style={{ textAlign: "right" }}>{formatMoney(i.unitPriceMinor * i.quantity, order.currency)}</td></tr>
-            ))}
-            <tr><td>Shipping</td><td className="num" style={{ textAlign: "right" }}>{formatMoney(order.shippingMinor, order.currency)}</td></tr>
-            <tr><td>Tax</td><td className="num" style={{ textAlign: "right" }}>{formatMoney(order.taxMinor, order.currency)}</td></tr>
-            <tr><td><strong>Total</strong></td><td className="num" style={{ textAlign: "right" }}><strong>{formatMoney(order.totalMinor, order.currency)}</strong></td></tr>
-          </tbody>
-        </table>
-        <h3 style={{ marginTop: 20 }}>Certificates</h3>
-        <ul>{order.certificates.map((c) => <li key={c.id}><a href={`/api/admin/certificates/${c.id}`}>{c.storageKey}</a></li>)}</ul>
+    <div className="adm-page">
+      <div className="adm-page-head">
+        <div>
+          <div className="eyebrow"><Link href="/admin/orders" style={{ color: "inherit", textDecoration: "none" }}>← All orders</Link></div>
+          <h1 style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>{order.orderNumber} <OrderStatusPill code={order.status.code} name={order.status.name} /></h1>
+          <p className="lead">{order.email}{order.phone ? ` · ${order.phone}` : ""}</p>
+        </div>
       </div>
-      <aside style={{ border: "1px solid var(--line)", borderRadius: 8, padding: 16, height: "fit-content" }}>
-        <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "var(--brass)", fontWeight: 600, marginBottom: 8 }}>Fulfillment</div>
-        {order.statusHistory.map((h) => (
-          <div key={h.id} style={{ fontSize: 13, padding: "4px 0", color: "var(--ink)" }}>✓ {h.status.name}</div>
-        ))}
-        {next ? (
-          <form action={advanceStatus} style={{ marginTop: 10 }}>
-            <input type="hidden" name="orderId" value={order.id} />
-            <input type="hidden" name="currentCode" value={order.status.code} />
-            <button style={{ width: "100%" }}>Mark as {next}</button>
-          </form>
-        ) : (
-          <p style={{ fontSize: 12, color: "var(--ink-muted)", marginTop: 10 }}>Fulfillment complete.</p>
-        )}
-        <button className="btn-ghost" style={{ width: "100%", marginTop: 8 }} disabled title="Courier integration comes in a later plan">Generate shipping label</button>
-      </aside>
+
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 300px", gap: 24, alignItems: "start" }} className="adm-prod-grid">
+        <div style={{ display: "grid", gap: 16 }}>
+          {order.isGift && (
+            <div className="adm-note brass"><Icon name="gift" /><div><b>Gift order</b> — enclose the message and keep prices out of the parcel.{order.giftNote && <div style={{ marginTop: 6, fontStyle: "italic", whiteSpace: "pre-wrap" }}>&ldquo;{order.giftNote}&rdquo;</div>}</div></div>
+          )}
+
+          <div className="adm-card">
+            <div className="adm-card-head"><span className="adm-card-title">Ship to</span></div>
+            <div className="adm-card-pad" style={{ paddingTop: 16 }}>
+              <div style={{ fontSize: 14, lineHeight: 1.6 }}>
+                <b>{addr.name}</b><br />
+                {addr.line1}<br />
+                {addr.city}, {addr.state} {addr.postalCode}<br />
+                {addr.country}
+              </div>
+            </div>
+          </div>
+
+          <div className="adm-card">
+            <div className="adm-card-head"><span className="adm-card-title">Items</span></div>
+            <div className="adm-table-scroll">
+              <table className="adm-table">
+                <tbody>
+                  {order.items.map((i) => (
+                    <tr key={i.id}><td className="r-strong">{i.name} <span style={{ color: "var(--ink-faint)" }}>× {i.quantity}</span></td><td className="num right">{formatMoney(i.unitPriceMinor * i.quantity, order.currency)}</td></tr>
+                  ))}
+                  <tr><td style={{ color: "var(--ink-muted)" }}>Shipping</td><td className="num right">{formatMoney(order.shippingMinor, order.currency)}</td></tr>
+                  <tr><td style={{ color: "var(--ink-muted)" }}>Tax</td><td className="num right">{formatMoney(order.taxMinor, order.currency)}</td></tr>
+                  <tr><td className="r-strong">Total</td><td className="num right r-strong">{formatMoney(order.totalMinor, order.currency)}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {order.certificates.length > 0 && (
+            <div className="adm-card">
+              <div className="adm-card-head"><span className="adm-card-title">Certificates</span></div>
+              <div className="adm-card-pad" style={{ paddingTop: 14, display: "grid", gap: 8 }}>
+                {order.certificates.map((c) => <a key={c.id} href={`/api/admin/certificates/${c.id}`} style={{ fontSize: 13, color: "var(--brass-deep)", textDecoration: "none", fontWeight: 600 }}>↓ {c.storageKey}</a>)}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Fulfillment sidebar */}
+        <aside style={{ position: "sticky", top: 84 }}>
+          <div className="adm-card adm-card-pad">
+            <div className="adm-card-title" style={{ marginBottom: 12 }}>Fulfillment</div>
+            <div className="adm-timeline">
+              {FULFILLMENT_FLOW.map((code) => {
+                const done = doneCodes.has(code) || order.status.code === code;
+                const label = code.charAt(0).toUpperCase() + code.slice(1);
+                return (
+                  <div key={code} className={`step${done ? "" : " todo"}`}>
+                    <span className="dot">{done ? <Icon name="check" /> : null}</span>{label}
+                  </div>
+                );
+              })}
+            </div>
+            {next ? (
+              <form action={advanceStatus} style={{ marginTop: 14 }}>
+                <input type="hidden" name="orderId" value={order.id} />
+                <input type="hidden" name="currentCode" value={order.status.code} />
+                <button type="submit" className="adm-btn adm-btn-primary" style={{ width: "100%" }}><Icon name="check" /> {NEXT_LABEL[next] ?? `Mark as ${next}`}</button>
+              </form>
+            ) : (
+              <div className="adm-note info" style={{ marginTop: 14 }}><Icon name="checkCircle" /> Fulfillment complete.</div>
+            )}
+            <button className="adm-btn adm-btn-ghost" style={{ width: "100%", marginTop: 8 }} disabled title="Courier integration comes later"><Icon name="truck" /> Generate shipping label</button>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

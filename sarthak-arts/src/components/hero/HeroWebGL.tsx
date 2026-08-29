@@ -52,9 +52,10 @@ function heroScrollFade(strength: number): number {
 }
 
 // ---------------------------------------------------------------------------
-// Śrī Yantra line geometry — Bhūpura, circles, lotuses, nine triangles
+// Svastika mandala line geometry — Bhūpura squares, circles, lotus rings, an
+// Aṣṭakoṇa (Star of Lakṣmī), and a right-facing svastika at the heart.
 // ---------------------------------------------------------------------------
-function SriYantra() {
+function SwastikaMandala() {
   const groupRef = useRef<THREE.Group>(null!);
   const cursor = useCursor();
 
@@ -134,20 +135,33 @@ function SriYantra() {
     petals(1.65, 16, 0.32).forEach((p) => outs.push({ points: p, opacity: 0.55 }));
     petals(1.15, 8, 0.32).forEach((p) => outs.push({ points: p, opacity: 0.68 }));
 
-    // Nine interlocking triangles — 4 Śiva up, 5 Śakti down
-    const triangle = (size: number, up: boolean) => {
-      const h = size * 0.87;
-      const apexY = up ? size : -size;
-      const baseY = up ? -size * 0.5 : size * 0.5;
-      return [
-        new THREE.Vector3(0, apexY, 0),
-        new THREE.Vector3(-h, baseY, 0),
-        new THREE.Vector3(h, baseY, 0),
-        new THREE.Vector3(0, apexY, 0),
-      ];
-    };
-    for (let i = 0; i < 4; i++) outs.push({ points: triangle(0.85 - i * 0.14, true), opacity: 0.88 - i * 0.05 });
-    for (let i = 0; i < 5; i++) outs.push({ points: triangle(0.95 - i * 0.14, false), opacity: 0.88 - i * 0.05 });
+    // Aṣṭakoṇa (Star of Lakṣmī) — two overlaid squares form an eight-point star
+    // that cradles the svastika. Both squares share the same corner-distance D.
+    const D = 0.86, Q = D / Math.SQRT2;
+    outs.push({ points: [ // diamond: vertices on the axes
+      new THREE.Vector3(D, 0, 0), new THREE.Vector3(0, D, 0),
+      new THREE.Vector3(-D, 0, 0), new THREE.Vector3(0, -D, 0), new THREE.Vector3(D, 0, 0),
+    ], opacity: 0.5 });
+    outs.push({ points: [ // axis-aligned square: corners on the diagonals
+      new THREE.Vector3(Q, Q, 0), new THREE.Vector3(-Q, Q, 0),
+      new THREE.Vector3(-Q, -Q, 0), new THREE.Vector3(Q, -Q, 0), new THREE.Vector3(Q, Q, 0),
+    ], opacity: 0.42 });
+
+    // Svastika — the auspicious right-facing (clockwise) mark at the heart of the
+    // mandala: a + cross whose four arm-tips each hook clockwise. Drawn as crisp
+    // line segments (higher opacity) so it reads as the clear centrepiece.
+    const A = 0.5, hook = 0.36;
+    const seg = (x1: number, y1: number, x2: number, y2: number) =>
+      [new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0)];
+    const svastika = [
+      seg(0, -A, 0, A),        // vertical bar
+      seg(-A, 0, A, 0),        // horizontal bar
+      seg(0, A, hook, A),      // top arm  → hooks right
+      seg(A, 0, A, -hook),     // right arm → hooks down
+      seg(0, -A, -hook, -A),   // bottom arm → hooks left
+      seg(-A, 0, -A, hook),    // left arm → hooks up
+    ];
+    svastika.forEach((pts) => outs.push({ points: pts, opacity: 0.96 }));
 
     // Construct real THREE.Line objects — avoids the JSX <line>/SVG ambiguity.
     // Line gold sits below the bloom threshold: crisp gold thread, no haze.
@@ -344,7 +358,7 @@ function CameraController() {
 // ---------------------------------------------------------------------------
 // Scene root — assembles everything; god-rays wire up once the Bindu exists
 // ---------------------------------------------------------------------------
-function SanctumScene({ particleCount }: { particleCount: number }) {
+function SanctumScene({ particleCount, mandala }: { particleCount: number; mandala: { x: number; scale: number } }) {
   const [sun, setSun] = useState<THREE.Mesh | null>(null);
 
   return (
@@ -359,8 +373,12 @@ function SanctumScene({ particleCount }: { particleCount: number }) {
       <CursorLight />
       <Environment preset="studio" background={false} />
 
-      <SriYantra />
-      <Bindu onReady={setSun} />
+      {/* The mandala + its bindu ride together in one group so they can sit off
+          to one side (desktop) with the copy on the other — set by the parent. */}
+      <group position={[mandala.x, 0, 0]} scale={mandala.scale}>
+        <SwastikaMandala />
+        <Bindu onReady={setSun} />
+      </group>
       <ParticleField count={particleCount} />
       <CameraController />
 
@@ -396,6 +414,7 @@ export function HeroWebGL() {
   const [ready, setReady] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [particleCount, setParticleCount] = useState(1800);
+  const [mandala, setMandala] = useState<{ x: number; scale: number }>({ x: 0, scale: 1 });
   // Frameloop pauses the entire Three render tree when the sanctum is
   // scrolled well offscreen — a real perf win on long scrolls & mobile.
   // IntersectionObserver can't observe a `position: fixed` element (it
@@ -404,7 +423,11 @@ export function HeroWebGL() {
 
   useEffect(() => {
     setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    if (window.innerWidth < 720) setParticleCount(900); // mobile perf budget
+    const w = window.innerWidth;
+    if (w < 720) setParticleCount(900); // mobile perf budget
+    // Desktop: the mandala sits to the right so the copy owns the left. Narrow
+    // screens keep it centred behind the copy (a side layout would crowd).
+    setMandala(w >= 900 ? { x: -2.15, scale: 0.66 } : { x: 0, scale: 0.72 });
     const t = setTimeout(() => setReady(true), 60);
     return () => clearTimeout(t);
   }, []);
@@ -458,7 +481,7 @@ export function HeroWebGL() {
         dpr={[1, 1.5]}
         frameloop={inView ? "always" : "never"}
       >
-        <SanctumScene particleCount={particleCount} />
+        <SanctumScene particleCount={particleCount} mandala={mandala} />
       </Canvas>
     </div>
   );

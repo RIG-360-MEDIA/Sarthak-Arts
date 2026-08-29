@@ -4,6 +4,7 @@ import path from "path";
 export interface Storage {
   put(key: string, data: Buffer): Promise<void>;
   get(key: string): Promise<Buffer>;
+  del(key: string): Promise<void>;
 }
 
 /** Choose the storage driver from the environment. Local disk unless S3 is explicitly selected. */
@@ -20,6 +21,9 @@ class LocalStorage implements Storage {
   }
   async get(key: string): Promise<Buffer> {
     return fs.readFile(path.join(this.dir, key));
+  }
+  async del(key: string): Promise<void> {
+    await fs.rm(path.join(this.dir, key), { force: true });
   }
 }
 
@@ -50,6 +54,10 @@ class S3Storage implements Storage {
     const res = await (await this.client()).send(new GetObjectCommand({ Bucket: this.bucket, Key: key }));
     const bytes = await res.Body!.transformToByteArray();
     return Buffer.from(bytes);
+  }
+  async del(key: string): Promise<void> {
+    const { DeleteObjectCommand } = await import("@aws-sdk/client-s3");
+    await (await this.client()).send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
   }
 }
 

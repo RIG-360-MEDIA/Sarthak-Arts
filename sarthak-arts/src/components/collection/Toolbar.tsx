@@ -8,10 +8,11 @@ import { toQuery } from "@/lib/collection-url";
  * sorted view is shareable and survives a refresh.
  */
 export function Toolbar({
-  lead, count, sort, density, current,
+  lead, count, total, sort, density, current,
 }: {
   lead: string;
   count: number;
+  total?: number;
   sort: string;
   density: string;
   current: Record<string, string | undefined>;
@@ -21,31 +22,42 @@ export function Toolbar({
   const push = (patch: Record<string, string | undefined>) =>
     startTransition(() => router.push(toQuery({ ...current, ...patch }), { scroll: false }));
 
+  // A density toggle only earns its place once there are enough cards to scan.
+  // Below that it's a decision with no payoff — so hide it (but keep it visible
+  // while compact is active, so the choice stays reversible).
+  const showDensity = count >= 12 || density === "compact";
+
   return (
     <div className="toolbar">
       <div className="tb-lead">
         <span className="lead serif">{lead}</span>
-        <span className="rescount">Showing {count} {count === 1 ? "piece" : "pieces"}</span>
+        <span className="rescount">
+          {total != null && total > count
+            ? `Showing ${count} of ${total} pieces`
+            : `Showing ${count} ${count === 1 ? "piece" : "pieces"}`}
+        </span>
       </div>
       <div className="tb-tools">
-        <div className="density">
-          <button
-            type="button"
-            className={`catpill${density !== "compact" ? " on" : ""}`}
-            aria-pressed={density !== "compact"}
-            onClick={() => push({ density: undefined })}
-          >
-            Comfortable
-          </button>
-          <button
-            type="button"
-            className={`catpill${density === "compact" ? " on" : ""}`}
-            aria-pressed={density === "compact"}
-            onClick={() => push({ density: "compact" })}
-          >
-            Compact
-          </button>
-        </div>
+        {showDensity && (
+          <div className="density">
+            <button
+              type="button"
+              className={`catpill${density !== "compact" ? " on" : ""}`}
+              aria-pressed={density !== "compact"}
+              onClick={() => push({ density: undefined })}
+            >
+              Comfortable
+            </button>
+            <button
+              type="button"
+              className={`catpill${density === "compact" ? " on" : ""}`}
+              aria-pressed={density === "compact"}
+              onClick={() => push({ density: "compact" })}
+            >
+              Compact
+            </button>
+          </div>
+        )}
         <label className="tb-sortlbl">
           Sort
           <select value={sort} onChange={(e) => push({ sort: e.target.value === "newest" ? undefined : e.target.value })}>

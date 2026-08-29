@@ -69,7 +69,7 @@ export function QuickView({ p }: { p: PieceCard }) {
               {spec && <div className="qv-spec">{spec}</div>}
               <div className="qv-trust">✦ Certified metal &amp; gemstone · Handcrafted to order</div>
               <div className="qv-actions">
-                <AddToCart productId={p.productId} pieceName={p.name} inStock={p.inStock} />
+                <AddToCart productId={p.productId} variantId={p.variantId} pieceName={p.name} inStock={p.inStock} />
                 <WishlistHeart slug={p.slug} pieceName={p.name} />
               </div>
               <Link href={`/collection/${p.slug}`} className="qv-details" onClick={() => setOpen(false)}>

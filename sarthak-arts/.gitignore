@@ -43,3 +43,6 @@ next-env.d.ts
 
 # Local certificate/file storage
 .storage/
+
+# Owner-uploaded product photos (served locally; cloud storage in prod)
+/public/uploads/

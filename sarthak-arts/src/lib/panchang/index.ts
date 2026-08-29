@@ -104,7 +104,7 @@ function computePanchangUncached(
     // *sunrise of the day the moment falls in*.
     const suncalcSunrise = SunCalc.getTimes(at, city.lat, city.lon).sunrise;
     const suncalcSunset = SunCalc.getTimes(at, city.lat, city.lon).sunset;
-    if (Number.isNaN(suncalcSunrise.getTime()) || Number.isNaN(suncalcSunset.getTime())) {
+    if (!suncalcSunrise || !suncalcSunset || Number.isNaN(suncalcSunrise.getTime()) || Number.isNaN(suncalcSunset.getTime())) {
       return { ok: false, error: "sunrise/sunset unavailable", city };
     }
 
@@ -124,6 +124,9 @@ function computePanchangUncached(
     // Next-day sunrise for night-choghadiya.
     const tomorrow = new Date(at.getTime() + 24 * 60 * 60 * 1000);
     const nextSunrise = SunCalc.getTimes(tomorrow, city.lat, city.lon).sunrise;
+    if (!nextSunrise || Number.isNaN(nextSunrise.getTime())) {
+      return { ok: false, error: "next sunrise unavailable", city };
+    }
 
     const weekday = suncalcSunrise.getDay();
     const day = dayChoghadiya(suncalcSunrise, suncalcSunset, weekday);
