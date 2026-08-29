@@ -16,7 +16,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <p>Sign in to your Sarthak Arts console</p>
           </div>
 
-          {error && <div className="err">That email or password didn&apos;t match. Please try again.</div>}
+          {error && <div className="err">{error === "throttle" ? "Too many attempts. Please wait a few minutes, then try again." : "That email or password didn't match. Please try again."}</div>}
 
           <div className="adm-field">
             <label htmlFor="email">Email</label>

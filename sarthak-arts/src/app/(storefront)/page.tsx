@@ -23,6 +23,11 @@ function kindFor(categoryCode: string): Product3DKind {
   return "kalash";
 }
 
+/** Serialize JSON-LD safely — escape "<" so a value can never break out of the <script> tag. */
+function jsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 const SITE_URL = "https://sarthakarts.com";
 const OG_TITLE = "Sarthak Arts — Made by hand. Placed with intention.";
 const OG_DESC =
@@ -87,9 +92,9 @@ export default async function HomePage() {
 
   return (
     <div className="sa-home bleed">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }} />
-      {eventJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }} />}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(orgJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(siteJsonLd) }} />
+      {eventJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(eventJsonLd) }} />}
       <SmoothScroll />
       <HeroWebGL />
 

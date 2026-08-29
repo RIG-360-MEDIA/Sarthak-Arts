@@ -16,7 +16,7 @@ export default async function PortalLogin({ searchParams }: { searchParams: Prom
             <p>Your Sarthak Arts sessions &amp; availability</p>
           </div>
 
-          {error && <div className="err">That email or password didn&apos;t match. Please try again.</div>}
+          {error && <div className="err">{error === "throttle" ? "Too many attempts. Please wait a few minutes, then try again." : "That email or password didn't match. Please try again."}</div>}
 
           <div className="adm-field">
             <label htmlFor="email">Email</label>

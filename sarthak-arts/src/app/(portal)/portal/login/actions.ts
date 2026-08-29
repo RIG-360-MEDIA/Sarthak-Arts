@@ -1,12 +1,16 @@
 "use server";
 import bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { signSession } from "@/lib/auth";
 import { SESSION_COOKIE } from "@/lib/session";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 export async function login(formData: FormData): Promise<void> {
+  const ip = clientIp(await headers());
+  if (!rateLimit(`portal-login:${ip}`, 8, 15 * 60 * 1000).ok) redirect("/portal/login?error=throttle");
+
   const user = await prisma.user.findUnique({
     where: { email: String(formData.get("email")) },
     include: { roles: { include: { role: true } } },
