@@ -1,14 +1,14 @@
 "use server";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { currentSession, SESSION_COOKIE } from "@/lib/session";
+import { currentSession } from "@/lib/session";
+import { supabaseServer } from "@/lib/supabase/server";
 
 /** Resolve the consultant record for the signed-in user, or throw. */
 async function requireConsultant() {
   const session = await currentSession();
-  if (!session) redirect("/portal/login");
+  if (!session || session.role !== "consultant") redirect("/portal/login");
   const consultant = await prisma.consultant.findFirst({ where: { userId: session.userId } });
   if (!consultant) redirect("/portal/login");
   return consultant;
@@ -45,6 +45,6 @@ export async function setVideoLink(formData: FormData): Promise<void> {
 }
 
 export async function logout(): Promise<void> {
-  (await cookies()).delete(SESSION_COOKIE);
+  await (await supabaseServer()).auth.signOut();
   redirect("/portal/login");
 }

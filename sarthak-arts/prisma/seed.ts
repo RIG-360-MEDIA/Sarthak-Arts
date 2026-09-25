@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { ensureAuthUser } from "../src/lib/supabase/admin";
 import { findFestivalDate, type FestivalRule } from "../src/lib/panchang/festivals";
 const db = new PrismaClient();
 
@@ -83,14 +83,12 @@ async function main() {
     await db.setting.upsert({ where: { key }, update: {}, create: { key, value: value as object } });
 
   const adminRole = await db.role.upsert({ where: { code: "admin" }, update: {}, create: { code: "admin", name: "Admin" } });
+  const adminEmail = (process.env.ADMIN_EMAIL ?? "owner@sarthakarts.com").toLowerCase();
+  const adminAuthId = await ensureAuthUser(adminEmail, process.env.ADMIN_PASSWORD ?? "change-me", "admin", "Owner");
   const admin = await db.user.upsert({
-    where: { email: process.env.ADMIN_EMAIL ?? "owner@sarthakarts.com" },
-    update: {},
-    create: {
-      email: process.env.ADMIN_EMAIL ?? "owner@sarthakarts.com",
-      name: "Owner",
-      passwordHash: await bcrypt.hash(process.env.ADMIN_PASSWORD ?? "change-me", 10),
-    },
+    where: { email: adminEmail },
+    update: { authId: adminAuthId, isGuest: false },
+    create: { email: adminEmail, name: "Owner", authId: adminAuthId, isGuest: false },
   });
   await db.userRole.upsert({
     where: { userId_roleId: { userId: admin.id, roleId: adminRole.id } },
@@ -248,14 +246,12 @@ async function main() {
   // Consultant login: role + user, linked to the consultant record so the portal
   // resolves their own bookings/availability by userId.
   const consultantRole = await db.role.upsert({ where: { code: "consultant" }, update: {}, create: { code: "consultant", name: "Consultant" } });
+  const consultantEmail = (process.env.CONSULTANT_EMAIL ?? "consultant@sarthakarts.com").toLowerCase();
+  const consultantAuthId = await ensureAuthUser(consultantEmail, process.env.CONSULTANT_PASSWORD ?? "change-me", "consultant", "Resident Consultant");
   const consultantUser = await db.user.upsert({
-    where: { email: process.env.CONSULTANT_EMAIL ?? "consultant@sarthakarts.com" },
-    update: {},
-    create: {
-      email: process.env.CONSULTANT_EMAIL ?? "consultant@sarthakarts.com",
-      name: "Resident Consultant",
-      passwordHash: await bcrypt.hash(process.env.CONSULTANT_PASSWORD ?? "change-me", 10),
-    },
+    where: { email: consultantEmail },
+    update: { authId: consultantAuthId, isGuest: false },
+    create: { email: consultantEmail, name: "Resident Consultant", authId: consultantAuthId, isGuest: false },
   });
   await db.userRole.upsert({
     where: { userId_roleId: { userId: consultantUser.id, roleId: consultantRole.id } },

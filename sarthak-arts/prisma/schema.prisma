@@ -127,7 +127,8 @@ model Setting {
 model User {
   id           Int        @id @default(autoincrement())
   email        String     @unique
-  passwordHash String?
+  passwordHash String? // legacy, unused since login moved to Supabase Auth
+  authId       String?    @unique
   name         String?
   phone        String?
   isGuest      Boolean    @default(false)

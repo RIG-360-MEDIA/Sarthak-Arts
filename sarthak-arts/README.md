@@ -6,7 +6,7 @@ A custom D2C storefront and admin panel for **Sarthak Arts** — handcrafted Mur
 
 - **Next.js 16** (App Router, React 19, Server Actions) + TypeScript
 - **Prisma 6** + **PostgreSQL** (Neon)
-- Custom session auth (jose JWT + bcrypt, HttpOnly cookie, `proxy.ts`-gated `/admin`)
+- **Supabase Auth** for every login (admin, consultant, customer). Roles live in tamper-proof `app_metadata`; `proxy.ts` gates `/admin`, `/portal` and `/account`
 - Money stored as integer minor units; multi-currency display via cookie + per-currency rate
 - Razorpay webhook-driven orders (HMAC-verified, idempotent); certificate PDFs via `@react-pdf/renderer` behind a storage abstraction
 - Vitest (TDD for all pure-logic modules)
@@ -15,7 +15,7 @@ A custom D2C storefront and admin panel for **Sarthak Arts** — handcrafted Mur
 
 ```bash
 npm install
-cp .env.example .env         # then fill in DATABASE_URL and SESSION_SECRET
+cp .env.example .env         # then fill in the database URLs and the Supabase keys
 npm run db:migrate           # apply migrations
 npm run db:seed              # reference data, settings, sample products, content
 npm run dev                  # http://localhost:3000

@@ -50,7 +50,7 @@ Until this is set, order/booking emails are skipped silently (no errors) — not
    |---|---|
    | `DATABASE_URL` | Neon **pooled** string |
    | `DIRECT_URL` | Neon **direct** string |
-   | `SESSION_SECRET` | a fresh random 32+ char string |
+   | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` | from Supabase → Project Settings → API Keys |
    | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | the owner's admin login |
    | `CONSULTANT_EMAIL` / `CONSULTANT_PASSWORD` | first consultant login (changeable later in admin) |
    | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | Razorpay **live** keys |
