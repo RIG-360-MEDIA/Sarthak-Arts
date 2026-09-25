@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const session = await currentSession();
-  if (!session) redirect("/admin/login");
+  if (!session || session.role !== "admin") redirect("/admin/login");
 
   const [user, openOrders, pendingReturns, pendingReviews, upcomingConsults] = await Promise.all([
     prisma.user.findUnique({ where: { id: session.userId }, select: { name: true, email: true } }),

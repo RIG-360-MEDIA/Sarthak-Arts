@@ -1,11 +1,11 @@
 "use server";
-import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { ensureAuthUser } from "@/lib/supabase/admin";
 
 /**
  * Set or reset a consultant's portal login. Creates/links a User with the
- * "consultant" role and (re)sets the password, then links it to the consultant.
+ * "consultant" role and (re)sets the Supabase Auth password, then links it to the consultant.
  */
 export async function setConsultantAccess(formData: FormData): Promise<void> {
   const consultantId = Number(formData.get("consultantId"));
@@ -14,11 +14,11 @@ export async function setConsultantAccess(formData: FormData): Promise<void> {
   if (!email || !password) return;
 
   const role = await prisma.role.upsert({ where: { code: "consultant" }, update: {}, create: { code: "consultant", name: "Consultant" } });
-  const passwordHash = await bcrypt.hash(password, 10);
+  const authId = await ensureAuthUser(email, password, "consultant", "Consultant");
   const user = await prisma.user.upsert({
     where: { email },
-    update: { passwordHash },
-    create: { email, passwordHash, name: "Consultant" },
+    update: { authId },
+    create: { email, authId, name: "Consultant", isGuest: false },
   });
   await prisma.userRole.upsert({
     where: { userId_roleId: { userId: user.id, roleId: role.id } },
