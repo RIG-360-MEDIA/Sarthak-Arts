@@ -394,7 +394,7 @@ async function main() {
       codeBase: "diwali", name: "Deepāvalī",
       nameDeva: "दीपावली", nameIast: "Deepāvalī",
       tagline: "the festival of lights",
-      rule: { masa: "Kārtika", tithi: "Amāvāsyā", paksha: "kṛṣṇa" },
+      rule: { masa: "Kārtika", tithi: "Amāvāsyā", paksha: "kṛṣṇa", basis: "sunset" },
       regions: ["north", "south", "bengali", "gaudiya"],
       productSlugs: ["ashtalakshmi-brass-kalash", "silver-sri-yantra-plate", "gold-accent-om-wall-panel"],
       source: "Padma Purāṇa · engine-computed, human-verify before publish",
