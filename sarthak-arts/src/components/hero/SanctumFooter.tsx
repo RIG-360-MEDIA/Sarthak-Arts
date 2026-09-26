@@ -40,6 +40,7 @@ export function SanctumFooter({ storeName }: { storeName: string }) {
       </div>
       <div className="sa-foot-base">
         <span>© {storeName} · every metal weight and gemstone certified per piece.</span>
+        <Link href="/admin" rel="nofollow">Staff login</Link>
         <CurrencySwitcher />
       </div>
     </footer>
