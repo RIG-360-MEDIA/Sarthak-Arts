@@ -12,7 +12,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
 
   const [user, openOrders, pendingReturns, pendingReviews, upcomingConsults] = await Promise.all([
     prisma.user.findUnique({ where: { id: session.userId }, select: { name: true, email: true } }),
-    prisma.order.count({ where: { status: { code: { in: ["confirmed", "packed"] } } } }).catch(() => 0),
+    prisma.order.count({ where: { status: { code: { in: ["pending_payment", "confirmed", "packed"] } } } }).catch(() => 0),
     prisma.returnRequest.count({ where: { status: "requested" } }).catch(() => 0),
     prisma.review.count({ where: { status: "pending" } }).catch(() => 0),
     prisma.booking.count({ where: { status: "booked" } }).catch(() => 0),

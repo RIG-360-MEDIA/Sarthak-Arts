@@ -44,7 +44,7 @@ export default async function AdminConsultations() {
                   <tbody>
                     {bookings.map((b) => (
                       <tr key={b.id}>
-                        <td><span className="r-strong">{b.customerName}</span><div className="r-sub">{b.customerEmail}</div></td>
+                        <td><span className="r-strong">{b.customerName}</span><div className="r-sub">{b.customerEmail}</div>{b.birthDate && <div className="r-sub">Born {b.birthDate}{b.birthTime ? ` ${b.birthTime}` : ""}{b.birthPlace ? ` · ${b.birthPlace}` : ""}</div>}</td>
                         <td>{b.consultationType.name}</td>
                         <td>{fmtSlot(b.slotStart)}</td>
                         <td><BookingStatusPill status={b.status} />{b.paymentStatus === "free" ? <span className="adm-pill neutral" style={{ marginLeft: 6 }}>free</span> : null}</td>

@@ -119,6 +119,20 @@ body:has(.pdp-root) {
 }
 .pdp-actions .niche-cart button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.04); }
 .pdp-actions .niche-cart button:disabled { background: var(--line); color: var(--ink-faint); box-shadow: none; cursor: not-allowed; }
+.pdp-actions { flex-wrap: wrap; }
+.pdp-buy { flex: 1 1 100%; margin: 0; }
+.pdp-buy button {
+  width: 100%; padding: 16px 22px; border-radius: 14px; cursor: pointer; border: none;
+  font-size: 15px; font-weight: 800; letter-spacing: .4px; color: #23150c;
+  background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 62%, var(--gold-deep));
+  box-shadow: 0 14px 28px -14px color-mix(in srgb, var(--gold) 70%, transparent), inset 0 1px 1px rgba(255,255,255,.5);
+  transition: transform .18s ease, filter .18s ease;
+}
+.pdp-buy button:hover { transform: translateY(-2px); filter: brightness(1.04); }
+.pdp-buy ~ .niche-cart button {
+  background: #fff; color: var(--gold-deep); box-shadow: none;
+  border: 1.5px solid color-mix(in srgb, var(--gold) 55%, var(--line));
+}
 .pdp-root .sa-wish {
   position: static; width: 50px; height: 50px; padding: 0; flex-shrink: 0; cursor: pointer;
   display: grid; place-items: center; border-radius: 14px; background: #fff; border: 1px solid var(--line);

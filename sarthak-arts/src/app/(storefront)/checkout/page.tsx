@@ -152,7 +152,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
             <div className="co-trust">
               <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" /><path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" /></svg>Certified metal &amp; gemstone, per piece</span>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M4 7h16M4 7l1-2h14l1 2M6 7v12a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7" /></svg>Razorpay · UPI, cards &amp; netbanking</span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M4 7h16M4 7l1-2h14l1 2M6 7v12a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7" /></svg>Pay by UPI · GPay, PhonePe, Paytm</span>
               <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>7-day easy returns</span>
             </div>
           </aside>

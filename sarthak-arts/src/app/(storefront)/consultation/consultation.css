@@ -166,6 +166,13 @@ body:has(.cons-root) {
   transition: border-color .16s ease, box-shadow .16s ease;
 }
 .cons-inputs input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 18%, transparent); }
+.cons-birth-hint { font-size: 12.5px; color: var(--ink-muted); margin: -4px 0 10px; }
+.cons-birth { grid-template-columns: 1fr 1fr; gap: 10px; }
+.cons-birth-f { display: grid; gap: 5px; }
+.cons-birth-f.wide { grid-column: 1 / -1; }
+.cons-birth-f span { font-size: 12px; font-weight: 600; color: var(--ink); }
+.cons-birth-f em { font-style: normal; font-weight: 500; color: var(--ink-faint); }
+@media (max-width: 520px) { .cons-birth { grid-template-columns: 1fr; } }
 .cons-submit {
   width: 100%; margin-top: 22px; padding: 15px; border-radius: 14px; border: none; cursor: pointer;
   font-size: 14px; font-weight: 700; letter-spacing: .3px; color: #23150c;

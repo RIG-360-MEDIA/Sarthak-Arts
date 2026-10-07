@@ -6,6 +6,10 @@ export async function createBooking(formData: FormData): Promise<void> {
   const consultationTypeId = Number(formData.get("consultationTypeId"));
   const slotIso = String(formData.get("slot"));
   const email = String(formData.get("email"));
+  const birthDate = String(formData.get("birthDate") ?? "").trim();
+  const birthTime = String(formData.get("birthTime") ?? "").trim();
+  const birthPlace = String(formData.get("birthPlace") ?? "").trim().slice(0, 120);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || !birthPlace) redirect("/consultation?error=birth");
   const type = await prisma.consultationType.findUniqueOrThrow({ where: { id: consultationTypeId } });
 
   const slot = await prisma.consultantAvailability.findFirstOrThrow({
@@ -26,6 +30,9 @@ export async function createBooking(formData: FormData): Promise<void> {
       customerName: String(formData.get("name")),
       customerEmail: email,
       customerPhone: String(formData.get("phone")),
+      birthDate,
+      birthTime: /^\d{2}:\d{2}$/.test(birthTime) ? birthTime : null,
+      birthPlace,
       slotStart: new Date(slotIso),
       feeMinorAtBooking: entitlement ? 0 : type.feeMinor,
       paymentStatus: entitlement ? "free" : "pending",

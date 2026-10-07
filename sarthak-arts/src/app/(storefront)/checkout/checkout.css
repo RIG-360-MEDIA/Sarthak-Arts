@@ -130,6 +130,21 @@ body:has(.co-root) {
 .co-pay-methods { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 20px 0 4px; }
 .co-pay-methods span { font-size: 11px; font-weight: 600; color: var(--ink-muted); padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px; background: #FCF8EF; }
 
+/* UPI QR payment */
+.co-upi-qr { width: 230px; max-width: 100%; margin: 18px auto 14px; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 18px 36px -24px rgba(60,40,15,.45); }
+.co-upi-qr svg { display: block; width: 100%; height: auto; }
+.co-upi-app { display: inline-flex; width: 100%; justify-content: center; text-decoration: none; }
+@media (hover: hover) and (pointer: fine) { .co-upi-app { display: none; } }
+.co-upi-details { display: grid; gap: 8px; margin: 16px 0 6px; padding: 14px 16px; text-align: left; background: #FCF8EF; border: 1px solid var(--line); border-radius: 14px; }
+.co-upi-details div { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.co-upi-details span { color: var(--ink-muted); }
+.co-upi-details b { color: var(--ink); font-weight: 700; word-break: break-all; text-align: right; }
+.co-upi-details .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+.co-upi-confirm { margin-top: 20px; padding-top: 18px; border-top: 1px dashed var(--line); text-align: left; }
+.co-upi-step { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+.co-upi-confirm .co-submit { margin-top: 14px; }
+.co-upi-note { font-size: 12.5px; color: var(--ink-muted); line-height: 1.5; margin: 12px 0 0; text-align: center; }
+
 /* ── Success page ────────────────────────────────────────────────────────── */
 .co-done { max-width: 560px; margin: 0 auto; text-align: center; padding-top: 12px; }
 .co-done-badge { width: 84px; height: 84px; margin: 0 auto 18px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 58%, var(--gold-deep)); color: #23150c; box-shadow: 0 20px 44px -18px rgba(232,168,28,.7); animation: coPop .5s cubic-bezier(.2,.9,.3,1.2); }

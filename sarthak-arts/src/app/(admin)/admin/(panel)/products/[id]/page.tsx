@@ -12,12 +12,12 @@ export const dynamic = "force-dynamic";
 export default async function EditProduct({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const productId = Number(id);
-  const [product, metals, gemstones, priceHistory] = await Promise.all([
+  const [product, metals, gemstones, priceHistory, allDirections] = await Promise.all([
     prisma.product.findUnique({
       where: { id: productId },
       include: {
         composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" } },
-        directions: { include: { direction: true } },
+        directions: { include: { direction: true }, orderBy: { directionId: "asc" } },
         images: { orderBy: { sortOrder: "asc" } },
         category: true,
       },
@@ -25,6 +25,7 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
     prisma.metal.findMany(),
     prisma.gemstone.findMany(),
     prisma.productPriceHistory.findMany({ where: { productId }, orderBy: { changedAt: "desc" }, take: 5 }),
+    prisma.direction.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }),
   ]);
   if (!product) notFound();
 
@@ -91,6 +92,14 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
                   <label>Stock quantity</label>
                   <input name="stockQuantity" type="number" defaultValue={product.stockQuantity} />
                 </div>
+              </div>
+              <div className="adm-field">
+                <label>Vāstu direction</label>
+                <div className="hint">Pieces are grouped by direction on the shop. Without one they appear under &ldquo;More pieces&rdquo;.</div>
+                <select name="directionId" defaultValue={product.directions[0]?.directionId ?? ""}>
+                  <option value="">— None —</option>
+                  {allDirections.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+                </select>
               </div>
               <div className="adm-field">
                 <label>Status</label>

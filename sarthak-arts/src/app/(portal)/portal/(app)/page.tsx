@@ -68,6 +68,11 @@ export default async function PortalDashboard() {
                       <a href={`mailto:${b.customerEmail}`}>{b.customerEmail}</a>
                       {b.customerPhone && <a href={`tel:${b.customerPhone}`}>{b.customerPhone}</a>}
                     </div>
+                    {b.birthDate && (
+                      <div className="pf-session-cust" style={{ marginTop: 4 }}>
+                        <span>Born {b.birthDate}{b.birthTime ? ` at ${b.birthTime}` : " (time unknown)"}{b.birthPlace ? ` · ${b.birthPlace}` : ""}</span>
+                      </div>
+                    )}
                   </div>
                   <div className="pf-session-when">
                     <div className="t">{when.t}</div>

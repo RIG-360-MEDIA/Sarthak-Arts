@@ -15,10 +15,11 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
     ? await prisma.checkoutIntent.findUnique({ where: { id: intentId } }).catch(() => null)
     : null;
   const order = intent?.gatewayOrderId
-    ? await prisma.order.findFirst({ where: { payments: { some: { gatewayOrderId: intent.gatewayOrderId } } }, select: { orderNumber: true, totalMinor: true, currency: true } }).catch(() => null)
+    ? await prisma.order.findFirst({ where: { payments: { some: { gatewayOrderId: intent.gatewayOrderId } } }, select: { orderNumber: true, totalMinor: true, currency: true, status: { select: { code: true } } } }).catch(() => null)
     : null;
 
   const email = intent?.email;
+  const awaiting = order?.status.code === "pending_payment";
   const amount = order ? formatMoney(order.totalMinor, order.currency) : intent ? formatMoney(intent.totalMinor, intent.currency) : null;
 
   return (
@@ -31,16 +32,23 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 6" /></svg>
           </div>
           <div className="om" aria-hidden="true">ॐ</div>
-          <h1 className="serif">Your order is confirmed</h1>
+          <h1 className="serif">{awaiting ? "Order received — verifying your payment" : "Your order is confirmed"}</h1>
+          {awaiting ? (
+            <p className="lead">
+              Thank you. Your piece is reserved and we&apos;re matching your UPI payment now — usually within a few hours.
+              You can follow the status with your order number below.
+            </p>
+          ) : (
           <p className="lead">
             Thank you{email ? <>, and a confirmation is on its way to <b>{email}</b></> : ""}. Your certificate of
             composition travels with the piece — each one crafted, blessed and sent for the corner it belongs to.
           </p>
+          )}
 
           {(order || amount) && (
             <div className="co-done-card" style={{ maxWidth: 420 }}>
               {order && <div className="dl-row"><span className="k">Order number</span><span className="v">{order.orderNumber}</span></div>}
-              {amount && <div className="dl-row"><span className="k">Amount paid</span><span className="v">{amount}</span></div>}
+              {amount && <div className="dl-row"><span className="k">{awaiting ? "Amount" : "Amount paid"}</span><span className="v">{amount}</span></div>}
               {email && <div className="dl-row"><span className="k">Confirmation to</span><span className="v">{email}</span></div>}
             </div>
           )}

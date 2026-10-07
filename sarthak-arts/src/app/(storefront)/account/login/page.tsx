@@ -28,6 +28,15 @@ export default async function AccountLogin({ searchParams }: { searchParams: Pro
             <p className="foot">New here? <Link href="/account/signup">Create an account</Link></p>
             <p className="foot">Or <Link href="/order-lookup">track an order without an account</Link></p>
           </div>
+
+          <div className="acc-staff">
+            <div className="acc-staff-eyebrow">Sarthak Arts team</div>
+            <p>Running the shop or taking consultations? Sign in to your console here.</p>
+            <div className="acc-staff-btns">
+              <Link href="/admin/login" className="acc-staff-btn primary">Staff login</Link>
+              <Link href="/portal/login" className="acc-staff-btn">Consultant login</Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

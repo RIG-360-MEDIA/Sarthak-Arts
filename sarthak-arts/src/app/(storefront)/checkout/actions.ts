@@ -5,7 +5,9 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getCartWithItems, cartSubtotalMinor } from "@/lib/cart";
 import { computeTotals, zoneConfigForCountry } from "@/lib/totals";
+import { randomUUID } from "crypto";
 import { createGatewayOrder } from "@/lib/payments/razorpay";
+import { paymentMode } from "@/lib/payments/upi";
 import { validateCheckout } from "@/lib/validation";
 
 export async function beginCheckout(formData: FormData): Promise<void> {
@@ -53,7 +55,10 @@ export async function beginCheckout(formData: FormData): Promise<void> {
   // friendly message instead of a raw server-error page.
   let intentId: string;
   try {
-    const gatewayOrder = await createGatewayOrder(totals.totalMinor, "INR", `cart_${cart.id.slice(0, 12)}`);
+    const mode = paymentMode();
+    const gatewayOrderId = mode === "upi"
+      ? `upi_${randomUUID()}`
+      : String((await createGatewayOrder(totals.totalMinor, "INR", `cart_${cart.id.slice(0, 12)}`)).id);
     const intent = await prisma.checkoutIntent.create({
       data: {
         cartId: cart.id,
@@ -72,8 +77,8 @@ export async function beginCheckout(formData: FormData): Promise<void> {
         ...totals,
         isGift: formData.get("isGift") === "on",
         giftNote: (formData.get("giftNote") as string)?.trim() || null,
-        gatewayCode: "razorpay",
-        gatewayOrderId: String(gatewayOrder.id),
+        gatewayCode: mode,
+        gatewayOrderId,
       },
     });
     intentId = intent.id;

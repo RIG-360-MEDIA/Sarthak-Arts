@@ -406,6 +406,9 @@ model Booking {
   customerName       String
   customerEmail      String
   customerPhone      String
+  birthDate          String?                  // "YYYY-MM-DD", as entered — no timezone shifting
+  birthTime          String?                  // "HH:MM" local time at birth; null if unknown
+  birthPlace         String?
   slotStart          DateTime
   status             String                   @default("booked")
   paymentStatus      String                   @default("pending")

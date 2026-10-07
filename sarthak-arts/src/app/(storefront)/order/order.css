@@ -55,6 +55,22 @@ body:has(.ot-root) {
 .ot-lookup .foot { text-align: center; font-size: 12.5px; color: var(--ink-muted); margin-top: 16px; }
 .ot-lookup .foot a { color: var(--gold-deep); font-weight: 600; text-decoration: none; }
 
+/* Staff entry on the Account page — the site's plum-and-gold, set apart from the customer card */
+.acc-staff { margin-top: 18px; padding: 22px 24px; border-radius: 22px; text-align: center; color: #F7ECD4;
+  background: linear-gradient(160deg, #1E0D33, #0A0416); border: 1px solid rgba(232,168,28,.35);
+  box-shadow: 0 26px 50px -30px rgba(10,4,22,.8); }
+.acc-staff-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--gold); }
+.acc-staff p { font-size: 13.5px; line-height: 1.55; color: rgba(247,236,212,.78); margin: 8px 0 16px; }
+.acc-staff-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.acc-staff-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 14px; border-radius: 12px;
+  font-size: 14px; font-weight: 700; text-decoration: none; color: #F7ECD4; border: 1px solid rgba(232,168,28,.55);
+  transition: transform .18s ease, background .18s ease; }
+.acc-staff-btn:hover { background: rgba(232,168,28,.12); transform: translateY(-1px); }
+.acc-staff-btn.primary { color: #23150c; border-color: transparent;
+  background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 62%, var(--gold-deep)); }
+.acc-staff-btn.primary:hover { filter: brightness(1.05); }
+@media (max-width: 420px) { .acc-staff-btns { grid-template-columns: 1fr; } }
+
 /* ── Status header ───────────────────────────────────────────────────────── */
 .ot-head { margin-bottom: 22px; }
 .ot-head .eyebrow { font-size: 11px; letter-spacing: 2.2px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }

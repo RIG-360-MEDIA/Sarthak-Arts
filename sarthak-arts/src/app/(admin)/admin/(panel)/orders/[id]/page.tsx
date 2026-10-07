@@ -5,7 +5,7 @@ import { formatMoney } from "@/lib/money";
 import { nextStatusCode, FULFILLMENT_FLOW } from "@/lib/orderflow";
 import { Icon } from "../../../_ui/icons";
 import { OrderStatusPill } from "../../../_ui/status";
-import { advanceStatus } from "../actions";
+import { advanceStatus, confirmPayment, rejectPayment } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +21,8 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
   const addr = order.shippingAddress as { name: string; line1: string; city: string; state: string; postalCode: string; country: string };
   const next = nextStatusCode(order.status.code, FULFILLMENT_FLOW);
   const doneCodes = new Set(order.statusHistory.map((h) => h.status.code));
+  const upi = order.payments.find((p) => p.gateway === "upi");
+  const awaitingPayment = order.status.code === "pending_payment";
 
   return (
     <div className="adm-page">
@@ -77,7 +79,31 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
         </div>
 
         {/* Fulfillment sidebar */}
-        <aside style={{ position: "sticky", top: 84 }}>
+        <aside style={{ position: "sticky", top: 84, display: "grid", gap: 16 }}>
+          {upi && (
+            <div className="adm-card adm-card-pad">
+              <div className="adm-card-title" style={{ marginBottom: 10 }}>UPI payment</div>
+              <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+                <div>Amount: <b>{formatMoney(upi.amountMinor, upi.currency)}</b></div>
+                <div>Transaction ID (UTR): <b style={{ fontFamily: "ui-monospace, monospace" }}>{upi.gatewayPaymentId}</b></div>
+                <div>Status: <b>{upi.status === "captured" ? "Received" : upi.status === "failed" ? "Not received" : "Waiting for you to check"}</b></div>
+              </div>
+              {awaitingPayment && (
+                <>
+                  <div className="adm-note brass" style={{ marginTop: 12 }}>Check your UPI or bank app for this amount and transaction ID before confirming.</div>
+                  <form action={confirmPayment} style={{ marginTop: 12 }}>
+                    <input type="hidden" name="orderId" value={order.id} />
+                    <button type="submit" className="adm-btn adm-btn-primary" style={{ width: "100%" }}><Icon name="check" /> Payment received — confirm order</button>
+                  </form>
+                  <form action={rejectPayment} style={{ marginTop: 8 }}>
+                    <input type="hidden" name="orderId" value={order.id} />
+                    <button type="submit" className="adm-btn adm-btn-ghost" style={{ width: "100%" }}>Not received — cancel order</button>
+                  </form>
+                </>
+              )}
+            </div>
+          )}
+          {!awaitingPayment && order.status.code !== "cancelled" && (
           <div className="adm-card adm-card-pad">
             <div className="adm-card-title" style={{ marginBottom: 12 }}>Fulfillment</div>
             <div className="adm-timeline">
@@ -102,6 +128,7 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
             )}
             <button className="adm-btn adm-btn-ghost" style={{ width: "100%", marginTop: 8 }} disabled title="Courier integration comes later"><Icon name="truck" /> Generate shipping label</button>
           </div>
+          )}
         </aside>
       </div>
     </div>

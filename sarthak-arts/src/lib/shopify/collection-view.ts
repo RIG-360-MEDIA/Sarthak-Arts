@@ -21,7 +21,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 export async function getShopifyCollectionView(filters: CollectionFilters): Promise<CollectionView> {
   const hasFilters = filters.directions.length > 0 || !!filters.category || !!filters.metal;
   const empty: CollectionView = {
-    mode: "overview", overview: [], pieces: [], matchCount: 0, shown: 0, hasMore: false,
+    mode: "overview", overview: [], unplaced: [], pieces: [], matchCount: 0, shown: 0, hasMore: false,
     totalLive: 0, directions: [], categories: [], currency: { code: "INR", ratePerBase: 1 }, filters,
   };
 
@@ -73,7 +73,7 @@ export async function getShopifyCollectionView(filters: CollectionFilters): Prom
     });
     matched = sortPieces(matched);
     const shown = matched.slice(0, filters.show);
-    return { ...base, mode: "grid", overview: [], pieces: shown.map(asPiece), matchCount: matched.length, shown: shown.length, hasMore: matched.length > shown.length };
+    return { ...base, mode: "grid", overview: [], unplaced: [], pieces: shown.map(asPiece), matchCount: matched.length, shown: shown.length, hasMore: matched.length > shown.length };
   }
 
   // Overview: capped preview per non-empty direction.
@@ -83,7 +83,7 @@ export async function getShopifyCollectionView(filters: CollectionFilters): Prom
       const items = all.filter((p) => p.directionCode === d.code).slice(0, OVERVIEW_PER_DIR).map(asPiece);
       return { direction: d, items, hasMore: d.liveCount > OVERVIEW_PER_DIR };
     });
-  return { ...base, mode: "overview", overview, pieces: [], matchCount: all.length, shown: all.length, hasMore: false };
+  return { ...base, mode: "overview", overview, unplaced: [], pieces: [], matchCount: all.length, shown: all.length, hasMore: false };
 }
 
 export { PAGE_SIZE };

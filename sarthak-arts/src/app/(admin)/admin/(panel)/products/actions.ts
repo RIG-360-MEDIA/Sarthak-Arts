@@ -52,6 +52,16 @@ export async function updateProduct(formData: FormData): Promise<void> {
     },
   });
 
+  if (formData.has("directionId")) {
+    const directionId = Number(formData.get("directionId"));
+    const current = await prisma.productDirection.findMany({ where: { productId: id }, orderBy: { directionId: "asc" } });
+    // The form shows one direction; only rewrite when the owner picks a different one.
+    if ((current[0]?.directionId ?? 0) !== directionId) {
+      await prisma.productDirection.deleteMany({ where: { productId: id } });
+      if (directionId) await prisma.productDirection.create({ data: { productId: id, directionId } });
+    }
+  }
+
   if (newPriceMinor !== existing.basePriceMinor) {
     await prisma.productPriceHistory.create({
       data: { productId: id, oldPriceMinor: existing.basePriceMinor, newPriceMinor },

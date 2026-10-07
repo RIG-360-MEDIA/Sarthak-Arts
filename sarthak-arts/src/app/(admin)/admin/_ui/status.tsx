@@ -11,7 +11,7 @@ function Pill({ tone, children }: { tone: Tone; children: React.ReactNode }) {
 }
 
 const ORDER_TONE: Record<string, Tone> = {
-  pending: "warn", paid: "info", confirmed: "info", packed: "info",
+  pending: "warn", pending_payment: "warn", paid: "info", confirmed: "info", packed: "info",
   shipped: "info", delivered: "ok", cancelled: "crit", refunded: "neutral",
 };
 export function OrderStatusPill({ code, name }: { code: string; name: string }) {

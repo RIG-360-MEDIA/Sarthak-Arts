@@ -34,7 +34,7 @@ export default async function Dashboard() {
     prisma.order.findMany({ where: { createdAt: { gte: since } } }),
     prisma.product.findMany({ where: { stockQuantity: { lte: threshold }, status: "live" }, orderBy: { stockQuantity: "asc" } }),
     prisma.order.findMany({ include: { status: true }, orderBy: { createdAt: "desc" }, take: 6 }),
-    prisma.order.count({ where: { status: { code: { in: ["confirmed", "packed"] } } } }).catch(() => 0),
+    prisma.order.count({ where: { status: { code: { in: ["pending_payment", "confirmed", "packed"] } } } }).catch(() => 0),
     prisma.returnRequest.count({ where: { status: "requested" } }).catch(() => 0),
     prisma.booking.count({ where: { status: "booked" } }).catch(() => 0),
     prisma.review.count({ where: { status: "pending" } }).catch(() => 0),
