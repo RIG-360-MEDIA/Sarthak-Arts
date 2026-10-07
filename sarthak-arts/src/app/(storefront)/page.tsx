@@ -180,8 +180,15 @@ export default async function HomePage() {
                       {p.isSample && <span className="sa-piece-badge sample" title="Sample piece — real catalogue arriving">Sample</span>}
                     </div>
                     <div className="sa-piece-wish"><WishlistHeart slug={p.slug} pieceName={p.name} /></div>
-                    <Product3D kind={kindFor(p.categoryCode)} />
-                    <div className="sa-piece-hint">Live 3D · rotating</div>
+                    {p.photoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- served already optimised (WebP) by /api/images
+                      <img src={p.photoUrl} alt={p.name} loading="lazy" decoding="async" className="sa-piece-photo" />
+                    ) : (
+                      <>
+                        <Product3D kind={kindFor(p.categoryCode)} />
+                        <div className="sa-piece-hint">Live 3D · rotating</div>
+                      </>
+                    )}
                   </div>
                   <div className="sa-piece-body">
                     {p.deityName && <div className="sa-piece-deity">{p.deityName}</div>}

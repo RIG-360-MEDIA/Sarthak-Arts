@@ -7,7 +7,7 @@ import { prisma } from "@/lib/db";
 import { getCartWithItems, cartSubtotalMinor } from "@/lib/cart";
 import { computeTotals, zoneConfigForCountry } from "@/lib/totals";
 import { formatMoney } from "@/lib/money";
-import { glyphForCategory, gradForMetal } from "@/lib/collection";
+import { glyphForCategory, gradForMetal, realPhoto } from "@/lib/collection";
 import { visualFor } from "@/lib/direction-visual";
 import { PieceDefs, PieceRender } from "@/components/collection/Piece";
 import { CheckoutSteps } from "./CheckoutSteps";
@@ -22,6 +22,7 @@ const CART_INCLUDE = {
   category: true,
   composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" as const } },
   directions: { include: { direction: true } },
+  images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
 };
 
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
@@ -50,6 +51,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       lineMinor: i.product.basePriceMinor * i.quantity,
       glyph: glyphForCategory(p?.category.code ?? "vessel"),
       metalGrad: gradForMetal(metal?.name), gemHex: gem?.accentHex ?? "#B8863E",
+      photoUrl: realPhoto(p?.images[0]?.url),
       dirName: p?.directions[0]?.direction.name ?? "Center", color: v.color, colorDeep: v.colorDeep,
     };
   });
@@ -117,7 +119,10 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
               {lines.map((it) => (
                 <div key={it.id} className="co-line" style={{ ["--pc" as string]: it.color, ["--pc-deep" as string]: it.colorDeep } as React.CSSProperties}>
                   <span className="co-line-thumb">
-                    <PieceRender glyph={it.glyph} metalGrad={it.metalGrad} gemHex={it.gemHex} className="obj" />
+                    {it.photoUrl
+                      // eslint-disable-next-line @next/next/no-img-element -- served already optimised (WebP) by /api/images
+                      ? <img src={it.photoUrl} alt="" className="obj" style={{ objectFit: "cover", borderRadius: 10 }} />
+                      : <PieceRender glyph={it.glyph} metalGrad={it.metalGrad} gemHex={it.gemHex} className="obj" />}
                     {it.quantity > 1 && <span className="qty">{it.quantity}</span>}
                   </span>
                   <span className="co-line-info">

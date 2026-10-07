@@ -5,7 +5,7 @@ import "./cart.css";
 import { prisma } from "@/lib/db";
 import { getCartWithItems, cartSubtotalMinor } from "@/lib/cart";
 import { formatMoney } from "@/lib/money";
-import { glyphForCategory, gradForMetal } from "@/lib/collection";
+import { glyphForCategory, gradForMetal, realPhoto } from "@/lib/collection";
 import { visualFor } from "@/lib/direction-visual";
 import { PieceDefs, PieceRender } from "@/components/collection/Piece";
 import Image from "next/image";
@@ -22,6 +22,7 @@ const CART_PRODUCT_INCLUDE = {
   category: true,
   composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" as const } },
   directions: { include: { direction: true } },
+  images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
 };
 function loadCartProducts(ids: number[]) {
   return prisma.product.findMany({ where: { id: { in: ids } }, include: CART_PRODUCT_INCLUDE });
@@ -186,6 +187,7 @@ export default async function CartPage() {
       unitMinor: i.product.basePriceMinor, lineMinor: i.product.basePriceMinor * i.quantity,
       glyph: glyphForCategory(p?.category.code ?? "vessel"),
       metalGrad: gradForMetal(metal?.name), gemHex: gem?.accentHex ?? "#B8863E",
+      photoUrl: realPhoto(p?.images[0]?.url),
       dirName: p?.directions[0]?.direction.name ?? "Center", deity: v.deity, deva: v.deva,
       color: v.color, colorDeep: v.colorDeep, spec,
     };
@@ -211,7 +213,10 @@ export default async function CartPage() {
               {items.map((it) => (
                 <article key={it.id} className="citem" style={{ ["--pc" as string]: it.color, ["--pc-deep" as string]: it.colorDeep } as React.CSSProperties}>
                   <Link href={`/collection/${it.slug}`} className="citem-thumb" aria-label={it.name}>
-                    <PieceRender glyph={it.glyph} metalGrad={it.metalGrad} gemHex={it.gemHex} className="obj" />
+                    {it.photoUrl
+                      // eslint-disable-next-line @next/next/no-img-element -- served already optimised (WebP) by /api/images
+                      ? <img src={it.photoUrl} alt="" className="obj" style={{ objectFit: "cover", borderRadius: 10 }} />
+                      : <PieceRender glyph={it.glyph} metalGrad={it.metalGrad} gemHex={it.gemHex} className="obj" />}
                   </Link>
                   <div className="citem-info">
                     <span className="citem-dir"><span className="sa-deva">{it.deva}</span> {it.deity} · {it.dirName}</span>

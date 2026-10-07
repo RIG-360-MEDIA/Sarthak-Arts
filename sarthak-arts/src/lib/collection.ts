@@ -65,6 +65,8 @@ export type PieceCard = {
   stockQuantity: number;
   isSample: boolean;
   categoryCode: string;
+  /** Owner-uploaded cover photo; null means draw the illustrated piece instead. */
+  photoUrl?: string | null;
 };
 
 export type DirectionView = DirectionCard & {
@@ -102,7 +104,13 @@ const PIECE_INCLUDE = {
   category: true,
   composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" as const } },
   directions: { include: { direction: true } },
+  images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
 } as const;
+
+/** Seeded placeholder art isn't a real photo — keep the illustration for those. */
+export function realPhoto(url: string | undefined | null): string | null {
+  return url && !url.startsWith("/placeholder/") ? url : null;
+}
 
 type LiveProduct = Awaited<ReturnType<typeof loadOne>>;
 async function loadOne() {
@@ -147,6 +155,7 @@ function toPiece(
     stockQuantity: p.stockQuantity ?? 0,
     isSample: p.isSample,
     categoryCode: p.category.code,
+    photoUrl: realPhoto(p.images[0]?.url),
   };
 }
 
