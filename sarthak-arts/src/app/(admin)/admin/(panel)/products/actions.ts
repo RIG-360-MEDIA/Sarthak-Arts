@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { saveImage, deleteImageByUrl } from "@/lib/uploads";
+import { deleteProducts } from "@/lib/product-delete";
 
 function slugify(s: string): string {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -130,4 +131,23 @@ export async function makePrimaryImage(formData: FormData): Promise<void> {
   const reordered = [images.find((i) => i.id === imageId)!, ...images.filter((i) => i.id !== imageId)].filter(Boolean);
   await prisma.$transaction(reordered.map((img, i) => prisma.productImage.update({ where: { id: img.id }, data: { sortOrder: i } })));
   revalidatePath(`/admin/products/${productId}`);
+}
+
+// ── Delete ────────────────────────────────────────────────────────────────
+
+function afterDelete(r: { deleted: number; archived: number }): never {
+  revalidatePath("/admin/products");
+  revalidatePath("/collection");
+  revalidatePath("/");
+  redirect(`/admin/products?deleted=${r.deleted}&archived=${r.archived}`);
+}
+
+export async function deleteProduct(formData: FormData): Promise<void> {
+  afterDelete(await deleteProducts([Number(formData.get("id"))]));
+}
+
+export async function deleteSelectedProducts(formData: FormData): Promise<void> {
+  const ids = formData.getAll("ids").map(Number);
+  if (ids.length === 0) redirect("/admin/products");
+  afterDelete(await deleteProducts(ids));
 }

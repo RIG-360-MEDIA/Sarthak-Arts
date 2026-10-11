@@ -5,7 +5,8 @@ import { formatMoney } from "@/lib/money";
 import { Icon } from "../../../_ui/icons";
 import { ProductStatusPill, StockPill } from "../../../_ui/status";
 import { ImageUploader } from "../ImageUploader";
-import { updateProduct, addComposition, removeComposition } from "../actions";
+import { updateProduct, addComposition, removeComposition, deleteProduct } from "../actions";
+import { ConfirmSubmit } from "../DeleteControls";
 
 export const dynamic = "force-dynamic";
 
@@ -193,6 +194,22 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="adm-card adm-card-pad" style={{ marginTop: 16, borderColor: "#EEC7B9" }}>
+            <div className="adm-card-title" style={{ marginBottom: 8 }}>Delete product</div>
+            <p style={{ fontSize: 12.5, color: "var(--ink-muted)", margin: "0 0 12px", lineHeight: 1.5 }}>
+              Removes it from the shop and the database, with its photos. If it appears in past orders it is archived instead.
+            </p>
+            <form action={deleteProduct}>
+              <input type="hidden" name="id" value={product.id} />
+              <ConfirmSubmit
+                className="adm-btn adm-btn-ghost"
+                message={`Delete “${product.name}” permanently? This cannot be undone.`}
+              >
+                <Icon name="trash" /> Delete product
+              </ConfirmSubmit>
+            </form>
           </div>
         </aside>
       </div>
