@@ -121,7 +121,7 @@ export default async function OrderView({
             const gem = p?.composition.find((c) => c.gemstone)?.gemstone;
             const returnable = canReturn({
               statusCode: order.status.code, deliveredAt, windowDays, now,
-              isFinalSale: p.isFinalSale, alreadyRequested: !!item.returnRequest,
+              isFinalSale: p?.isFinalSale ?? false, alreadyRequested: !!item.returnRequest,
             });
             return (
               <div key={item.id} className="ot-item" style={{ ["--pc" as string]: v.color } as React.CSSProperties}>
@@ -135,7 +135,7 @@ export default async function OrderView({
                   </div>
 
                   {/* Review */}
-                  {order.status.code === "delivered" && !item.review && (
+                  {order.status.code === "delivered" && p && !item.review && (
                     <form action={submitReview} className="ot-form">
                       <input type="hidden" name="orderItemId" value={item.id} />
                       <div className="ot-form-title">Share your experience</div>
@@ -164,7 +164,7 @@ export default async function OrderView({
                       </div>
                       <button type="submit" className="ot-btn ghost sm">Request return</button>
                     </form>
-                  ) : order.status.code === "delivered" && p.isFinalSale ? (
+                  ) : order.status.code === "delivered" && p?.isFinalSale ? (
                     <div className="ot-item-note" style={{ color: "var(--ink-faint)" }}>This piece is final sale — not returnable.</div>
                   ) : null}
                 </div>

@@ -135,19 +135,22 @@ export async function makePrimaryImage(formData: FormData): Promise<void> {
 
 // ── Delete ────────────────────────────────────────────────────────────────
 
-function afterDelete(r: { deleted: number; archived: number }): never {
+const STATUS_TABS = new Set(["live", "draft", "archived"]);
+
+function afterDelete(r: { deleted: number; archived: number }, status: FormDataEntryValue | null): never {
   revalidatePath("/admin/products");
   revalidatePath("/collection");
   revalidatePath("/");
-  redirect(`/admin/products?deleted=${r.deleted}&archived=${r.archived}`);
+  const tab = STATUS_TABS.has(String(status)) ? `&status=${status}` : "";
+  redirect(`/admin/products?deleted=${r.deleted}&archived=${r.archived}${tab}`);
 }
 
 export async function deleteProduct(formData: FormData): Promise<void> {
-  afterDelete(await deleteProducts([Number(formData.get("id"))]));
+  afterDelete(await deleteProducts([Number(formData.get("id"))]), formData.get("returnStatus"));
 }
 
 export async function deleteSelectedProducts(formData: FormData): Promise<void> {
   const ids = formData.getAll("ids").map(Number);
   if (ids.length === 0) redirect("/admin/products");
-  afterDelete(await deleteProducts(ids));
+  afterDelete(await deleteProducts(ids), formData.get("returnStatus"));
 }

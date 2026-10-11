@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 export async function submitReview(formData: FormData): Promise<void> {
   const orderItemId = Number(formData.get("orderItemId"));
   const item = await prisma.orderItem.findUniqueOrThrow({ where: { id: orderItemId }, include: { order: true } });
+  if (item.productId === null) return; // the piece has since been removed from the shop
   await prisma.review.create({
     data: {
       productId: item.productId,

@@ -57,7 +57,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
           <Icon name="checkCircle" />
           <div>
             {nDeleted > 0 && <>{nDeleted} product{nDeleted === 1 ? "" : "s"} deleted permanently. </>}
-            {nArchived > 0 && <>{nArchived} product{nArchived === 1 ? " was" : "s were"} archived instead, because {nArchived === 1 ? "it appears" : "they appear"} in past orders — hidden from the shop, kept for order records.</>}
+            {nArchived > 0 && <>{nArchived} product{nArchived === 1 ? " was" : "s were"} archived (hidden from the shop) because {nArchived === 1 ? "it appears" : "they appear"} in past orders. To remove {nArchived === 1 ? "it" : "them"} for good, delete again from the <Link href="/admin/products?status=archived">Archived</Link> tab — past orders keep their details.</>}
           </div>
         </div>
       )}
@@ -85,7 +85,8 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
           </div>
         ) : (
           <form action={deleteSelectedProducts}>
-          <BulkDeleteBar />
+          <input type="hidden" name="returnStatus" value={status} />
+          <BulkDeleteBar permanent={status === "archived"} />
           <div className="adm-table-scroll">
             <table className="adm-table">
               <thead>

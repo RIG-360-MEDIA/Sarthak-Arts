@@ -199,13 +199,18 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
           <div className="adm-card adm-card-pad" style={{ marginTop: 16, borderColor: "#EEC7B9" }}>
             <div className="adm-card-title" style={{ marginBottom: 8 }}>Delete product</div>
             <p style={{ fontSize: 12.5, color: "var(--ink-muted)", margin: "0 0 12px", lineHeight: 1.5 }}>
-              Removes it from the shop and the database, with its photos. If it appears in past orders it is archived instead.
+              {product.status === "archived"
+                ? "Removes it from the database for good, with its photos. Past orders keep their item details."
+                : "Removes it from the shop and the database, with its photos. If it appears in past orders it is archived first; delete again to remove it for good."}
             </p>
             <form action={deleteProduct}>
               <input type="hidden" name="id" value={product.id} />
+              <input type="hidden" name="returnStatus" value={product.status === "archived" ? "archived" : ""} />
               <ConfirmSubmit
                 className="adm-btn adm-btn-ghost"
-                message={`Delete “${product.name}” permanently? This cannot be undone.`}
+                message={product.status === "archived"
+                  ? `Permanently delete “${product.name}”? This cannot be undone. Past orders keep their item details.`
+                  : `Delete “${product.name}”? This cannot be undone. If it appears in past orders it will be archived first.`}
               >
                 <Icon name="trash" /> Delete product
               </ConfirmSubmit>

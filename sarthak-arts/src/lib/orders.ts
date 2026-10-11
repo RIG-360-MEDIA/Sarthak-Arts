@@ -155,6 +155,7 @@ export async function rejectUpiPayment(orderId: number): Promise<void> {
     await tx.payment.updateMany({ where: { orderId, gateway: "upi" }, data: { status: "failed" } });
     await tx.orderStatusHistory.create({ data: { orderId, statusId: cancelled.id, note: "UPI payment not received — order cancelled" } });
     for (const i of order.items) {
+      if (i.productId === null) continue;
       await tx.product.updateMany({ where: { id: i.productId }, data: { stockQuantity: { increment: i.quantity } } });
     }
   });

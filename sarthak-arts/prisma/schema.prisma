@@ -309,8 +309,8 @@ model OrderItem {
   id                  Int                @id @default(autoincrement())
   orderId             Int
   order               Order              @relation(fields: [orderId], references: [id])
-  productId           Int
-  product             Product            @relation(fields: [productId], references: [id])
+  productId           Int?               // null once the product itself is deleted; name/price/composition are kept here
+  product             Product?           @relation(fields: [productId], references: [id], onDelete: SetNull)
   name                String
   unitPriceMinor      Int
   quantity            Int

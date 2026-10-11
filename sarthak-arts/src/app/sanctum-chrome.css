@@ -257,6 +257,8 @@
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 .sa-foot {
+  /* Above the homepage's fixed WebGL layer (z-index 0), like every other section. */
+  position: relative; z-index: 2;
   background: linear-gradient(180deg, #120720, #05020D);
   border-top: 1px solid var(--line-dark); color: var(--silk);
   padding: 64px clamp(20px, 5vw, 48px) 40px;

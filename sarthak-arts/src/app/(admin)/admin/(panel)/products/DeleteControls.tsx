@@ -21,7 +21,7 @@ export function ConfirmSubmit({ message, className, children, disabled }: {
  * Bulk-delete bar for the products table: a select-all checkbox and a
  * "Delete selected (n)" button that tracks the row checkboxes (name="ids") in the same form.
  */
-export function BulkDeleteBar() {
+export function BulkDeleteBar({ permanent = false }: { permanent?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [count, setCount] = useState(0);
   const [total, setTotal] = useState(0);
@@ -52,9 +52,11 @@ export function BulkDeleteBar() {
       <ConfirmSubmit
         className="adm-btn adm-btn-ghost adm-btn-sm"
         disabled={count === 0}
-        message={`Delete ${count} product${count === 1 ? "" : "s"} permanently? This removes them from the shop and the database and cannot be undone. Products that appear in past orders will be archived instead.`}
+        message={permanent
+          ? `Permanently delete ${count} archived product${count === 1 ? "" : "s"}? This removes them from the database and cannot be undone. Past orders keep their item details.`
+          : `Delete ${count} product${count === 1 ? "" : "s"}? This removes them from the shop and the database and cannot be undone. Products that appear in past orders are archived first — delete them again from the Archived tab to remove them for good.`}
       >
-        Delete selected{count > 0 ? ` (${count})` : ""}
+        {permanent ? "Delete permanently" : "Delete selected"}{count > 0 ? ` (${count})` : ""}
       </ConfirmSubmit>
     </div>
   );
