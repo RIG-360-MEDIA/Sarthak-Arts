@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
 import { freeSlots } from "@/lib/booking";
 import { createBooking } from "./actions";
+import { PlaceInput } from "@/components/PlaceInput";
 import { PieceDefs, PieceRender } from "@/components/collection/Piece";
 import { OvalImage } from "./OvalImage";
 
@@ -180,7 +181,7 @@ export default async function ConsultationPage({ searchParams }: { searchParams:
                 </label>
                 <label className="cons-birth-f wide">
                   <span>Place of birth</span>
-                  <input name="birthPlace" placeholder="City, State, Country" required maxLength={120} autoComplete="off" />
+                  <PlaceInput name="birthPlace" placeholder="Start typing your town or city…" required />
                 </label>
               </div>
 

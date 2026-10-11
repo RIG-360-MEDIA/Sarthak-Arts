@@ -109,7 +109,8 @@ body:has(.pdp-root) {
 .pdp-purpose { font-size: 12px; font-weight: 600; color: var(--pc-deep); padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--pc) 10%, #fff); border: 1px solid color-mix(in srgb, var(--pc) 28%, var(--line)); text-transform: capitalize; }
 
 .pdp-actions { display: flex; align-items: center; gap: 12px; margin: 22px 0 18px; }
-.pdp-actions .niche-cart { flex: 1; }
+/* Reset the collection grid's hover-reveal (its stylesheet stays loaded after client-side navigation). */
+.pdp-actions .niche-cart { flex: 1; position: static; opacity: 1; transform: none; }
 .pdp-actions .niche-cart button {
   width: 100%; padding: 15px 22px; border-radius: 14px; cursor: pointer;
   font-size: 14px; font-weight: 700; letter-spacing: .3px; color: #23150c; border: none;

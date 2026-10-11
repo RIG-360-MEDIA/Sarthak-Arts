@@ -154,3 +154,21 @@ export async function deleteSelectedProducts(formData: FormData): Promise<void> 
   if (ids.length === 0) redirect("/admin/products");
   afterDelete(await deleteProducts(ids), formData.get("returnStatus"));
 }
+
+const BULK_STATUSES = new Set(["live", "draft", "archived"]);
+
+/** One form, several buttons: the clicked button's name="intent" says what to do with the ticked products. */
+export async function bulkProductAction(formData: FormData): Promise<void> {
+  const intent = String(formData.get("intent"));
+  if (intent === "delete") return deleteSelectedProducts(formData);
+
+  const ids = [...new Set(formData.getAll("ids").map(Number).filter((n) => Number.isInteger(n) && n > 0))];
+  const tab = STATUS_TABS.has(String(formData.get("returnStatus"))) ? `&status=${formData.get("returnStatus")}` : "";
+  if (ids.length === 0 || !BULK_STATUSES.has(intent)) redirect(`/admin/products${tab ? `?${tab.slice(1)}` : ""}`);
+
+  const { count } = await prisma.product.updateMany({ where: { id: { in: ids } }, data: { status: intent } });
+  revalidatePath("/admin/products");
+  revalidatePath("/collection");
+  revalidatePath("/");
+  redirect(`/admin/products?updated=${count}&to=${intent}${tab}`);
+}
