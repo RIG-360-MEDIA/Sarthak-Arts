@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site";
 
-const BASE = "https://sarthakarts.com";
+const BASE = SITE_URL;
 
 const STATIC_ROUTES = [
   { path: "/", priority: 1.0, changeFrequency: "daily" as const },
