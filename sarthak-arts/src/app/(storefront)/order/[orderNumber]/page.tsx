@@ -137,7 +137,7 @@ export default async function OrderView({
                   {/* Review */}
                   {order.status.code === "delivered" && p && !item.review && (
                     <form action={submitReview} className="ot-form">
-                      <input type="hidden" name="orderItemId" value={item.id} />
+                      <input type="hidden" name="orderItemId" value={item.id} /><input type="hidden" name="email" value={order.email} />
                       <div className="ot-form-title">Share your experience</div>
                       <div className="ot-form-sub">Delivered pieces can be reviewed — it helps other seekers.</div>
                       <div className="ot-form-row">
@@ -155,7 +155,7 @@ export default async function OrderView({
                     <div className="ot-item-note" style={{ color: "var(--ink-muted)" }}>Return {item.returnRequest.status} — {item.returnRequest.reason.displayName}</div>
                   ) : returnable ? (
                     <form action={requestReturn} className="ot-form">
-                      <input type="hidden" name="orderItemId" value={item.id} />
+                      <input type="hidden" name="orderItemId" value={item.id} /><input type="hidden" name="email" value={order.email} />
                       <div className="ot-form-title">Request a return</div>
                       <div className="ot-form-sub">Within {windowDays} days of delivery.</div>
                       <div className="ot-form-row">

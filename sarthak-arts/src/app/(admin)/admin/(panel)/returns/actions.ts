@@ -1,8 +1,10 @@
 "use server";
+import { requireAdmin } from "@/lib/require-admin";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 
 export async function resolveReturn(formData: FormData): Promise<void> {
+  await requireAdmin();
   const status = String(formData.get("status")); // approved | rejected | refunded
   await prisma.returnRequest.update({
     where: { id: Number(formData.get("returnId")) },

@@ -1,8 +1,10 @@
 "use server";
+import { requireAdmin } from "@/lib/require-admin";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 
 export async function setReviewStatus(formData: FormData): Promise<void> {
+  await requireAdmin();
   await prisma.review.update({
     where: { id: Number(formData.get("reviewId")) },
     data: { status: String(formData.get("status")) },
@@ -11,6 +13,7 @@ export async function setReviewStatus(formData: FormData): Promise<void> {
 }
 
 export async function replyToReview(formData: FormData): Promise<void> {
+  await requireAdmin();
   await prisma.review.update({
     where: { id: Number(formData.get("reviewId")) },
     data: { sellerReply: String(formData.get("reply")) },

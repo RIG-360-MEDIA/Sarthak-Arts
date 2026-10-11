@@ -1,9 +1,11 @@
 "use server";
+import { requireAdmin } from "@/lib/require-admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 
 export async function saveGeneralSettings(formData: FormData): Promise<void> {
+  await requireAdmin();
   const storeName = String(formData.get("storeName"));
   const announcementLines = String(formData.get("announcementLines"))
     .split("\n")
