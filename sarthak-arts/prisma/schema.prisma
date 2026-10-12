@@ -541,6 +541,8 @@ model Festival {
   masaIast     String?                           // "Śrāvaṇa" (purnimanta)
   tithiIast    String?                           // "Pūrṇimā"
   paksha       String?                           // "śukla" | "kṛṣṇa"
+  basis        String?                           // when the tithi must prevail: "sunrise" | "midday" (null) | "sunset"
+  fixedDate    String?                           // "MM-DD" for festivals on a fixed solar date (e.g. Makar Sankranti "01-14"); overrides the tithi rule
   regions      String[]                          // ["north","south","bengali","gaudiya"]
   productSlugs String[]                          // slugs of pieces traditionally offered/gifted
   source       String                            // citation

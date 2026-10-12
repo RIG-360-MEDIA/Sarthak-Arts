@@ -52,6 +52,9 @@ The `.env` file is **never committed**. All variables are listed and explained i
 | `npm run db:migrate` | Create a new migration while developing (`prisma migrate dev`) |
 | `npm run db:seed` | Reference data, settings, logins (+ sample products in demo mode) |
 | `npm run db:seed:prod` | Same without sample products |
+| `npm run db:festivals` | Sync festival dates only (safe on the live database) |
+
+> Never run `db:seed` against the live database — it resets the admin/consultant passwords to the `.env` values and restores deleted sample products.
 
 ## Making changes (team workflow)
 
@@ -76,6 +79,10 @@ sarthak-arts/
 ```
 
 Every admin server action calls `requireAdmin()` itself — keep doing that for new ones (actions can be called directly, not only from the guarded pages).
+
+## Festivals (fully automatic)
+
+The homepage "Next festival" comes from `src/lib/festival-list.ts` — about 40 festivals, each with its tithi rule (or a fixed date for solar ones). A **nightly Vercel cron** (`vercel.json` → `/api/cron/festivals`, 01:00 IST) keeps one database row per festival dated to its next occurrence, rolls passed ones to next year and removes anything no longer listed. Nobody needs to touch it. To add a festival, add a line to the list and deploy (or run `npm run db:festivals` to apply immediately). Needs `CRON_SECRET` set in Vercel.
 
 ## What the owner can do (admin)
 
