@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { ensureAuthUser } from "../src/lib/supabase/admin";
-import { seedFestivals } from "./festivals";
+import { syncFestivals } from "../src/lib/festival-refresh";
 const db = new PrismaClient();
 
 async function main() {
@@ -332,7 +332,7 @@ async function main() {
     for (let i = 1; i <= 4; i++)
       await db.socialPost.create({ data: { platform: "instagram", caption: `A piece from the workshop #${i}`, mediaUrl: `/placeholder/copper-vastu-kalash.svg`, permalink: "https://instagram.com/sarthakarts" } });
 
-  await seedFestivals(db);
+  console.log("Festivals:", await syncFestivals());
 
   console.log(`Seed complete. Mode: ${demo ? "demo (sample products loaded)" : "production (reference data only, no sample products)"}.`);
 }

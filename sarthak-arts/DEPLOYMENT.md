@@ -36,7 +36,7 @@ Migrations should be additive (add columns/tables) so the old code keeps working
 
 Set for **Production** and **Preview**. Names and meaning are in `.env.example`. Any change needs a redeploy to take effect.
 
-`DATABASE_URL`, `DIRECT_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `STORAGE_DRIVER`, `S3_BUCKET`, `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `PAYMENT_MODE`, `UPI_ID`, `UPI_PAYEE_NAME`, `NEXT_PUBLIC_SITE_URL`.
+`DATABASE_URL`, `DIRECT_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `STORAGE_DRIVER`, `S3_BUCKET`, `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `PAYMENT_MODE`, `UPI_ID`, `UPI_PAYEE_NAME`, `NEXT_PUBLIC_SITE_URL`, `CRON_SECRET` (any long random string; protects the nightly festival job).
 
 ## Supabase settings that live outside the code
 

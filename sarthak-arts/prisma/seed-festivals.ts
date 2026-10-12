@@ -1,7 +1,5 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-import { seedFestivals } from "./festivals";
+import { syncFestivals } from "../src/lib/festival-refresh";
 
-// Refresh festival dates only (safe on the live database: no logins, products or settings touched).
-const db = new PrismaClient();
-seedFestivals(db).finally(() => db.$disconnect());
+// Same as the nightly job: sync festivals with src/lib/festival-list.ts (touches only the Festival table).
+syncFestivals().then((r) => console.log("Festivals synced:", r)).catch((e) => { console.error(e); process.exit(1); });
