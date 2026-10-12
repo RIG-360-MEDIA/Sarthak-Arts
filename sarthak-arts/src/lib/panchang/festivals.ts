@@ -8,8 +8,8 @@ export type FestivalRule = {
   tithi: string;
   /** Paksha. Ignored for Amāvāsyā/Pūrṇimā (implied). */
   paksha: "śukla" | "kṛṣṇa";
-  /** When the tithi must prevail: "midday" (default) or "sunset" (pradoṣa, e.g. Deepāvalī). */
-  basis?: "midday" | "sunset";
+  /** When the tithi must prevail: "midday" (default), "sunrise" (udaya tithi) or "sunset" (pradoṣa, e.g. Deepāvalī). */
+  basis?: "sunrise" | "midday" | "sunset";
 };
 
 /**
