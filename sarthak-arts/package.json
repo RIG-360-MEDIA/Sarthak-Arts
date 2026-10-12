@@ -14,7 +14,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:prod": "cross-env SEED_DEMO=false tsx prisma/seed.ts",
     "simulate:webhook": "tsx scripts/simulate-webhook.ts",
-    "shopify:check": "node scripts/shopify-check.mjs"
+    "shopify:check": "node scripts/shopify-check.mjs",
+    "db:festivals": "tsx prisma/seed-festivals.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1080.0",
