@@ -1,100 +1,65 @@
-# Deployment Guide — Sarthak Arts
+# Deployment — Sarthak Arts
 
-This takes the finished platform to a live site at **sarthakarts.com**. Do it in order. Everything that needs the *business's* identity (Razorpay, domain, accounts) is called out — create those under the client's business logins, not a personal account.
+How the live site at **https://sarthakarts.in** is put together, how to deploy changes, and what's left before a full commercial launch.
 
-Recommended host: **Vercel** (built for Next.js). Database: **Neon** (Postgres). File storage: **Cloudflare R2** (or Amazon S3). Email: **Resend**.
+## Current setup
 
----
+| Piece | Where | Notes |
+|---|---|---|
+| Code | GitHub `RIG-360-MEDIA/Sarthak-Arts` | App lives in `sarthak-arts/` |
+| Hosting | Vercel, team **RIG** (`rig12`), project **sarthak-arts** | Root directory `sarthak-arts`, function region `bom1` (Mumbai) |
+| Database + logins + files | Supabase project **Sarthak Arts** (ref `uhwxrygihovgopezqmzi`, Mumbai) | Postgres, Auth, Storage bucket `sarthak-media` |
+| Domain | `sarthakarts.in`, DNS at **Hostinger** | `A @ 76.76.21.21`, `CNAME www → sarthakarts.in`. Nameservers stay Hostinger's. |
+| Payments | UPI QR (`UPI_ID` env) | Razorpay switch-ready |
 
-## 0. Prerequisites
+## Deploying a change
 
-- The code on GitHub, under the client's account.
-- Client business details ready for Razorpay KYC (business PAN, bank account, address proof).
-- The domain `sarthakarts.com` registered.
+**Normal path (recommended):** merge a Pull Request into `master`. The Vercel project is connected to the GitHub repo, so `master` deploys to production and every other branch gets a preview URL.
 
-## 1. Production database (Neon)
-
-1. Create a Neon project under the client's account (choose a region near customers, e.g. Singapore).
-2. From the connection details, copy **two** connection strings:
-   - **Pooled** (host contains `-pooler`) → this becomes `DATABASE_URL`.
-   - **Direct** (no `-pooler`) → this becomes `DIRECT_URL`.
-3. Leave Neon Auth off — the app has its own login system.
-
-## 2. File storage (Cloudflare R2)
-
-1. In Cloudflare, create an R2 bucket (e.g. `sarthak-arts-certificates`).
-2. Create an R2 API token (Object Read & Write) → note the **Access Key ID** and **Secret Access Key**.
-3. Note the **S3 endpoint**: `https://<account-id>.r2.cloudflarestorage.com`.
-
-(Amazon S3 works too — create a bucket + IAM keys, leave `S3_ENDPOINT` blank, set `S3_REGION` to the AWS region.)
-
-## 3. Email (Resend)
-
-1. Create a Resend account; add and **verify the `sarthakarts.com` domain** (add the DNS records it gives you).
-2. Create an API key → `RESEND_API_KEY`.
-
-Until this is set, order/booking emails are skipped silently (no errors) — nothing else is affected.
-
-## 4. Payments (Razorpay)
-
-1. Sign up at razorpay.com with the **business** details and complete **KYC** (this can take a few days).
-2. Once live, from the dashboard get the **live** Key ID and Key Secret.
-3. Add a **webhook**: URL `https://sarthakarts.com/api/webhooks/razorpay`, event `payment.captured`, and set a webhook secret you choose.
-
-## 5. Deploy to Vercel
-
-1. In Vercel, **Import** the GitHub repo. Root directory: `sarthak-arts`. Framework preset: Next.js (auto-detected).
-2. Add the **environment variables** (Settings → Environment Variables):
-
-   | Variable | Value |
-   |---|---|
-   | `DATABASE_URL` | Neon **pooled** string |
-   | `DIRECT_URL` | Neon **direct** string |
-   | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` | from Supabase → Project Settings → API Keys |
-   | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | the owner's admin login |
-   | `CONSULTANT_EMAIL` / `CONSULTANT_PASSWORD` | first consultant login (changeable later in admin) |
-   | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | Razorpay **live** keys |
-   | `NEXT_PUBLIC_RAZORPAY_KEY_ID` | same live Key ID |
-   | `RAZORPAY_WEBHOOK_SECRET` | the webhook secret from step 4 |
-   | `RESEND_API_KEY` | Resend key |
-   | `STORAGE_DRIVER` | `s3` |
-   | `S3_BUCKET` | R2 bucket name |
-   | `S3_ENDPOINT` | R2 endpoint (blank for AWS S3) |
-   | `S3_REGION` | `auto` for R2 (AWS region for S3) |
-   | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | R2/S3 keys |
-
-3. Deploy.
-
-## 6. Set up the database (once)
-
-From a machine with the production `DATABASE_URL` + `DIRECT_URL` in `.env` (or via Vercel CLI), run:
+**Manual path (from a laptop, Vercel CLI logged in to the RIG team):**
 
 ```bash
-npm run db:migrate:deploy     # apply the schema
-npm run db:seed:prod          # reference data + owner/consultant logins, NO sample products
+# run from the repo ROOT (the project's root directory is sarthak-arts/)
+npx vercel deploy --prod --scope rig12
 ```
 
-`db:seed:prod` seeds directions, currencies, order statuses, settings, page copy, return reasons, consultation types, and the admin + consultant accounts — and **no** demo products. The owner adds the real catalogue through the admin.
+**If the change includes a database migration**, apply it to the live database first (with `.env` pointing at Supabase):
 
-## 7. Domain
+```bash
+cd sarthak-arts
+npx prisma migrate deploy
+```
 
-1. In Vercel, add the domain `sarthakarts.com` and follow the DNS instructions at the registrar.
-2. Wait for HTTPS (the padlock) to go green.
+Migrations should be additive (add columns/tables) so the old code keeps working until the new code is live.
 
-## 8. Go-live smoke test
+## Environment variables (Vercel → Settings → Environment Variables)
 
-On the live site:
-- Browse the storefront; open a product page.
-- Place one **real** small order → confirm the order appears in **Admin → Orders**, the **certificate PDF** downloads, and the confirmation **email** arrives.
-- Sign in to **/admin** (owner) and **/portal** (consultant) and confirm each loads its own area.
-- Book a consultation; confirm it shows in the consultant's portal.
+Set for **Production** and **Preview**. Names and meaning are in `.env.example`. Any change needs a redeploy to take effect.
 
-When those pass, the store is open.
+`DATABASE_URL`, `DIRECT_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `STORAGE_DRIVER`, `S3_BUCKET`, `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `PAYMENT_MODE`, `UPI_ID`, `UPI_PAYEE_NAME`, `NEXT_PUBLIC_SITE_URL`.
 
----
+## Supabase settings that live outside the code
 
-## Notes
+- **Authentication → URL Configuration:** Site URL `https://sarthakarts.in`; redirect URLs `https://sarthakarts.in/**`, `https://www.sarthakarts.in/**` (and `http://localhost:3000/**` for development).
+- **Authentication → Providers → Email:** keep "Confirm email" **on** (customers' past orders are matched by verified email).
+- **Data API:** off. Automatic RLS: on. The app talks to Postgres only through Prisma on the server.
+- The database user the app uses is `prisma` (created for this project); its password is inside `DATABASE_URL`.
 
-- **Test mode first:** you can deploy with Razorpay **test** keys and place test orders before KYC clears — everything works except real money movement.
-- **Rotating a consultant's password** or adding the real consultant: **Admin → Consultations → Consultant portal access**.
-- **Editing legal/store copy:** **Admin → Content** — changes go live immediately.
+## Switching payments to Razorpay
+
+1. Client completes Razorpay KYC and creates **live** keys.
+2. In Vercel set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`, `RAZORPAY_WEBHOOK_SECRET`, and `PAYMENT_MODE=razorpay`.
+3. In Razorpay add the webhook `https://sarthakarts.in/api/webhooks/razorpay` for `payment.captured` with the same secret. Redeploy.
+
+## Before a full commercial launch
+
+- **Rotate secrets** that were shared during development (Supabase secret key, storage keys, database password) and update Vercel.
+- **Change the admin and consultant passwords** (Supabase → Authentication → Users).
+- **Ownership:** move the Supabase project and Vercel project to accounts the client owns (or add the client as owner).
+- **Plans:** Vercel Hobby is non-commercial — use Vercel Pro (or the client's account). Supabase free is the smallest machine — consider Pro for reliability and backups.
+- **Email:** connect Resend (verify `sarthakarts.in`, set `RESEND_API_KEY`) so order/booking confirmations are sent. Update the `from:` addresses in `src/lib/email.ts` to the verified domain.
+- Real catalogue, photos, legal text (see `CLIENT-CHECKLIST.md`).
+
+## Rolling back
+
+Vercel → Deployments → pick the last good deployment → **⋯ → Promote to Production** (instant). Database migrations are not rolled back automatically; that's why they should be additive.

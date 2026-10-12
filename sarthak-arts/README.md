@@ -1,58 +1,104 @@
 # Sarthak Arts
 
-A custom D2C storefront and admin panel for **Sarthak Arts** — handcrafted Murtis and Indian Vastu products (copper, brass and silver pieces, set with gemstones). Built direction-first: every product is tied to a Vastu direction and purpose, ships with a certificate of composition, and the whole platform is configuration-driven — copy, currencies, shipping, statuses, FAQ and social posts are all database rows the owner edits, never code.
+D2C storefront + admin panel for **Sarthak Arts** — handcrafted murtis and Vāstu pieces in copper, brass and silver. Every product is tied to a Vāstu direction and purpose and ships with a certificate of composition. Copy, prices, shipping, FAQ and social posts are database rows the owner edits — not code.
+
+**Live:** https://sarthakarts.in  ·  Admin: `/admin`  ·  Consultant portal: `/portal`  ·  Customer account: `/account`
 
 ## Stack
 
-- **Next.js 16** (App Router, React 19, Server Actions) + TypeScript
-- **Prisma 6** + **PostgreSQL** (Neon)
-- **Supabase Auth** for every login (admin, consultant, customer). Roles live in tamper-proof `app_metadata`; `proxy.ts` gates `/admin`, `/portal` and `/account`
-- Money stored as integer minor units; multi-currency display via cookie + per-currency rate
-- Razorpay webhook-driven orders (HMAC-verified, idempotent); certificate PDFs via `@react-pdf/renderer` behind a storage abstraction
-- Vitest (TDD for all pure-logic modules)
+| Part | Tech |
+|---|---|
+| App | Next.js 16 (App Router, React 19, Server Actions), TypeScript |
+| Database | PostgreSQL on **Supabase** (Mumbai), via **Prisma 6** |
+| Logins | **Supabase Auth** — admin, consultant and customer; role kept in `app_metadata` |
+| Files (product photos, certificate PDFs) | **Supabase Storage** (S3-compatible) behind `src/lib/storage.ts` |
+| Payments | **UPI QR** today (owner verifies each payment); **Razorpay** ready behind `PAYMENT_MODE=razorpay` |
+| Hosting | **Vercel** (team `rig12`, project `sarthak-arts`, region `bom1`); domain DNS at Hostinger |
+| Tests | Vitest |
 
-## Running locally
+## Run it locally
+
+Requires Node 20+ (24 works).
 
 ```bash
+cd sarthak-arts
 npm install
-cp .env.example .env         # then fill in the database URLs and the Supabase keys
-npm run db:migrate           # apply migrations
-npm run db:seed              # reference data, settings, sample products, content
-npm run dev                  # http://localhost:3000
+cp .env.example .env        # fill in values — ask the project owner for the real ones
+npx prisma generate
+npm run dev                 # http://localhost:3000
 ```
 
-- **Storefront:** `/`
-- **Admin:** `/admin` — sign in with the seeded owner account:
-  - `owner@sarthakarts.com` / `SarthakAdmin!2026`
-- **Simulate a paid order** without a public webhook URL: `npm run simulate:webhook`
+The `.env` file is **never committed**. All variables are listed and explained in `.env.example`. The important ones:
 
-## What's in it
+| Variable | What it is |
+|---|---|
+| `DATABASE_URL` / `DIRECT_URL` | Supabase Postgres: pooled (port 6543, `?pgbouncer=true`) / session (port 5432, used by migrations) |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` | Supabase → Project Settings → API Keys. The secret key is server-only. |
+| `STORAGE_DRIVER=s3`, `S3_*` | Supabase Storage bucket `sarthak-media` + its S3 access keys |
+| `PAYMENT_MODE`, `UPI_ID`, `UPI_PAYEE_NAME` | `upi` shows a QR at checkout; switch to `razorpay` once live keys exist |
+| `NEXT_PUBLIC_SITE_URL` | `https://sarthakarts.in` in production (links, sitemap, previews) |
+| `ADMIN_*`, `CONSULTANT_*` | Logins created by the seed script |
 
-**Storefront:** homepage, collection listing + filters, product pages (with reviews, gemstone-accent pricing, SEO metadata), shop-by-direction wheel, search, cart, guest checkout → payment → order, consultation booking, 2-minute home audit, guest order lookup with review/return, and editorial pages (About, Our Craft, Vastu Shastra/FAQ) with a full footer + newsletter capture.
+> Local development uses the **same Supabase database as the live site** unless you point `.env` at another one. Be careful with test data — or create a separate Supabase project for development.
 
-**Admin:** dashboard, products (manual pricing, composition editor, price history), orders (status flow), consultations (bookings + availability + provisioning consultant logins), reviews (moderation), returns, **content** (edit any storefront copy — goes live instantly), **social** (curate the Instagram feed), **analytics** (revenue, top products, sales-by-direction), and settings.
+## Scripts
 
-**Consultant / astrologer portal** (`/portal`): each consultant signs in to see only their own bookings (customer details, mark done, add a video-call link) and manage their own availability. Role-gated separately from admin. The admin creates/resets consultant logins from the Consultations screen.
+| Command | Does |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run build` | `prisma generate` + production build (what Vercel runs) |
+| `npm test` | Unit tests (Vitest) |
+| `npx prisma migrate deploy` | Apply pending migrations to the database in `.env` |
+| `npm run db:migrate` | Create a new migration while developing (`prisma migrate dev`) |
+| `npm run db:seed` | Reference data, settings, logins (+ sample products in demo mode) |
+| `npm run db:seed:prod` | Same without sample products |
 
-### Logins (dev)
+## Making changes (team workflow)
 
-- **Admin:** `owner@sarthakarts.com` / `SarthakAdmin!2026` → `/admin`
-- **Consultant:** `consultant@sarthakarts.com` / (set via `CONSULTANT_PASSWORD`) → `/portal`
+1. `git pull` on `master`, then create a branch: `git checkout -b feat/short-description`.
+2. Make the change; run `npm test` and `npm run build` in `sarthak-arts/`.
+3. **Database change?** Edit `prisma/schema.prisma`, run `npm run db:migrate -- --name what_changed` against a dev database, and commit the new folder in `prisma/migrations/`. Prefer additive changes (new columns/tables); never edit an old migration.
+4. Push the branch and open a Pull Request into `master`. Vercel builds a preview for every push.
+5. Merge → deploy to production (see `DEPLOYMENT.md`). Apply any new migration to the live database **before** the new code goes live: `npx prisma migrate deploy`.
 
-## Deferred (operational inputs, not missing features)
+## Where things are
 
-These are wired and waiting on real credentials/content — no code changes needed to switch on:
+```
+sarthak-arts/
+  prisma/                schema.prisma, migrations/, seed.ts
+  src/app/(storefront)/  public site: home, collection, product, cart, checkout, consultation, account, order tracking
+  src/app/(admin)/admin/ owner console (products, orders, consultations, reviews, returns, content, social, subscribers, analytics)
+  src/app/(portal)/      consultant portal
+  src/app/api/           images, places (birth-place search), admin CSV export
+  src/lib/               business logic: orders, payments/upi.ts, product-delete, session, require-admin, supabase/, panchang/ (calendar)
+  src/proxy.ts           login + role guard for /admin, /portal, /account
+  tests/                 Vitest
+```
 
-- **Payment keys** — Razorpay/Stripe live keys are behind KYC; the webhook + signature verification are complete and tested against a local simulator.
-- **Transactional email** — `src/lib/email.ts` no-ops cleanly without `RESEND_API_KEY`; order- and booking-confirmation emails send the moment a key is set. The broader notification set (abandoned cart, back-in-stock) plugs into the same module.
-- **Customer accounts** — checkout is guest-first with email-gated order lookup; a full account area is a later addition.
-- **Live social sync** — posts are admin-curated now; the `SocialPost.source` field is ready for API sync later.
-- **Real product photography and catalog** — sample products and placeholder art ship in the seed; the admin accepts the real catalog as data.
+Every admin server action calls `requireAdmin()` itself — keep doing that for new ones (actions can be called directly, not only from the guarded pages).
 
-## Deploying
+## What the owner can do (admin)
 
-The app is production-ready: cloud file storage (S3-compatible — Cloudflare R2 or Amazon S3, via `STORAGE_DRIVER=s3`), a production seed that loads reference data + logins but no sample products (`npm run db:seed:prod`), and pooled/direct database URLs for serverless. See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full step-by-step (Neon, Vercel, R2, Razorpay, Resend, domain).
+Products (add/edit, photos, composition, direction, bulk Live/Draft/Archive/Delete) · Orders (verify UPI payment, mark packed/shipped/delivered) · Consultations (bookings with birth details, availability, consultant logins) · Reviews · Returns · Content (any storefront text) · Social · **Subscribers** (newsletter list, remove, CSV download) · Analytics · Settings.
 
-## Tag history
+Deleting a product that was ordered archives it first; deleting it again from the **Archived** tab removes it for good (past orders keep their item details).
 
-`v0.1-slice` → `v0.2-storefront` → `v0.3-admin` → `v0.4-consultations` → `v0.5-post-purchase` → `v1.0` (CMS, social, analytics, polish — feature-complete) → `v1.1` (legal pages via CMS + gifting) → `v1.2` (consultant/astrologer portal — every role has its own interface) → **`v1.3`** (production readiness — cloud storage, prod seed, deploy config + guide).
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| Live site still shows the old version | Hard refresh (Ctrl+F5). Check the latest deployment is **Ready** in Vercel → Deployments. |
+| Vercel build fails with Prisma type errors | The build must run `prisma generate` first — `npm run build` does; don't change the build command to plain `next build`. |
+| Works locally, error on Vercel | A variable is missing in Vercel → Settings → Environment Variables (compare with `.env.example`), then redeploy. |
+| `relation/column does not exist` | A migration wasn't applied: `npx prisma migrate deploy` with `.env` pointing at that database. |
+| Local dev shows 404 on real pages, or build fails with `EPERM … .next` | The `.next` cache is corrupt or locked by OneDrive. Stop the server, delete `sarthak-arts/.next`, run again. Keeping the repo outside OneDrive avoids this. |
+| New products don't appear on the site | They're **Draft** — set Status to **Live** in admin. Products without a direction appear under "More pieces". |
+| Can't sign in to admin | Reset the password in Supabase → Authentication → Users (the role is in the user's `app_metadata.role`). |
+| Signup email links point to the wrong site | Supabase → Authentication → URL Configuration: Site URL `https://sarthakarts.in`, redirect URLs `https://sarthakarts.in/**`. |
+| Images don't upload or show | Check `STORAGE_DRIVER=s3` and the `S3_*` values. Supabase Storage needs path-style URLs (handled in `src/lib/storage.ts`). |
+| Homepage 3D background missing | Don't add drei `<Environment preset>` back — it loads a remote file and stalls the scene. |
+| Consultation "Confirm booking" greyed out | No future time slots — add availability in the portal or admin → Consultations. |
+| Site slow everywhere | Check your own connection first, then Supabase status / plan (free plan = smallest machine). |
+| Domain shows `DEPLOYMENT_NOT_FOUND` | Domain not attached to the Vercel project: Vercel → Settings → Domains → add it. DNS at Hostinger: `A @ 76.76.21.21`, `CNAME www → sarthakarts.in`. |
+
+See `DEPLOYMENT.md` for accounts, deployment and go-live, and `CLIENT-CHECKLIST.md` for what's still needed from the client.
