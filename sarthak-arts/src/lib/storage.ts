@@ -39,6 +39,7 @@ class S3Storage implements Storage {
     return new S3Client({
       region: process.env.S3_REGION ?? "auto",
       endpoint: process.env.S3_ENDPOINT || undefined,
+      forcePathStyle: Boolean(process.env.S3_ENDPOINT), // Supabase Storage requires path-style URLs
       credentials: {
         accessKeyId: process.env.S3_ACCESS_KEY_ID!,
         secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,

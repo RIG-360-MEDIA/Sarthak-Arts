@@ -65,6 +65,8 @@ export type PieceCard = {
   stockQuantity: number;
   isSample: boolean;
   categoryCode: string;
+  /** Owner-uploaded cover photo; null means draw the illustrated piece instead. */
+  photoUrl?: string | null;
 };
 
 export type DirectionView = DirectionCard & {
@@ -84,6 +86,8 @@ export type CollectionView = {
   mode: "overview" | "grid";
   /** overview mode: capped preview per direction */
   overview: OverviewGroup[];
+  /** overview mode: live pieces not yet assigned a direction */
+  unplaced: PieceCard[];
   /** grid mode: the current (paginated) page of matching pieces */
   pieces: PieceCard[];
   matchCount: number;     // grid mode: total matching the filters
@@ -100,7 +104,13 @@ const PIECE_INCLUDE = {
   category: true,
   composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" as const } },
   directions: { include: { direction: true } },
+  images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
 } as const;
+
+/** Seeded placeholder art isn't a real photo — keep the illustration for those. */
+export function realPhoto(url: string | undefined | null): string | null {
+  return url && !url.startsWith("/placeholder/") ? url : null;
+}
 
 type LiveProduct = Awaited<ReturnType<typeof loadOne>>;
 async function loadOne() {
@@ -145,6 +155,7 @@ function toPiece(
     stockQuantity: p.stockQuantity ?? 0,
     isSample: p.isSample,
     categoryCode: p.category.code,
+    photoUrl: realPhoto(p.images[0]?.url),
   };
 }
 
@@ -152,7 +163,7 @@ const EMPTY_CURRENCY = { code: "INR", ratePerBase: 1 };
 
 function emptyView(filters: CollectionFilters): CollectionView {
   return {
-    mode: "overview", overview: [], pieces: [], matchCount: 0, shown: 0, hasMore: false,
+    mode: "overview", overview: [], unplaced: [], pieces: [], matchCount: 0, shown: 0, hasMore: false,
     totalLive: 0, directions: [], categories: [], currency: EMPTY_CURRENCY, filters,
   };
 }
@@ -224,7 +235,7 @@ export async function getCollectionView(filters: CollectionFilters): Promise<Col
         prisma.product.findMany({ where, include: PIECE_INCLUDE, orderBy: orderByFor(filters.sort), take: filters.show }),
       ]);
       const pieces = rows.map((p) => toPiece(p, currency));
-      return { ...base, mode: "grid", overview: [], pieces, matchCount, shown: pieces.length, hasMore: matchCount > pieces.length };
+      return { ...base, mode: "grid", overview: [], unplaced: [], pieces, matchCount, shown: pieces.length, hasMore: matchCount > pieces.length };
     }
 
     // ── Overview mode: one capped preview query per non-empty direction ───
@@ -239,7 +250,13 @@ export async function getCollectionView(filters: CollectionFilters): Promise<Col
       }),
     );
 
-    return { ...base, mode: "overview", overview: groups, pieces: [], matchCount: totalLive, shown: totalLive, hasMore: false };
+    const unplacedRows = await prisma.product.findMany({
+      where: { status: "live", directions: { none: {} } },
+      include: PIECE_INCLUDE, orderBy: { createdAt: "desc" }, take: 48,
+    });
+    const unplaced = unplacedRows.map((p) => toPiece(p, currency));
+
+    return { ...base, mode: "overview", overview: groups, unplaced, pieces: [], matchCount: totalLive, shown: totalLive, hasMore: false };
   } catch (err) {
     console.warn("[collection] load failed, rendering empty:", err instanceof Error ? err.message : err);
     return emptyView(filters);

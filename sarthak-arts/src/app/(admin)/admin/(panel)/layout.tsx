@@ -8,11 +8,11 @@ export const dynamic = "force-dynamic";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const session = await currentSession();
-  if (!session) redirect("/admin/login");
+  if (!session || session.role !== "admin") redirect("/admin/login");
 
   const [user, openOrders, pendingReturns, pendingReviews, upcomingConsults] = await Promise.all([
     prisma.user.findUnique({ where: { id: session.userId }, select: { name: true, email: true } }),
-    prisma.order.count({ where: { status: { code: { in: ["confirmed", "packed"] } } } }).catch(() => 0),
+    prisma.order.count({ where: { status: { code: { in: ["pending_payment", "confirmed", "packed"] } } } }).catch(() => 0),
     prisma.returnRequest.count({ where: { status: "requested" } }).catch(() => 0),
     prisma.review.count({ where: { status: "pending" } }).catch(() => 0),
     prisma.booking.count({ where: { status: "booked" } }).catch(() => 0),

@@ -54,7 +54,10 @@ export function QuickView({ p }: { p: PieceCard }) {
             <button type="button" className="qv-close" onClick={() => setOpen(false)} aria-label="Close quick view">✕</button>
             <div className="qv-stage">
               <span className="qv-halo" aria-hidden="true" />
-              <PieceRender glyph={p.glyph} metalGrad={p.metalGrad} gemHex={p.gemHex} className="qv-obj" />
+              {p.photoUrl
+                // eslint-disable-next-line @next/next/no-img-element -- served already optimised (WebP) by /api/images
+                ? <img src={p.photoUrl} alt={p.name} className="qv-photo" />
+                : <PieceRender glyph={p.glyph} metalGrad={p.metalGrad} gemHex={p.gemHex} className="qv-obj" />}
             </div>
             <div className="qv-info">
               <span className="qv-dir">

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { realPhoto } from "@/lib/collection";
 
 export type FeaturedPiece = {
   slug: string;
@@ -16,6 +17,7 @@ export type FeaturedPiece = {
   primaryMetalName: string | null;
   primaryMetalWeightG: number | null;
   primaryMetalLabel: string | null;
+  photoUrl: string | null;
 };
 
 /**
@@ -45,6 +47,7 @@ export async function getFeaturedPieces(count = 3): Promise<FeaturedPiece[]> {
         // ProductDirection has a composite key (no `id`); pick the first-linked one deterministically.
         directions: { include: { direction: true }, orderBy: { directionId: "asc" }, take: 1 },
         composition: { include: { metal: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+        images: { orderBy: { sortOrder: "asc" }, take: 1 },
       },
     });
   } catch (err) {
@@ -70,6 +73,7 @@ export async function getFeaturedPieces(count = 3): Promise<FeaturedPiece[]> {
       // weightGrams is Prisma Decimal — normalize to plain number for the client boundary.
       primaryMetalWeightG: comp?.weightGrams != null ? Number(comp.weightGrams) : null,
       primaryMetalLabel: comp?.label ?? null,
+      photoUrl: realPhoto(p.images[0]?.url),
     };
   });
 }

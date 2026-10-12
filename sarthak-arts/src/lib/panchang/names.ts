@@ -56,27 +56,13 @@ export function tithiName(ino: number): { deva: string; iast: string; paksha: "�
 }
 
 /**
- * Translate mhah's Masa.ino (0-indexed, Vaiśākha=0) to our canonical index
- * (0-indexed, Caitra=0). This gives the AMĀNTA masa — the month name in the
- * amānta convention (month ends at Amāvāsyā), used across South India,
- * Maharashtra, Gujarat.
- */
-export function masaIndexFromMhah(mhahIno: number): number {
-  return (mhahIno + 1) % 12;
-}
-
-/**
  * Convert an amānta masa index to pūrṇimānta (month ends at Pūrṇimā), the
- * convention used across North India. Rule:
- *   Śukla paksha: Pūrṇimānta month = Amānta month − 1 (belongs to the "next"
- *                 half of the previous month)
- *   Kṛṣṇa paksha: Pūrṇimānta month = Amānta month (unchanged)
- *
- * Reference: Vikrama Saṃvat almanacs; verified against Drik Panchang for
- * Rāma Navamī (Caitra) and Rakṣā Bandhana (Śrāvaṇa) 2024.
+ * convention used across North India. The two systems agree during Śukla
+ * paksha; the Kṛṣṇa fortnight is counted into the NEXT month by name
+ * (amānta Āṣāḍha Kṛṣṇa = pūrṇimānta Śrāvaṇa Kṛṣṇa).
  */
 export function amantaToPurnimanta(amantaIdx: number, paksha: "śukla" | "kṛṣṇa"): number {
-  return paksha === "śukla" ? (amantaIdx + 11) % 12 : amantaIdx;
+  return paksha === "kṛṣṇa" ? (amantaIdx + 1) % 12 : amantaIdx;
 }
 
 export type MasaSystem = "amanta" | "purnimanta";

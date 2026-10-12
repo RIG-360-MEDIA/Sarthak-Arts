@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
 import { freeSlots } from "@/lib/booking";
 import { createBooking } from "./actions";
+import { PlaceInput } from "@/components/PlaceInput";
 import { PieceDefs, PieceRender } from "@/components/collection/Piece";
 import { OvalImage } from "./OvalImage";
 
@@ -165,6 +166,23 @@ export default async function ConsultationPage({ searchParams }: { searchParams:
                 <input name="name" placeholder="Full name" required autoComplete="name" />
                 <input name="email" type="email" placeholder="Email" required autoComplete="email" />
                 <input name="phone" placeholder="Phone" required autoComplete="tel" />
+              </div>
+
+              <span className="cons-field-lbl">Birth details</span>
+              <p className="cons-birth-hint">Your consultant uses these to prepare your reading before the call.</p>
+              <div className="cons-inputs cons-birth">
+                <label className="cons-birth-f">
+                  <span>Date of birth</span>
+                  <input name="birthDate" type="date" required max={new Date().toISOString().slice(0, 10)} />
+                </label>
+                <label className="cons-birth-f">
+                  <span>Time of birth <em>(if known)</em></span>
+                  <input name="birthTime" type="time" />
+                </label>
+                <label className="cons-birth-f wide">
+                  <span>Place of birth</span>
+                  <PlaceInput name="birthPlace" placeholder="Start typing your town or city…" required />
+                </label>
               </div>
 
               <button className="cons-submit" disabled={slots.length === 0}>Confirm booking</button>

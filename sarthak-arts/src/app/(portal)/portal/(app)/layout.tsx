@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const session = await currentSession();
-  if (!session) redirect("/portal/login");
+  if (!session || session.role !== "consultant") redirect("/portal/login");
   const consultant = await prisma.consultant.findFirst({ where: { userId: session.userId }, select: { name: true } });
 
   return (

@@ -18,7 +18,6 @@
  */
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
 import { EffectComposer, Bloom, GodRays, Vignette, Noise } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
@@ -371,7 +370,6 @@ function SanctumScene({ particleCount, mandala }: { particleCount: number; manda
       <ambientLight intensity={0.4} color="#3A2C7E" />
       <directionalLight position={[3, 4, 2]} intensity={0.45} color="#E8B849" />
       <CursorLight />
-      <Environment preset="studio" background={false} />
 
       {/* The mandala + its bindu ride together in one group so they can sit off
           to one side (desktop) with the copy on the other — set by the parent. */}

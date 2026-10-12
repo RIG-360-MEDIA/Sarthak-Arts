@@ -4,6 +4,8 @@ import { formatMoney } from "@/lib/money";
 import { getSetting } from "@/lib/settings";
 import { Icon } from "../../_ui/icons";
 import { ProductStatusPill, StockPill } from "../../_ui/status";
+import { bulkProductAction } from "./actions";
+import { BulkDeleteBar } from "./DeleteControls";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +16,11 @@ const STATUS_TABS = [
   { label: "Archived", value: "archived" },
 ];
 
-export default async function AdminProducts({ searchParams }: { searchParams: Promise<{ q?: string; status?: string }> }) {
-  const { q = "", status = "" } = await searchParams;
+export default async function AdminProducts({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; deleted?: string; archived?: string; updated?: string; to?: string }> }) {
+  const { q = "", status = "", deleted, archived, updated, to } = await searchParams;
+  const nUpdated = Number(updated ?? 0);
+  const TO_LABEL: Record<string, string> = { live: "made live", draft: "moved to draft", archived: "archived" };
+  const nDeleted = Number(deleted ?? 0), nArchived = Number(archived ?? 0);
   const threshold = await getSetting<number>("low_stock_threshold", 5);
 
   const products = await prisma.product.findMany({
@@ -49,6 +54,22 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
         <Link href="/admin/products/new" className="adm-btn adm-btn-primary"><Icon name="plus" /> Add a product</Link>
       </div>
 
+      {nUpdated > 0 && to && TO_LABEL[to] && (
+        <div className="adm-note info" style={{ marginBottom: 16 }}>
+          <Icon name="checkCircle" />
+          <div>{nUpdated} product{nUpdated === 1 ? "" : "s"} {TO_LABEL[to]}.</div>
+        </div>
+      )}
+      {(nDeleted > 0 || nArchived > 0) && (
+        <div className="adm-note info" style={{ marginBottom: 16 }}>
+          <Icon name="checkCircle" />
+          <div>
+            {nDeleted > 0 && <>{nDeleted} product{nDeleted === 1 ? "" : "s"} deleted permanently. </>}
+            {nArchived > 0 && <>{nArchived} product{nArchived === 1 ? " was" : "s were"} archived (hidden from the shop) because {nArchived === 1 ? "it appears" : "they appear"} in past orders. To remove {nArchived === 1 ? "it" : "them"} for good, delete again from the <Link href="/admin/products?status=archived">Archived</Link> tab — past orders keep their details.</>}
+          </div>
+        </div>
+      )}
+
       <div className="adm-table-wrap">
         <div className="adm-table-tools">
           <form className="adm-search" method="get">
@@ -71,14 +92,18 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
             {!q && !status && <Link href="/admin/products/new" className="adm-btn adm-btn-primary"><Icon name="plus" /> Add your first product</Link>}
           </div>
         ) : (
+          <form action={bulkProductAction}>
+          <input type="hidden" name="returnStatus" value={status} />
+          <BulkDeleteBar permanent={status === "archived"} />
           <div className="adm-table-scroll">
             <table className="adm-table">
               <thead>
-                <tr><th>Product</th><th>Category</th><th>Direction</th><th className="right">Price</th><th>Stock</th><th>Status</th></tr>
+                <tr><th style={{ width: 36 }} aria-label="Select" /><th>Product</th><th>Category</th><th>Direction</th><th className="right">Price</th><th>Stock</th><th>Status</th></tr>
               </thead>
               <tbody>
                 {products.map((p) => (
                   <tr key={p.id}>
+                    <td><input type="checkbox" name="ids" value={p.id} aria-label={`Select ${p.name}`} /></td>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                         <ProductThumb url={p.images[0]?.url} />
@@ -95,6 +120,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
               </tbody>
             </table>
           </div>
+          </form>
         )}
       </div>
     </div>

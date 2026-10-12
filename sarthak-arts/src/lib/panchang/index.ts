@@ -12,7 +12,6 @@ import * as SunCalc from "suncalc";
 import { getCity, type CityCode, type City } from "./cities";
 import {
   tithiName,
-  masaIndexFromMhah,
   amantaToPurnimanta,
   NAKSHATRA_NAMES,
   YOGA_NAMES,
@@ -20,6 +19,7 @@ import {
   MASA_NAMES,
   type MasaSystem,
 } from "./names";
+import { lunarMonthAt, tithiIndexAt } from "./masa";
 import {
   dayChoghadiya,
   nightChoghadiya,
@@ -43,6 +43,8 @@ export type PanchangOk = {
   karana: PanchangCell;
   masa: PanchangCell;           // lunar month (per the chosen masa system)
   masaSystem: MasaSystem;
+  /** True when this lunar month is an adhika (leap) month. */
+  adhika: boolean;
   choghadiyaDay: ChoghadiyaWindow[];
   choghadiyaNight: ChoghadiyaWindow[];
   choghadiyaNow: ChoghadiyaWindow | null;
@@ -59,6 +61,8 @@ const mhah = new MhahPanchang();
 export type PanchangOptions = {
   /** Lunar month reckoning. Default "purnimanta" (North Indian). */
   masaSystem?: MasaSystem;
+  /** Instant the tithi is read at: "sunrise" (default) or local "midday" (used for festival days). */
+  basis?: "sunrise" | "midday" | "sunset";
 };
 
 /**
@@ -84,10 +88,11 @@ export function computePanchang(
   const masaSystem: MasaSystem = opts.masaSystem ?? "purnimanta";
   const city = getCity(cityCode);
   const bucket = Math.floor(at.getTime() / CACHE_TTL_MS);
-  const key = `${city.code}|${masaSystem}|${bucket}`;
+  const basis = opts.basis ?? "sunrise";
+  const key = `${city.code}|${masaSystem}|${basis}|${bucket}`;
   const hit = CACHE.get(key);
   if (hit) return hit;
-  const result = computePanchangUncached(city, masaSystem, at);
+  const result = computePanchangUncached(city, masaSystem, at, basis);
   if (CACHE.size >= CACHE_MAX) CACHE.clear();
   CACHE.set(key, result);
   return result;
@@ -97,6 +102,7 @@ function computePanchangUncached(
   city: City,
   masaSystem: MasaSystem,
   at: Date,
+  basis: "sunrise" | "midday" | "sunset",
 ): Panchang {
   try {
     // Sunrise/sunset for the calendar day the observer is currently living in.
@@ -111,15 +117,21 @@ function computePanchangUncached(
     // Panchang values at sunrise (classical convention: tithi/nakshatra/yoga/
     // karana of the day are those prevailing at sunrise).
     // All mhah inos are 0-indexed. Masa needs remapping (Amanta year convention).
-    const c = mhah.calendar(suncalcSunrise, city.lat, city.lon);
-    const tithi = tithiName(c.Tithi.ino);
+    const readAt = basis === "midday"
+      ? new Date((suncalcSunrise.getTime() + suncalcSunset.getTime()) / 2)
+      : basis === "sunset"
+        ? new Date(suncalcSunset.getTime() + 20 * 60 * 1000) // pradoṣa, just after sunset
+        : suncalcSunrise;
+    const c = mhah.calendar(readAt, city.lat, city.lon);
+    // mhah reads one tithi per calendar day (at sunrise); for a specific instant, derive it from the Sun–Moon angle.
+    const tithi = tithiName(basis === "sunrise" ? c.Tithi.ino : tithiIndexAt(readAt));
     const nakshatraIdx = c.Nakshatra.ino % 27;
     const yogaIdx = c.Yoga.ino % 27;
     const karanaIdx = c.Karna.ino % 11;
-    const amantaMasaIdx = masaIndexFromMhah(c.Masa.ino);
+    const month = lunarMonthAt(readAt);
     const masaIdx = masaSystem === "purnimanta"
-      ? amantaToPurnimanta(amantaMasaIdx, tithi.paksha)
-      : amantaMasaIdx;
+      ? amantaToPurnimanta(month.amantaIdx, tithi.paksha)
+      : month.amantaIdx;
 
     // Next-day sunrise for night-choghadiya.
     const tomorrow = new Date(at.getTime() + 24 * 60 * 60 * 1000);
@@ -147,6 +159,7 @@ function computePanchangUncached(
       karana: KARANA_NAMES[karanaIdx],
       masa: MASA_NAMES[masaIdx],
       masaSystem,
+      adhika: month.adhika,
       choghadiyaDay: day,
       choghadiyaNight: night,
       choghadiyaNow: nowDay ?? nowNight,

@@ -407,6 +407,9 @@ main:has(.col-root) { max-width: 1340px; }
 .niche-arch circle { fill: color-mix(in srgb, var(--pc) 42%, #FBE7A6); stroke: none; opacity: .7; }
 .niche-obj { position: relative; width: 150px; height: 150px; z-index: 2; filter: drop-shadow(0 0 22px color-mix(in srgb, var(--pc) 42%, transparent)) drop-shadow(0 16px 20px rgba(0,0,0,.45)); }
 .niche.compact .niche-obj { width: 110px; height: 110px; }
+.niche-photo { position: absolute; inset: 14px 14px 10px; width: calc(100% - 28px); height: calc(100% - 24px); z-index: 2;
+  object-fit: cover; border-radius: 999px 999px 14px 14px / 46% 46% 14px 14px;
+  border: 1px solid color-mix(in srgb, var(--pc) 45%, #FBE7A6); box-shadow: 0 18px 30px -18px rgba(0,0,0,.6); }
 
 /* "Hold the piece" — the alcove tilts toward the cursor (vars set by TiltStage).
    Perspective lives on this decorative, click-through layer — NOT on .niche-stage
@@ -531,6 +534,7 @@ main:has(.col-root) { max-width: 1340px; }
     linear-gradient(180deg, color-mix(in srgb, var(--pc) 14%, #FFFCF4), color-mix(in srgb, var(--pc) 5%, #FFFBF0));
 }
 .qv-halo { position: absolute; left: 50%; top: 48%; transform: translate(-50%, -50%); width: 58%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--pc) 30%, transparent), transparent 66%); }
+.qv-photo { position: relative; z-index: 1; width: 100%; max-height: 320px; object-fit: contain; border-radius: 16px; }
 .qv-obj { position: relative; width: 200px; height: 200px; z-index: 1; filter: drop-shadow(0 16px 20px rgba(60, 40, 15, .25)); }
 .qv-info { padding: 36px 30px; display: flex; flex-direction: column; overflow: auto; }
 .qv-dir { font-size: 11px; letter-spacing: .8px; text-transform: uppercase; font-weight: 700; color: var(--pc-deep); display: inline-flex; align-items: baseline; gap: 7px; }

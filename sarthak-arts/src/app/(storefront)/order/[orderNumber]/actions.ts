@@ -4,7 +4,10 @@ import { prisma } from "@/lib/db";
 
 export async function submitReview(formData: FormData): Promise<void> {
   const orderItemId = Number(formData.get("orderItemId"));
-  const item = await prisma.orderItem.findUniqueOrThrow({ where: { id: orderItemId }, include: { order: true } });
+  const item = await prisma.orderItem.findUniqueOrThrow({ where: { id: orderItemId }, include: { order: { include: { status: true } }, review: true, returnRequest: true } });
+  // The item must belong to the order the visitor unlocked with its order number + email.
+  if (item.order.email.toLowerCase() !== String(formData.get("email") ?? "").trim().toLowerCase()) return;
+  if (item.productId === null || item.review || item.order.status.code !== "delivered") return;
   await prisma.review.create({
     data: {
       productId: item.productId,
@@ -21,7 +24,10 @@ export async function submitReview(formData: FormData): Promise<void> {
 
 export async function requestReturn(formData: FormData): Promise<void> {
   const orderItemId = Number(formData.get("orderItemId"));
-  const item = await prisma.orderItem.findUniqueOrThrow({ where: { id: orderItemId }, include: { order: true } });
+  const item = await prisma.orderItem.findUniqueOrThrow({ where: { id: orderItemId }, include: { order: { include: { status: true } }, review: true, returnRequest: true } });
+  // The item must belong to the order the visitor unlocked with its order number + email.
+  if (item.order.email.toLowerCase() !== String(formData.get("email") ?? "").trim().toLowerCase()) return;
+  if (item.returnRequest || item.order.status.code !== "delivered") return;
   await prisma.returnRequest.create({
     data: {
       orderItemId,

@@ -5,19 +5,20 @@ import { formatMoney } from "@/lib/money";
 import { Icon } from "../../../_ui/icons";
 import { ProductStatusPill, StockPill } from "../../../_ui/status";
 import { ImageUploader } from "../ImageUploader";
-import { updateProduct, addComposition, removeComposition } from "../actions";
+import { updateProduct, addComposition, removeComposition, deleteProduct } from "../actions";
+import { ConfirmSubmit } from "../DeleteControls";
 
 export const dynamic = "force-dynamic";
 
 export default async function EditProduct({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const productId = Number(id);
-  const [product, metals, gemstones, priceHistory] = await Promise.all([
+  const [product, metals, gemstones, priceHistory, allDirections] = await Promise.all([
     prisma.product.findUnique({
       where: { id: productId },
       include: {
         composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" } },
-        directions: { include: { direction: true } },
+        directions: { include: { direction: true }, orderBy: { directionId: "asc" } },
         images: { orderBy: { sortOrder: "asc" } },
         category: true,
       },
@@ -25,6 +26,7 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
     prisma.metal.findMany(),
     prisma.gemstone.findMany(),
     prisma.productPriceHistory.findMany({ where: { productId }, orderBy: { changedAt: "desc" }, take: 5 }),
+    prisma.direction.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }),
   ]);
   if (!product) notFound();
 
@@ -91,6 +93,14 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
                   <label>Stock quantity</label>
                   <input name="stockQuantity" type="number" defaultValue={product.stockQuantity} />
                 </div>
+              </div>
+              <div className="adm-field">
+                <label>Vāstu direction</label>
+                <div className="hint">Pieces are grouped by direction on the shop. Without one they appear under &ldquo;More pieces&rdquo;.</div>
+                <select name="directionId" defaultValue={product.directions[0]?.directionId ?? ""}>
+                  <option value="">— None —</option>
+                  {allDirections.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+                </select>
               </div>
               <div className="adm-field">
                 <label>Status</label>
@@ -184,6 +194,27 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="adm-card adm-card-pad" style={{ marginTop: 16, borderColor: "#EEC7B9" }}>
+            <div className="adm-card-title" style={{ marginBottom: 8 }}>Delete product</div>
+            <p style={{ fontSize: 12.5, color: "var(--ink-muted)", margin: "0 0 12px", lineHeight: 1.5 }}>
+              {product.status === "archived"
+                ? "Removes it from the database for good, with its photos. Past orders keep their item details."
+                : "Removes it from the shop and the database, with its photos. If it appears in past orders it is archived first; delete again to remove it for good."}
+            </p>
+            <form action={deleteProduct}>
+              <input type="hidden" name="id" value={product.id} />
+              <input type="hidden" name="returnStatus" value={product.status === "archived" ? "archived" : ""} />
+              <ConfirmSubmit
+                className="adm-btn adm-btn-ghost"
+                message={product.status === "archived"
+                  ? `Permanently delete “${product.name}”? This cannot be undone. Past orders keep their item details.`
+                  : `Delete “${product.name}”? This cannot be undone. If it appears in past orders it will be archived first.`}
+              >
+                <Icon name="trash" /> Delete product
+              </ConfirmSubmit>
+            </form>
           </div>
         </aside>
       </div>

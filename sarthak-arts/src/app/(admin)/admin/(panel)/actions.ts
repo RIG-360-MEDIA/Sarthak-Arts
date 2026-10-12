@@ -1,8 +1,10 @@
 "use server";
-import { cookies } from "next/headers";
+import { requireAdmin } from "@/lib/require-admin";
 import { redirect } from "next/navigation";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export async function logout(): Promise<void> {
-  (await cookies()).delete("admin_session");
+  await requireAdmin();
+  await (await supabaseServer()).auth.signOut();
   redirect("/admin/login");
 }

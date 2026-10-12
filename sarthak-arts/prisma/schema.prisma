@@ -127,7 +127,8 @@ model Setting {
 model User {
   id           Int        @id @default(autoincrement())
   email        String     @unique
-  passwordHash String?
+  passwordHash String? // legacy, unused since login moved to Supabase Auth
+  authId       String?    @unique
   name         String?
   phone        String?
   isGuest      Boolean    @default(false)
@@ -308,8 +309,8 @@ model OrderItem {
   id                  Int                @id @default(autoincrement())
   orderId             Int
   order               Order              @relation(fields: [orderId], references: [id])
-  productId           Int
-  product             Product            @relation(fields: [productId], references: [id])
+  productId           Int?               // null once the product itself is deleted; name/price/composition are kept here
+  product             Product?           @relation(fields: [productId], references: [id], onDelete: SetNull)
   name                String
   unitPriceMinor      Int
   quantity            Int
@@ -405,6 +406,9 @@ model Booking {
   customerName       String
   customerEmail      String
   customerPhone      String
+  birthDate          String?                  // "YYYY-MM-DD", as entered — no timezone shifting
+  birthTime          String?                  // "HH:MM" local time at birth; null if unknown
+  birthPlace         String?
   slotStart          DateTime
   status             String                   @default("booked")
   paymentStatus      String                   @default("pending")

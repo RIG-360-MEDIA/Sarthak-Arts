@@ -23,11 +23,15 @@ function fmt(d?: Date) {
 }
 
 export function OrderTimeline({ currentCode, dates }: { currentCode: string; dates: Record<string, Date | undefined> }) {
-  const ci = FULFILLMENT_FLOW.indexOf(currentCode);
+  const verifying = currentCode === "pending_payment";
+  const steps = verifying
+    ? [{ code: "pending_payment", label: "Verifying your payment", desc: "Your piece is reserved while we match your UPI payment." }, ...STEPS]
+    : STEPS;
+  const ci = verifying ? 0 : FULFILLMENT_FLOW.indexOf(currentCode);
 
   return (
     <div className="ot-timeline">
-      {STEPS.map((step, i) => {
+      {steps.map((step, i) => {
         const state = i < ci ? "done" : i === ci ? "current" : "";
         const reached = i <= ci;
         const when = fmt(dates[step.code]);

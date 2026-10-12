@@ -175,7 +175,7 @@ export default async function CollectionPage({
             current={currentAll}
           />
 
-          {(view.mode === "overview" ? view.overview.length === 0 : view.pieces.length === 0) ? (
+          {(view.mode === "overview" ? view.overview.length === 0 && view.unplaced.length === 0 : view.pieces.length === 0) ? (
             <div className="col-empty">
               <div className="om sa-deva" aria-hidden="true">ॐ</div>
               <h3>No pieces in this corner yet</h3>
@@ -210,6 +210,20 @@ export default async function CollectionPage({
                   </div>
                 </section>
               ))}
+              {view.unplaced.length > 0 && (
+                <section className="dir-section col-reveal">
+                  <div className="dir-strip">
+                    <span className="ds-medal" aria-hidden="true">◈</span>
+                    <span className="ds-title"><span className="ds-name serif">More pieces</span></span>
+                    <span className="ds-count">{view.unplaced.length} {view.unplaced.length === 1 ? "piece" : "pieces"}</span>
+                  </div>
+                  <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
+                    {view.unplaced.map((p) => (
+                      <NicheCard key={p.slug} p={p} compact={density === "compact"} />
+                    ))}
+                  </div>
+                </section>
+              )}
             </div>
           ) : (
             /* ── Filtered grid: database-paginated, constant page weight ── */

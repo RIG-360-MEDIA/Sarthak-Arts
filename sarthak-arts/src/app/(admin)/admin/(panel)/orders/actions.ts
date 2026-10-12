@@ -1,9 +1,12 @@
 "use server";
+import { requireAdmin } from "@/lib/require-admin";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { nextStatusCode, FULFILLMENT_FLOW } from "@/lib/orderflow";
+import { confirmUpiPayment, rejectUpiPayment } from "@/lib/orders";
 
 export async function advanceStatus(formData: FormData): Promise<void> {
+  await requireAdmin();
   const orderId = Number(formData.get("orderId"));
   const currentCode = String(formData.get("currentCode"));
   const nextCode = nextStatusCode(currentCode, FULFILLMENT_FLOW);
@@ -13,6 +16,22 @@ export async function advanceStatus(formData: FormData): Promise<void> {
     prisma.order.update({ where: { id: orderId }, data: { statusId: next.id } }),
     prisma.orderStatusHistory.create({ data: { orderId, statusId: next.id, note: `Advanced to ${next.name}` } }),
   ]);
+  revalidatePath(`/admin/orders/${orderId}`);
+  revalidatePath("/admin/orders");
+}
+
+export async function confirmPayment(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const orderId = Number(formData.get("orderId"));
+  await confirmUpiPayment(orderId);
+  revalidatePath(`/admin/orders/${orderId}`);
+  revalidatePath("/admin/orders");
+}
+
+export async function rejectPayment(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const orderId = Number(formData.get("orderId"));
+  await rejectUpiPayment(orderId);
   revalidatePath(`/admin/orders/${orderId}`);
   revalidatePath("/admin/orders");
 }

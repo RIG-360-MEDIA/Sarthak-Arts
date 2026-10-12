@@ -81,6 +81,7 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
               <Link href="/consultation" onClick={() => setOpen(false)}>Consultations</Link>
               <Link href="/about" onClick={() => setOpen(false)}>About</Link>
               <Link href="/home-audit" onClick={() => setOpen(false)}>The two-minute audit</Link>
+              <Link href="/account" onClick={() => setOpen(false)}>Account</Link>
             </nav>
 
             <div className="sa-drawer-cart">

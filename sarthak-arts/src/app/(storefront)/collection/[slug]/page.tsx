@@ -11,6 +11,7 @@ import { AddToCart } from "@/components/collection/AddToCart";
 import { WishlistHeart } from "@/components/hero/WishlistHeart";
 import { ProductGallery } from "./ProductGallery";
 import { ProductSectionNav } from "./ProductSectionNav";
+import { buyNow } from "./actions";
 import { GlossaryText } from "@/components/GlossaryText";
 import { isShopifyEnabled } from "@/lib/shopify/config";
 import { getShopifyProduct } from "@/lib/shopify/products";
@@ -122,6 +123,9 @@ async function renderShopifyProduct(slug: string) {
             </span>
           </div>
           <div className="pdp-actions">
+            {!p.variantId && p.inStock && (
+              <form action={buyNow} className="pdp-buy"><input type="hidden" name="productId" value={p.productId} /><button type="submit">Order now</button></form>
+            )}
             <AddToCart productId={p.productId} variantId={p.variantId} pieceName={p.name} inStock={p.inStock} />
             <WishlistHeart slug={p.slug} pieceName={p.name} />
           </div>
@@ -339,6 +343,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           )}
 
           <div className="pdp-actions">
+            {inStock && (
+              <form action={buyNow} className="pdp-buy"><input type="hidden" name="productId" value={product.id} /><button type="submit">Order now</button></form>
+            )}
             <AddToCart productId={product.id} pieceName={product.name} inStock={inStock} />
             <WishlistHeart slug={product.slug} pieceName={product.name} />
           </div>

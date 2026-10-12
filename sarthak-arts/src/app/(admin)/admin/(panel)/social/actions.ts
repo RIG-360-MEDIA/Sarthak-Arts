@@ -1,8 +1,10 @@
 "use server";
+import { requireAdmin } from "@/lib/require-admin";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 
 export async function pinPost(formData: FormData): Promise<void> {
+  await requireAdmin();
   await prisma.socialPost.create({
     data: {
       platform: String(formData.get("platform")),
@@ -16,6 +18,7 @@ export async function pinPost(formData: FormData): Promise<void> {
 }
 
 export async function unpinPost(formData: FormData): Promise<void> {
+  await requireAdmin();
   await prisma.socialPost.delete({ where: { id: Number(formData.get("postId")) } });
   revalidatePath("/admin/social");
   revalidatePath("/", "layout");

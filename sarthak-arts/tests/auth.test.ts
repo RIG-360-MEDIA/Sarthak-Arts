@@ -1,14 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { signSession, verifySession } from "@/lib/auth";
+import { resolveRole } from "@/lib/roles";
 
-describe("admin session", () => {
-  it("verifies what it signs", async () => {
-    const token = await signSession({ userId: 1, role: "admin" }, "test-secret-at-least-32-characters!!");
-    const payload = await verifySession(token, "test-secret-at-least-32-characters!!");
-    expect(payload?.userId).toBe(1);
+describe("resolveRole", () => {
+  it("reads admin and consultant from app_metadata", () => {
+    expect(resolveRole({ role: "admin" })).toBe("admin");
+    expect(resolveRole({ role: "consultant" })).toBe("consultant");
   });
-  it("rejects a token signed with another secret", async () => {
-    const token = await signSession({ userId: 1, role: "admin" }, "test-secret-at-least-32-characters!!");
-    expect(await verifySession(token, "another-secret-also-32-characters!!!")).toBeNull();
+  it("treats everyone else as a customer", () => {
+    expect(resolveRole({})).toBe("customer");
+    expect(resolveRole(null)).toBe("customer");
+    expect(resolveRole({ role: "superuser" })).toBe("customer");
   });
 });
