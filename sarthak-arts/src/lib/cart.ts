@@ -20,21 +20,33 @@ export async function getOrCreateCartId(): Promise<string> {
 export async function getCartWithItems(cartId: string) {
   return prisma.cart.findUnique({
     where: { id: cartId },
-    include: { items: { include: { product: true }, orderBy: { id: "asc" } } },
+    include: { items: { include: { product: true, variant: true }, orderBy: { id: "asc" } } },
   });
 }
 
-export async function addItem(cartId: string, productId: number): Promise<void> {
-  await prisma.cartItem.upsert({
-    where: { cartId_productId: { cartId, productId } },
-    update: { quantity: { increment: 1 } },
-    create: { cartId, productId, quantity: 1 },
-  });
+type LineLike = { product: { name: string; basePriceMinor: number }; variant: { label: string; priceMinor: number | null } | null };
+/** Price of one unit of a cart line: the option's own price, else the product's. */
+export const lineUnitPrice = (i: LineLike) => i.variant?.priceMinor ?? i.product.basePriceMinor;
+/** "Lotus Diya — Blue" for a line with an option. */
+export const lineName = (i: LineLike) => (i.variant ? `${i.product.name} — ${i.variant.label}` : i.product.name);
+
+/**
+ * Add one unit. A product with options needs one chosen (variantId); the same
+ * product+option stays on one line. Returns false if the option is invalid.
+ */
+export async function addItem(cartId: string, productId: number, variantId?: number | null): Promise<boolean> {
+  const variants = await prisma.productVariant.findMany({ where: { productId }, select: { id: true } });
+  const vId = variants.length === 0 ? null : variants.some((v) => v.id === variantId) ? variantId! : null;
+  if (variants.length > 0 && vId === null) return false;
+  const existing = await prisma.cartItem.findFirst({ where: { cartId, productId, variantId: vId } });
+  if (existing) await prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: { increment: 1 } } });
+  else await prisma.cartItem.create({ data: { cartId, productId, variantId: vId, quantity: 1 } });
+  return true;
 }
 
-export async function setItemQuantity(cartId: string, productId: number, quantity: number): Promise<void> {
-  if (quantity <= 0) await prisma.cartItem.deleteMany({ where: { cartId, productId } });
-  else await prisma.cartItem.update({ where: { cartId_productId: { cartId, productId } }, data: { quantity } });
+export async function setItemQuantity(cartId: string, itemId: number, quantity: number): Promise<void> {
+  if (quantity <= 0) await prisma.cartItem.deleteMany({ where: { id: itemId, cartId } });
+  else await prisma.cartItem.updateMany({ where: { id: itemId, cartId }, data: { quantity } });
 }
 
 /**

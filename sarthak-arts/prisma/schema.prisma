@@ -183,6 +183,8 @@ model Product {
   images          ProductImage[]
   priceHistory    ProductPriceHistory[]
   cartItems       CartItem[]
+  variants        ProductVariant[]
+  optionName      String?               // what the options are called on the product page, e.g. "Colour" or "Pattern"
   orderItems      OrderItem[]
   reviews         Review[]
   createdAt       DateTime              @default(now())
@@ -227,6 +229,23 @@ model ProductImage {
   url       String
   alt       String
   sortOrder Int     @default(0)
+  variantId Int?    // photo belongs to this option (colour/pattern); null = shown for every option
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+}
+
+/// An option of a product the customer chooses, e.g. a colour or pattern ("Blue", "Red").
+model ProductVariant {
+  id            Int            @id @default(autoincrement())
+  productId     Int
+  product       Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  label         String
+  priceMinor    Int?           // null = the product's price
+  stockQuantity Int            @default(0)
+  sortOrder     Int            @default(0)
+  images        ProductImage[]
+  cartItems     CartItem[]
+
+  @@index([productId])
 }
 
 model ProductPriceHistory {
@@ -254,9 +273,9 @@ model CartItem {
   cart      Cart    @relation(fields: [cartId], references: [id])
   productId Int
   product   Product @relation(fields: [productId], references: [id])
+  variantId Int?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
   quantity  Int     @default(1)
-
-  @@unique([cartId, productId])
 }
 
 model CheckoutIntent {
@@ -312,6 +331,8 @@ model OrderItem {
   productId           Int?               // null once the product itself is deleted; name/price/composition are kept here
   product             Product?           @relation(fields: [productId], references: [id], onDelete: SetNull)
   name                String
+  variantId           Int?               // chosen option (no FK: options can be removed later)
+  variantLabel        String?
   unitPriceMinor      Int
   quantity            Int
   compositionSnapshot Json

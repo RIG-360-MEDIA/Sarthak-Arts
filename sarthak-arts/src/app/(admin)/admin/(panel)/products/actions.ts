@@ -54,6 +54,7 @@ export async function updateProduct(formData: FormData): Promise<void> {
       stockQuantity: Number(formData.get("stockQuantity") ?? 0),
       status: String(formData.get("status") ?? "draft"),
       isFinalSale: formData.get("isFinalSale") === "on",
+      ...(formData.has("optionName") ? { optionName: String(formData.get("optionName")).trim().slice(0, 30) || null } : {}),
     },
   });
 
@@ -182,4 +183,53 @@ export async function bulkProductAction(formData: FormData): Promise<void> {
   revalidatePath("/collection");
   revalidatePath("/");
   redirect(`/admin/products?updated=${count}&to=${intent}${tab}`);
+}
+
+// ── Options (colour / pattern) ──────────────────────────────────────────────
+
+function optionFields(formData: FormData) {
+  const label = String(formData.get("label") ?? "").trim().slice(0, 60);
+  const priceRaw = String(formData.get("priceRupees") ?? "").trim();
+  const price = priceRaw === "" ? null : Math.round(Number(priceRaw) * 100);
+  const stock = Math.max(0, Math.floor(Number(formData.get("stockQuantity") ?? 0)) || 0);
+  return { label, priceMinor: price !== null && Number.isFinite(price) && price >= 0 ? price : null, stockQuantity: stock };
+}
+
+export async function addVariant(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const productId = Number(formData.get("productId"));
+  const f = optionFields(formData);
+  if (f.label) {
+    const count = await prisma.productVariant.count({ where: { productId } });
+    await prisma.productVariant.create({ data: { productId, ...f, sortOrder: count } });
+  }
+  revalidatePath(`/admin/products/${productId}`);
+  redirect(`/admin/products/${productId}?flash=option-saved#options`);
+}
+
+export async function updateVariant(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const productId = Number(formData.get("productId"));
+  const f = optionFields(formData);
+  if (f.label) await prisma.productVariant.updateMany({ where: { id: Number(formData.get("variantId")), productId }, data: f });
+  revalidatePath(`/admin/products/${productId}`);
+  redirect(`/admin/products/${productId}?flash=option-saved#options`);
+}
+
+export async function removeVariant(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const productId = Number(formData.get("productId"));
+  // Photos stay on the product (unassigned); carts holding this option drop it.
+  await prisma.productVariant.deleteMany({ where: { id: Number(formData.get("variantId")), productId } });
+  revalidatePath(`/admin/products/${productId}`);
+  redirect(`/admin/products/${productId}?flash=option-removed#options`);
+}
+
+export async function setImageVariant(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const productId = Number(formData.get("productId"));
+  const variantId = Number(formData.get("variantId")) || null;
+  if (variantId && !(await prisma.productVariant.findFirst({ where: { id: variantId, productId } }))) return;
+  await prisma.productImage.updateMany({ where: { id: Number(formData.get("imageId")), productId }, data: { variantId } });
+  revalidatePath(`/admin/products/${productId}`);
 }

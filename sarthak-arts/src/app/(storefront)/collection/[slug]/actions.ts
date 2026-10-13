@@ -20,6 +20,6 @@ export async function addToCart(formData: FormData): Promise<void> {
 export async function buyNow(formData: FormData): Promise<void> {
   const productId = Number(formData.get("productId"));
   const cartId = await getOrCreateCartId();
-  await addItem(cartId, productId);
-  redirect("/checkout");
+  const ok = await addItem(cartId, productId, Number(formData.get("variantId")) || null);
+  redirect(ok ? "/checkout" : "/collection");
 }

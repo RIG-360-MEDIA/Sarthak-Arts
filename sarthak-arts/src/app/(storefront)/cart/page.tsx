@@ -3,7 +3,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import "./cart.css";
 import { prisma } from "@/lib/db";
-import { getCartWithItems, cartSubtotalMinor } from "@/lib/cart";
+import { getCartWithItems, cartSubtotalMinor, lineUnitPrice, lineName } from "@/lib/cart";
 import { formatMoney } from "@/lib/money";
 import { glyphForCategory, gradForMetal, realPhoto } from "@/lib/collection";
 import { visualFor } from "@/lib/direction-visual";
@@ -22,7 +22,7 @@ const CART_PRODUCT_INCLUDE = {
   category: true,
   composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" as const } },
   directions: { include: { direction: true } },
-  images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
+  images: { orderBy: { sortOrder: "asc" as const } },
 };
 function loadCartProducts(ids: number[]) {
   return prisma.product.findMany({ where: { id: { in: ids } }, include: CART_PRODUCT_INCLUDE });
@@ -170,7 +170,7 @@ export default async function CartPage() {
     );
   }
 
-  const subtotal = cartSubtotalMinor(rawItems.map((i) => ({ unitPriceMinor: i.product.basePriceMinor, quantity: i.quantity })));
+  const subtotal = cartSubtotalMinor(rawItems.map((i) => ({ unitPriceMinor: lineUnitPrice(i), quantity: i.quantity })));
   const byId = new Map(products.map((p) => [p.id, p]));
 
   const items = rawItems.map((i) => {
@@ -182,13 +182,13 @@ export default async function CartPage() {
     const weightG = metal ? p?.composition.find((c) => c.metal)?.weightGrams : null;
     const spec = [metal?.name, weightG != null ? `${Number(weightG)}g` : null].filter(Boolean).join(" · ");
     return {
-      id: i.id, productId: i.productId, slug: p?.slug ?? "", name: i.product.name,
-      quantity: i.quantity, stock: p?.stockQuantity ?? 99,
-      unitMinor: i.product.basePriceMinor, lineMinor: i.product.basePriceMinor * i.quantity,
+      id: i.id, productId: i.productId, slug: p?.slug ?? "", name: lineName(i),
+      quantity: i.quantity, stock: i.variant ? i.variant.stockQuantity : p?.stockQuantity ?? 99,
+      unitMinor: lineUnitPrice(i), lineMinor: lineUnitPrice(i) * i.quantity,
       glyph: glyphForCategory(p?.category.code ?? "vessel"),
       metalGrad: gradForMetal(metal?.name), gemHex: gem?.accentHex ?? "#B8863E",
-      photoUrl: realPhoto(p?.images[0]?.url),
-      dirName: p?.directions[0]?.direction.name ?? "Center", deity: v.deity, deva: v.deva,
+      photoUrl: realPhoto((p?.images.find((im) => i.variantId && im.variantId === i.variantId) ?? p?.images[0])?.url),
+      dirName: p?.directions[0]?.direction.name ?? "All directions", deity: v.deity, deva: v.deva,
       color: v.color, colorDeep: v.colorDeep, spec,
     };
   });
@@ -230,7 +230,7 @@ export default async function CartPage() {
                   <div className="citem-side">
                     <span className="citem-total">{formatMoney(it.lineMinor, "INR")}</span>
                     <form action={updateQuantity} className="citem-qtyform">
-                      <input type="hidden" name="productId" value={it.productId} />
+                      <input type="hidden" name="itemId" value={it.id} />
                       <div className="qty-stepper">
                         <button name="quantity" value={it.quantity - 1} aria-label="Decrease quantity">−</button>
                         <span>{it.quantity}</span>

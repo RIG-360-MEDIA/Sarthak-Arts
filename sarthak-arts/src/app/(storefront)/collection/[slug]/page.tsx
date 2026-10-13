@@ -124,7 +124,7 @@ async function renderShopifyProduct(slug: string) {
           </div>
           <div className="pdp-actions">
             {!p.variantId && p.inStock && (
-              <form action={buyNow} className="pdp-buy"><input type="hidden" name="productId" value={p.productId} /><button type="submit">Order now</button></form>
+              <form action={buyNow} className="pdp-order"><input type="hidden" name="productId" value={p.productId} /><button type="submit">Order now</button></form>
             )}
             <AddToCart productId={p.productId} variantId={p.variantId} pieceName={p.name} inStock={p.inStock} />
             <WishlistHeart slug={p.slug} pieceName={p.name} />
@@ -204,8 +204,11 @@ async function renderShopifyProduct(slug: string) {
   );
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function ProductPage({ params, searchParams }: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ v?: string }>;
+}) {
+  const [{ slug }, { v: optParam }] = await Promise.all([params, searchParams]);
   if (isShopifyEnabled()) return await renderShopifyProduct(slug);
   const product = await prisma.product.findUnique({
     where: { slug },
@@ -216,9 +219,21 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       purposes: { include: { purpose: true } },
       category: true,
       deity: true,
+      variants: { orderBy: [{ sortOrder: "asc" }, { id: "asc" }], include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } } },
     },
   });
   if (!product || product.status !== "live") notFound();
+
+  // Options (colour / pattern): the chosen one (?v=id) drives photos, price, stock and the buy buttons.
+  const options = product.variants;
+  const chosen = options.length
+    ? options.find((o) => String(o.id) === optParam) ?? options.find((o) => o.stockQuantity > 0) ?? options[0]
+    : null;
+  const unitPriceMinor = chosen?.priceMinor ?? product.basePriceMinor;
+  const stockQty = chosen ? chosen.stockQuantity : product.stockQuantity;
+  const galleryImages = chosen
+    ? [...product.images.filter((i) => i.variantId === chosen.id), ...product.images.filter((i) => i.variantId === null)]
+    : product.images;
 
   const dir = product.directions[0]?.direction;
   const dirNames = product.directions.map((d) => d.direction.name);
@@ -238,9 +253,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       : Promise.resolve([]),
   ]);
 
-  const priceDisplay = formatDisplay(product.basePriceMinor, currency.code, currency.ratePerBase);
-  const inStock = (product.stockQuantity ?? 0) > 0;
-  const low = inStock && product.stockQuantity <= 3;
+  const priceDisplay = formatDisplay(unitPriceMinor, currency.code, currency.ratePerBase);
+  const inStock = (stockQty ?? 0) > 0;
+  const low = inStock && stockQty <= 3;
 
   const metalLine = product.composition.find((c) => c.metal);
   const gemLine = product.composition.find((c) => c.gemstone);
@@ -305,7 +320,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <section className="pdp-hero">
         <div className="pdp-gallery-col">
           <ProductGallery
-            images={product.images.filter((i) => !i.url.includes("/placeholder/")).map((i) => ({ url: i.url, alt: i.alt }))}
+            key={chosen?.id ?? 0}
+            images={galleryImages.filter((i) => !i.url.includes("/placeholder/")).map((i) => ({ url: i.url, alt: i.alt }))}
             glyph={glyphForCategory(product.category.code)}
             metalGrad={gradForMetal(primaryMetal)}
             gemHex={gemLine?.gemstone?.accentHex ?? "#B8863E"}
@@ -333,7 +349,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="pdp-price-row">
             <span className="pdp-price">{priceDisplay}</span>
             <span className={`pdp-stock${!inStock ? " sold" : low ? " low" : ""}`}>
-              <span className="dot" />{!inStock ? "Made to order" : low ? `Only ${product.stockQuantity} ready to ship` : "In stock"}
+              <span className="dot" />{!inStock ? "Made to order" : low ? `Only ${stockQty} ready to ship` : "In stock"}
             </span>
           </div>
 
@@ -344,11 +360,39 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           )}
 
+          {options.length > 0 && chosen && (
+            <div className="pdp-options">
+              <div className="pdp-options-lbl">{product.optionName || "Colour"}: <b>{chosen.label}</b></div>
+              <div className="pdp-options-row">
+                {options.map((o) => {
+                  const img = o.images[0]?.url ?? product.images.find((i) => i.variantId === null)?.url;
+                  return (
+                    <Link
+                      key={o.id}
+                      href={`/collection/${product.slug}?v=${o.id}`}
+                      scroll={false}
+                      replace
+                      className={`pdp-opt${o.id === chosen.id ? " on" : ""}${o.stockQuantity <= 0 ? " out" : ""}`}
+                      aria-current={o.id === chosen.id ? "true" : undefined}
+                      aria-label={`${o.label}${o.stockQuantity <= 0 ? " (sold out)" : ""}`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element -- option thumbnail, already optimised */}
+                      {img ? <img src={img} alt="" loading="lazy" /> : <span className="pdp-opt-blank" />}
+                      <span className="pdp-opt-name">{o.label}</span>
+                      <span className="pdp-opt-price">{formatDisplay(o.priceMinor ?? product.basePriceMinor, currency.code, currency.ratePerBase)}</span>
+                      {o.stockQuantity <= 0 && <span className="pdp-opt-out">Sold out</span>}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="pdp-actions">
             {inStock && (
-              <form action={buyNow} className="pdp-buy"><input type="hidden" name="productId" value={product.id} /><button type="submit">Order now</button></form>
+              <form action={buyNow} className="pdp-order"><input type="hidden" name="productId" value={product.id} />{chosen && <input type="hidden" name="variantId" value={chosen.id} />}<button type="submit">Order now</button></form>
             )}
-            <AddToCart productId={product.id} pieceName={product.name} inStock={inStock} />
+            <AddToCart productId={product.id} optionId={chosen?.id} pieceName={chosen ? `${product.name} — ${chosen.label}` : product.name} inStock={inStock} />
             <WishlistHeart slug={product.slug} pieceName={product.name} />
           </div>
 

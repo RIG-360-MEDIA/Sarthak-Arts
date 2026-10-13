@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import "./checkout.css";
 import { prisma } from "@/lib/db";
-import { getCartWithItems, cartSubtotalMinor } from "@/lib/cart";
+import { getCartWithItems, cartSubtotalMinor, lineUnitPrice, lineName } from "@/lib/cart";
 import { computeTotals, zoneConfigForCountry } from "@/lib/totals";
 import { formatMoney } from "@/lib/money";
 import { glyphForCategory, gradForMetal, realPhoto } from "@/lib/collection";
@@ -34,7 +34,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const products = await prisma.product.findMany({ where: { id: { in: cart.items.map((i) => i.productId) } }, include: CART_INCLUDE });
   const byId = new Map(products.map((p) => [p.id, p]));
 
-  const subtotal = cartSubtotalMinor(cart.items.map((i) => ({ unitPriceMinor: i.product.basePriceMinor, quantity: i.quantity })));
+  const subtotal = cartSubtotalMinor(cart.items.map((i) => ({ unitPriceMinor: lineUnitPrice(i), quantity: i.quantity })));
   const zone = await zoneConfigForCountry("IN");
   const totals = computeTotals(subtotal, zone);
   const remaining = Math.max(0, FREE_SHIP_MINOR - subtotal);
@@ -47,8 +47,8 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     const metal = p?.composition.find((c) => c.metal)?.metal;
     const gem = p?.composition.find((c) => c.gemstone)?.gemstone;
     return {
-      id: i.id, name: i.product.name, quantity: i.quantity,
-      lineMinor: i.product.basePriceMinor * i.quantity,
+      id: i.id, name: lineName(i), quantity: i.quantity,
+      lineMinor: lineUnitPrice(i) * i.quantity,
       glyph: glyphForCategory(p?.category.code ?? "vessel"),
       metalGrad: gradForMetal(metal?.name), gemHex: gem?.accentHex ?? "#B8863E",
       photoUrl: realPhoto(p?.images[0]?.url),

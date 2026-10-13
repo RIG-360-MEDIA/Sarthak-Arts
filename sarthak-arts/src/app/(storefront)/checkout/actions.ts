@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { getCartWithItems, cartSubtotalMinor } from "@/lib/cart";
+import { getCartWithItems, cartSubtotalMinor, lineUnitPrice, lineName } from "@/lib/cart";
 import { computeTotals, zoneConfigForCountry } from "@/lib/totals";
 import { randomUUID } from "crypto";
 import { createGatewayOrder } from "@/lib/payments/razorpay";
@@ -27,8 +27,10 @@ export async function beginCheckout(formData: FormData): Promise<void> {
 
   const items = cart.items.map((i) => ({
     productId: i.productId,
-    name: i.product.name,
-    unitPriceMinor: i.product.basePriceMinor,
+    variantId: i.variantId,
+    variantLabel: i.variant?.label ?? null,
+    name: lineName(i),
+    unitPriceMinor: lineUnitPrice(i),
     quantity: i.quantity,
   }));
   const subtotal = cartSubtotalMinor(items);

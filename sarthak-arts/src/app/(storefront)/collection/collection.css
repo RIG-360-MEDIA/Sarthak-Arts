@@ -638,3 +638,5 @@ main:has(.col-root) { max-width: 1340px; }
   .col-root *, .col-root *::before, .col-root *::after { animation: none !important; transition: none !important; }
   .niche-scene { transform: none !important; }
 }
+
+.qv-choose { display: block; text-align: center; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; text-decoration: none; color: #fff; background: var(--pc-deep, var(--gold-deep)); }

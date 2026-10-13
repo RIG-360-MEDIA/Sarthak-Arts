@@ -4,7 +4,7 @@ import { getOrCreateCartId, setItemQuantity, bumpCartCountCache } from "@/lib/ca
 
 export async function updateQuantity(formData: FormData): Promise<void> {
   const cartId = await getOrCreateCartId();
-  await setItemQuantity(cartId, Number(formData.get("productId")), Number(formData.get("quantity")));
+  await setItemQuantity(cartId, Number(formData.get("itemId")), Number(formData.get("quantity")));
   await bumpCartCountCache(); // keep the nav cart badge in sync
   revalidatePath("/cart");
 }

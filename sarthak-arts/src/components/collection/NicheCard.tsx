@@ -14,7 +14,7 @@ import { TiltStage } from "./TiltStage";
  */
 export function NicheCard({ p, compact }: { p: PieceCard; compact?: boolean }) {
   const style = { ["--pc" as string]: p.color, ["--pc-deep" as string]: p.colorDeep } as React.CSSProperties;
-  const spec = [p.primaryMetalName, p.weightG != null ? `${p.weightG}g` : null, p.isSample ? "sample" : null]
+  const spec = [p.primaryMetalName, p.weightG != null ? `${p.weightG}g` : null, p.optionCount ? `${p.optionCount} options` : null, p.isSample ? "sample" : null]
     .filter(Boolean).join(" · ");
 
   const low = p.inStock && p.stockQuantity > 0 && p.stockQuantity <= 3;

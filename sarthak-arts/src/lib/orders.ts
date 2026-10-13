@@ -4,7 +4,7 @@ import { generateCertificates } from "@/lib/certificate";
 import { sendOrderConfirmation } from "@/lib/email";
 import { getSetting } from "@/lib/settings";
 
-type SnapshotItem = { productId: number; name: string; unitPriceMinor: number; quantity: number; composition: unknown };
+type SnapshotItem = { productId: number; variantId?: number | null; variantLabel?: string | null; name: string; unitPriceMinor: number; quantity: number; composition: unknown };
 
 /** Big-order perk: an order over the threshold grants one free Vastu placement consultation. */
 async function grantConsultationIfEligible(tx: Prisma.TransactionClient, order: { id: number; email: string; totalMinor: number }) {
@@ -47,6 +47,8 @@ async function createOrderFromIntent(
         items: {
           create: items.map((i) => ({
             productId: i.productId,
+            variantId: i.variantId ?? null,
+            variantLabel: i.variantLabel ?? null,
             name: i.name,
             unitPriceMinor: i.unitPriceMinor,
             quantity: i.quantity,
@@ -71,12 +73,14 @@ async function createOrderFromIntent(
     // Reserve the stock now (also for unverified UPI orders, so a piece can't be sold twice).
     // updateMany so a since-deleted product can't abort the order; a second pass clamps to zero.
     for (const i of items) {
-      await tx.product.updateMany({ where: { id: i.productId }, data: { stockQuantity: { decrement: i.quantity } } });
+      if (i.variantId) await tx.productVariant.updateMany({ where: { id: i.variantId }, data: { stockQuantity: { decrement: i.quantity } } });
+      else await tx.product.updateMany({ where: { id: i.productId }, data: { stockQuantity: { decrement: i.quantity } } });
     }
     await tx.product.updateMany({
       where: { id: { in: items.map((i) => i.productId) }, stockQuantity: { lt: 0 } },
       data: { stockQuantity: 0 },
     });
+    await tx.productVariant.updateMany({ where: { productId: { in: items.map((i) => i.productId) }, stockQuantity: { lt: 0 } }, data: { stockQuantity: 0 } });
 
     await tx.checkoutIntent.update({ where: { id: intent.id }, data: { status: "completed" } });
     if (intent.cartId) await tx.cartItem.deleteMany({ where: { cartId: intent.cartId } });
@@ -156,7 +160,8 @@ export async function rejectUpiPayment(orderId: number): Promise<void> {
     await tx.orderStatusHistory.create({ data: { orderId, statusId: cancelled.id, note: "UPI payment not received — order cancelled" } });
     for (const i of order.items) {
       if (i.productId === null) continue;
-      await tx.product.updateMany({ where: { id: i.productId }, data: { stockQuantity: { increment: i.quantity } } });
+      if (i.variantId) await tx.productVariant.updateMany({ where: { id: i.variantId }, data: { stockQuantity: { increment: i.quantity } } });
+      else await tx.product.updateMany({ where: { id: i.productId }, data: { stockQuantity: { increment: i.quantity } } });
     }
   });
 }
