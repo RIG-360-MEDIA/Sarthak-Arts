@@ -214,7 +214,7 @@ export default async function CollectionPage({
                 <section className="dir-section col-reveal">
                   <div className="dir-strip">
                     <span className="ds-medal" aria-hidden="true">◈</span>
-                    <span className="ds-title"><span className="ds-name serif">More pieces</span></span>
+                    <span className="ds-title"><span className="ds-name serif">For every direction</span></span>
                     <span className="ds-count">{view.unplaced.length} {view.unplaced.length === 1 ? "piece" : "pieces"}</span>
                   </div>
                   <div className={`col-wall${density === "compact" ? " compact" : ""}`}>

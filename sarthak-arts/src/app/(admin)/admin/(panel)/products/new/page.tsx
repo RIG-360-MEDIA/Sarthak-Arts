@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Icon } from "../../../_ui/icons";
 import { createProduct } from "../actions";
+import { DirectionPicker } from "../DirectionPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -55,11 +56,9 @@ export default async function NewProduct() {
               <label>Category<span className="req">*</span></label>
               <select name="categoryId" required>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
             </div>
-            <div className="adm-field">
-              <label>Vāstu direction</label>
-              <select name="directionId"><option value="">— None —</option>{directions.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}</select>
-            </div>
+            <span />
           </div>
+          <DirectionPicker directions={directions} selected={[]} />
           <div className="adm-field-row">
             <div className="adm-field">
               <label>Price<span className="req">*</span></label>

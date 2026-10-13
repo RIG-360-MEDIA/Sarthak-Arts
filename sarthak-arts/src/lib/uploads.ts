@@ -13,7 +13,7 @@ import { storage } from "@/lib/storage";
  * `/api/images/<path>` (which is locked to that prefix, so it can never reach
  * private objects like certificates).
  */
-const MAX_BYTES = 8 * 1024 * 1024; // 8 MB per photo
+const MAX_BYTES = 4 * 1024 * 1024; // 4 MB per photo (Vercel request limit is 4.5 MB)
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 const PUBLIC_PREFIX = "/api/images/";
 const KEY_PREFIX = "images/";
@@ -23,7 +23,7 @@ export type SavedImage = { url: string; width: number; height: number };
 /** Validate, optimise and persist one uploaded image. `folder` e.g. "products/12". */
 export async function saveImage(file: File, folder: string): Promise<SavedImage> {
   if (!file || file.size === 0) throw new Error("No file was uploaded.");
-  if (file.size > MAX_BYTES) throw new Error("That image is larger than 8 MB — please use a smaller file.");
+  if (file.size > MAX_BYTES) throw new Error("That image is larger than 4 MB — please use a smaller file.");
   if (file.type && !ALLOWED.includes(file.type)) throw new Error("Please upload a JPG, PNG or WebP image.");
 
   const input = Buffer.from(await file.arrayBuffer());

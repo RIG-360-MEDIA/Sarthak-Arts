@@ -87,6 +87,18 @@ body:has(.cons-root) {
 .cons-oval:nth-child(3) { animation-delay: 0s; }
 .cons-oval .obj { width: 58%; height: 58%; filter: drop-shadow(0 0 18px rgba(232,168,28,.4)) drop-shadow(0 14px 18px rgba(0,0,0,.5)); }
 .cons-oval .oval-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 3; }
+.cons-oval.solo { animation: none; width: 52%; box-shadow: 0 30px 60px -30px rgba(0,0,0,.7), 0 0 0 6px rgba(232,168,28,.08); }
+
+/* Full description of the chosen consultation (owner-editable) */
+.cons-details { margin-top: 30px; padding: 30px 32px; background: var(--chalk-raised); border: 1px solid color-mix(in srgb, var(--gold) 25%, var(--line)); border-radius: 20px; }
+.cons-details .rt-title { font-size: 28px; font-weight: 500; color: var(--ink); margin: 0 0 4px; line-height: 1.2; }
+.cons-details .rt-sub { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); margin: 0 0 18px; }
+.cons-details .rt-h { font-size: 19px; font-weight: 500; color: var(--ink); margin: 24px 0 8px; }
+.cons-details p { font-size: 15px; line-height: 1.7; color: var(--ink-muted); margin: 0 0 12px; max-width: 72ch; }
+.cons-details p b { color: var(--ink); }
+.rt-btn { display: inline-flex; margin-top: 10px; padding: 13px 22px; border-radius: 12px; font-weight: 700; font-size: 14px; text-decoration: none; color: #23150c;
+  background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 62%, var(--gold-deep)); }
+@media (max-width: 640px) { .cons-details { padding: 22px 18px; } .cons-details .rt-title { font-size: 23px; } }
 
 /* Card shuffle: three capsules stacked at the centre. The front card holds
    upfront, then lifts and flicks to the back of the stack while the ones behind

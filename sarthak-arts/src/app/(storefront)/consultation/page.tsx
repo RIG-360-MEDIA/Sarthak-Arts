@@ -7,7 +7,8 @@ import { freeSlots } from "@/lib/booking";
 import { createBooking } from "./actions";
 import { PlaceInput } from "@/components/PlaceInput";
 import { PieceDefs, PieceRender } from "@/components/collection/Piece";
-import { OvalImage } from "./OvalImage";
+import { RichText } from "@/components/RichText";
+import { getBlock } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +38,10 @@ const FAQS: [string, string][] = [
 
 export default async function ConsultationPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
   const { type } = await searchParams;
-  const types = await prisma.consultationType.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } });
+  const [types, photo] = await Promise.all([
+    prisma.consultationType.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }),
+    getBlock("image.consultant"),
+  ]);
   const active = types.find((t) => t.code === type) ?? null;
 
   // Real next-available slot for the honest "next opening" pill.
@@ -90,17 +94,11 @@ export default async function ConsultationPage({ searchParams }: { searchParams:
             </div>
           </div>
           <div className="cons-hero-right">
-            <div className="cons-oval">
-              <PieceRender glyph="yantra" metalGrad="gSilver" gemHex="#B8863E" className="obj" />
-              <OvalImage src="/consultants/1.jpg" alt="Vāstu consultant" />
-            </div>
-            <div className="cons-oval">
-              <PieceRender glyph="kalash" metalGrad="gCopper" gemHex="#B8863E" className="obj" />
-              <OvalImage src="/consultants/2.jpg" alt="Vāstu consultant" />
-            </div>
-            <div className="cons-oval">
-              <PieceRender glyph="pyramid" metalGrad="gBrass" gemHex="#B8863E" className="obj" />
-              <OvalImage src="/consultants/3.jpg" alt="Vāstu consultant" />
+            <div className="cons-oval solo">
+              {photo.body
+                // eslint-disable-next-line @next/next/no-img-element -- owner-uploaded photo, already optimised
+                ? <img className="oval-photo" src={photo.body} alt={photo.title ?? "Dr. Sapna Shree"} />
+                : <PieceRender glyph="yantra" metalGrad="gSilver" gemHex="#B8863E" className="obj" />}
             </div>
           </div>
         </div>
@@ -133,9 +131,14 @@ export default async function ConsultationPage({ searchParams }: { searchParams:
         )}
 
         {/* ── Booking panel ── */}
-        {active && (
+        {active && (<>
+          {active.details && (
+            <article className="cons-details">
+              <RichText text={active.details} buttonHref="#book-form" />
+            </article>
+          )}
           <div id="book" className="cons-book">
-            <form action={createBooking} className="cons-book-main">
+            <form id="book-form" action={createBooking} className="cons-book-main">
               <input type="hidden" name="consultationTypeId" value={active.id} />
               <div className="cons-book-sel">{active.name} · {active.durationMinutes} min</div>
               <div className="cons-book-name serif">Reserve your time</div>
@@ -199,7 +202,7 @@ export default async function ConsultationPage({ searchParams }: { searchParams:
               </p>
             </aside>
           </div>
-        )}
+        </>)}
       </section>
 
       {/* ── How it works ── */}

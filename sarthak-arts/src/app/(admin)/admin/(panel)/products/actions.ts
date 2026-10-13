@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { saveImage, deleteImageByUrl } from "@/lib/uploads";
 import { deleteProducts } from "@/lib/product-delete";
+import { pickedDirectionIds } from "./DirectionPicker";
 
 function slugify(s: string): string {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -29,8 +30,8 @@ export async function createProduct(formData: FormData): Promise<void> {
       categoryId,
     },
   });
-  const directionId = Number(formData.get("directionId"));
-  if (directionId) await prisma.productDirection.create({ data: { productId: product.id, directionId } });
+  const directionIds = pickedDirectionIds(formData);
+  if (directionIds.length) await prisma.productDirection.createMany({ data: directionIds.map((directionId) => ({ productId: product.id, directionId })) });
   redirect(`/admin/products/${product.id}?flash=created`);
 }
 
@@ -56,15 +57,14 @@ export async function updateProduct(formData: FormData): Promise<void> {
     },
   });
 
-  if (formData.has("directionId")) {
-    const directionId = Number(formData.get("directionId"));
-    const current = await prisma.productDirection.findMany({ where: { productId: id }, orderBy: { directionId: "asc" } });
-    // The form shows one direction; only rewrite when the owner picks a different one.
-    if ((current[0]?.directionId ?? 0) !== directionId) {
-      await prisma.productDirection.deleteMany({ where: { productId: id } });
-      if (directionId) await prisma.productDirection.create({ data: { productId: id, directionId } });
-    }
+  if (formData.has("directionIds")) {
+    const directionIds = pickedDirectionIds(formData);
+    await prisma.$transaction([
+      prisma.productDirection.deleteMany({ where: { productId: id } }),
+      prisma.productDirection.createMany({ data: directionIds.map((directionId) => ({ productId: id, directionId })) }),
+    ]);
   }
+
 
   if (newPriceMinor !== existing.basePriceMinor) {
     await prisma.productPriceHistory.create({

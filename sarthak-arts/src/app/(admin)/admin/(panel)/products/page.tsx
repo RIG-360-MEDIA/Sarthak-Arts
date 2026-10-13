@@ -111,7 +111,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
                       </div>
                     </td>
                     <td>{p.category.name}</td>
-                    <td>{p.directions[0]?.direction.name ?? "—"}</td>
+                    <td>{p.directions.length ? p.directions.map((d) => d.direction.name).join(", ") : "All directions"}</td>
                     <td className="num right">{formatMoney(p.basePriceMinor, p.baseCurrency)}</td>
                     <td><StockPill qty={p.stockQuantity} low={p.stockQuantity <= threshold} /></td>
                     <td><ProductStatusPill status={p.status} /></td>

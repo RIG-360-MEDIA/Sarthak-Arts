@@ -221,6 +221,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product || product.status !== "live") notFound();
 
   const dir = product.directions[0]?.direction;
+  const dirNames = product.directions.map((d) => d.direction.name);
+  const dirLabel = dirNames.length ? dirNames.join(", ") : "All directions";
   const code = dir?.code ?? "center";
   const v = visualFor(code);
 
@@ -314,7 +316,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <aside className="pdp-buy">
           <span className="pdp-eyebrow">
             <span className="sa-deva">{v.deva}</span> {v.deity} · {v.iast}
-            {dir && <span className="pdp-eyebrow-dir">{dir.name} corner</span>}
+            <span className="pdp-eyebrow-dir">{dirNames.length === 0 ? "Suits every direction" : `${dirLabel} corner${dirNames.length > 1 ? "s" : ""}`}</span>
           </span>
           <h1 className="pdp-title serif">{product.name}</h1>
           <p className="pdp-lede">{product.positioningLine}</p>
@@ -389,8 +391,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <span className="pdp-kicker">Vāstu placement</span>
             <h2 className="pdp-place-title serif">Where it belongs</h2>
             <p className="pdp-place-lead">
-              This piece is cast for the <b>{dir?.name ?? "Brahmasthān"}</b> corner
-              {dir ? <> — <span className="sa-deva">{v.deva}</span> {v.deity}&rsquo;s quarter, the <span className="sa-deva">{v.iast}</span> zone.</> : "."}
+              {dirNames.length === 0
+                ? <>This piece suits <b>every direction</b> of the home — place it wherever it feels right.</>
+                : dirNames.length > 1
+                  ? <>This piece is made for the <b>{dirLabel}</b> corners.</>
+                  : <>This piece is cast for the <b>{dirLabel}</b> corner — <span className="sa-deva">{v.deva}</span> {v.deity}&rsquo;s quarter, the <span className="sa-deva">{v.iast}</span> zone.</>}
             </p>
             <div className="pdp-place-facts">
               {dir?.element && <span className="ppf"><span className="ppf-k">Element</span>{dir.element}</span>}
@@ -411,7 +416,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
           <div className="pdp-place-compass">
             <PlacementCompass litCode={code} color={accent} colorDeep={accentDeep} />
-            <span className="pdp-compass-cap">{dir?.name ?? "Center"} · {v.iast}</span>
+            <span className="pdp-compass-cap">{dirNames.length === 1 ? `${dirLabel} · ${v.iast}` : dirLabel}</span>
           </div>
         </div>
       </section>
@@ -436,7 +441,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   </td>
                 </tr>
               ))}
-              <tr><th>Direction</th><td>{dir?.name ?? "Center"} · <span className="sa-deva">{v.iast}</span></td></tr>
+              <tr><th>Direction</th><td>{dirLabel}{dirNames.length === 1 && <> · <span className="sa-deva">{v.iast}</span></>}</td></tr>
               <tr><th>Category</th><td>{product.category.name}</td></tr>
             </tbody>
           </table>

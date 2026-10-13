@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./about.css";
+import { getBlock } from "@/lib/content";
+import { RichText } from "@/components/RichText";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +43,7 @@ const PROMISES: { big: React.ReactNode; label: string; deva?: boolean }[] = [
 ];
 
 export default async function About() {
+  const [founder, photo] = await Promise.all([getBlock("about.founder"), getBlock("image.consultant")]);
   return (
     <div className="about-root">
       {/* ── Hero ── */}
@@ -66,6 +69,21 @@ export default async function About() {
           </p>
         </div>
       </header>
+
+      {/* ── Founder (owner-editable: Admin → Content → "about.founder" and "image.consultant") ── */}
+      {founder.body && (
+        <section className="about-section about-founder">
+          {photo.body && (
+            // eslint-disable-next-line @next/next/no-img-element -- owner-uploaded photo, already optimised
+            <img className="about-founder-photo" src={photo.body} alt={founder.title ?? "Dr. Sapna Shree"} />
+          )}
+          <div className="about-founder-text">
+            <span className="about-kicker">The guide behind Sarthak Arts</span>
+            {founder.title && <h2 className="about-h serif">{founder.title}</h2>}
+            <RichText text={founder.body} buttonHref="/consultation" />
+          </div>
+        </section>
+      )}
 
       {/* ── Belief ── */}
       <section className="about-section about-belief">

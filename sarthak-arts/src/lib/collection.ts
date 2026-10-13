@@ -142,7 +142,7 @@ function toPiece(
     primaryMetalName: metalLine?.metal?.name ?? null,
     weightG: metalLine?.weightGrams != null ? Number(metalLine.weightGrams) : null,
     directionCode: code,
-    directionName: primaryDir?.name ?? "Center",
+    directionName: primaryDir?.name ?? "All directions",
     directionIast: v.iast,
     directionDeity: v.deity,
     directionDeva: v.deva,
