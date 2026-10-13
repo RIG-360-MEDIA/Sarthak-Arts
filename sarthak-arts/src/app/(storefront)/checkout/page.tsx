@@ -25,9 +25,11 @@ const CART_INCLUDE = {
   images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
 };
 
-export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const { error } = await searchParams;
-  const cartId = (await cookies()).get("cart_id")?.value;
+export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ error?: string; buy?: string }> }) {
+  const { error, buy } = await searchParams;
+  // ?buy=<basket> = "Order now" for a single piece; otherwise the shopper's cart.
+  const buyNowId = buy && /^[a-z0-9]{20,40}$/.test(buy) ? buy : null;
+  const cartId = buyNowId ?? (await cookies()).get("cart_id")?.value;
   const cart = cartId ? await getCartWithItems(cartId) : null;
   if (!cart || cart.items.length === 0) redirect("/cart");
 
@@ -76,6 +78,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         )}
 
         <form action={beginCheckout} className="co-layout">
+          {buyNowId && <input type="hidden" name="buy" value={buyNowId} />}
           {/* Details */}
           <div>
             <section className="co-section">
@@ -109,7 +112,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
               </div>
             </section>
 
-            <Link href="/cart" className="co-back">← Back to cart</Link>
+            <Link href={buyNowId ? "/collection" : "/cart"} className="co-back">{buyNowId ? "← Keep shopping" : "← Back to cart"}</Link>
           </div>
 
           {/* Summary */}
