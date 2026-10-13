@@ -17,6 +17,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Photo uploads go through server actions (default limit 1 MB). Vercel caps request bodies at 4.5 MB.
+  experimental: { serverActions: { bodySizeLimit: "4mb" } },
   poweredByHeader: false,
   images: {
     qualities: [75, 90],

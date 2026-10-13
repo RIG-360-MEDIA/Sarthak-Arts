@@ -360,6 +360,7 @@ model ConsultationType {
   code               String                    @unique
   name               String
   description        String
+  details            String?                   // long text shown beside the booking form; "## " = heading, "[ Button ]" = book button
   durationMinutes    Int
   feeMinor           Int
   creditsTowardOrder Boolean                   @default(false)

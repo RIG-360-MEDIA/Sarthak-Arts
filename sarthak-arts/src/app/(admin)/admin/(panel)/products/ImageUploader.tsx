@@ -43,7 +43,7 @@ export function ImageUploader({ productId, images }: { productId: number; images
         >
           <span className="up-ic"><Icon name={uploading ? "box" : "upload"} /></span>
           <b>{uploading ? "Uploading…" : "Drag a photo here, or click to choose"}</b>
-          <span>JPG, PNG or WebP · up to 8 MB · we optimise it for you</span>
+          <span>JPG, PNG or WebP · up to 4 MB · we optimise it for you</span>
           <input type="file" name="file" accept="image/*" onChange={(e) => e.currentTarget.value && submit()} />
         </label>
       </form>

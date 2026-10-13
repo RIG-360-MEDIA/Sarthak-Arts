@@ -103,3 +103,12 @@ body:has(.about-root) {
 @media (prefers-reduced-motion: reduce) {
   .about-root *, .about-root *::before, .about-root *::after { animation: none !important; transition: none !important; }
 }
+
+/* Founder — Dr. Sapna Shree */
+.about-founder { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 44px; align-items: start; }
+.about-founder-photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 160px 160px 18px 18px;
+  border: 1px solid color-mix(in srgb, var(--gold, #E8A81C) 35%, transparent); box-shadow: 0 30px 60px -32px rgba(60,40,15,.55); position: sticky; top: 96px; }
+.about-founder .rt-sub { font-size: 12.5px; letter-spacing: 1.4px; text-transform: uppercase; font-weight: 700; color: var(--gold-deep, #B47D0C); margin: 0 0 6px; }
+.about-founder .rt-h { font-size: 22px; font-weight: 500; margin: 30px 0 10px; }
+.about-founder .rich-text p { line-height: 1.75; margin: 0 0 14px; }
+@media (max-width: 820px) { .about-founder { grid-template-columns: 1fr; gap: 24px; } .about-founder-photo { position: static; max-width: 300px; } }

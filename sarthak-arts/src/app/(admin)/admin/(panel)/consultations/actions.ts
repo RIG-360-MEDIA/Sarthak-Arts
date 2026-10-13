@@ -1,6 +1,7 @@
 "use server";
 import { requireAdmin } from "@/lib/require-admin";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ensureAuthUser } from "@/lib/supabase/admin";
 
@@ -48,4 +49,30 @@ export async function markComplete(formData: FormData): Promise<void> {
   await requireAdmin();
   await prisma.booking.update({ where: { id: Number(formData.get("bookingId")) }, data: { status: "completed" } });
   revalidatePath("/admin/consultations");
+}
+
+/** Edit a consultation type: name, fee, duration and the texts shown on the Consultation page. */
+export async function updateConsultationType(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = Number(formData.get("id"));
+  const fee = Number(formData.get("feeRupees"));
+  const minutes = Number(formData.get("durationMinutes"));
+  const name = String(formData.get("name") ?? "").trim().slice(0, 80);
+  if (!name || !Number.isFinite(fee) || fee < 0 || !Number.isInteger(minutes) || minutes < 5 || minutes > 480) {
+    redirect("/admin/consultations?flash=type-error#types");
+  }
+  await prisma.consultationType.update({
+    where: { id },
+    data: {
+      name,
+      feeMinor: Math.round(fee * 100),
+      durationMinutes: minutes,
+      description: String(formData.get("description") ?? "").trim().slice(0, 300),
+      details: String(formData.get("details") ?? "").trim() || null,
+      active: formData.get("active") === "on",
+    },
+  });
+  revalidatePath("/admin/consultations");
+  revalidatePath("/consultation");
+  redirect("/admin/consultations?flash=type-saved#types");
 }

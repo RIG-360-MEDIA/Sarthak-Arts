@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { Icon } from "../../_ui/icons";
 import { BookingStatusPill } from "../../_ui/status";
-import { addSlot, removeSlot, markComplete, setConsultantAccess } from "./actions";
+import { addSlot, removeSlot, markComplete, setConsultantAccess, updateConsultationType } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,8 @@ function fmtSlot(d: Date) {
   return new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }).format(d);
 }
 
-export default async function AdminConsultations() {
+export default async function AdminConsultations({ searchParams }: { searchParams: Promise<{ flash?: string }> }) {
+  const { flash } = await searchParams;
   const [bookings, types, availability, consultant] = await Promise.all([
     prisma.booking.findMany({ include: { consultationType: true, consultant: true }, orderBy: { slotStart: "asc" } }),
     prisma.consultationType.findMany({ orderBy: { displayOrder: "asc" } }),
@@ -26,6 +27,36 @@ export default async function AdminConsultations() {
           <p className="lead">Bookings, availability and your consultant&apos;s access. Times are shown in IST.</p>
         </div>
       </div>
+
+      {/* ── Consultation types: what customers see and pay ── */}
+      <section id="types" style={{ display: "grid", gap: 16, marginBottom: 28 }}>
+        {flash === "type-saved" && <div className="adm-note info"><Icon name="checkCircle" /> Saved — the Consultation page is updated.</div>}
+        {flash === "type-error" && <div className="adm-note brass"><Icon name="alert" /> Please give a name, a fee and a duration between 5 and 480 minutes.</div>}
+        {types.map((t) => (
+          <details key={t.id} className="adm-fieldset" style={{ margin: 0 }}>
+            <summary style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", listStyle: "none" }}>
+              <h3 style={{ margin: 0 }}>{t.name}</h3>
+              <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>₹{(t.feeMinor / 100).toLocaleString("en-IN")} · {t.durationMinutes} min · {t.active ? "shown" : "hidden"} — <u>edit</u></span>
+            </summary>
+            <form action={updateConsultationType} className="adm-form" style={{ marginTop: 14 }}>
+              <input type="hidden" name="id" value={t.id} />
+              <div className="adm-field"><label>Name</label><input name="name" required maxLength={80} defaultValue={t.name} /></div>
+              <div className="adm-field-row">
+                <div className="adm-field"><label>Fee</label><div className="adm-input-prefix"><span className="pfx">₹</span><input name="feeRupees" type="number" min={0} step="1" required defaultValue={t.feeMinor / 100} /></div></div>
+                <div className="adm-field"><label>Duration (minutes)</label><input name="durationMinutes" type="number" min={5} max={480} required defaultValue={t.durationMinutes} /></div>
+              </div>
+              <div className="adm-field"><label>Short line</label><div className="hint">Shown on the card where customers choose a consultation.</div><input name="description" maxLength={300} defaultValue={t.description} /></div>
+              <div className="adm-field">
+                <label>Full details</label>
+                <div className="hint">Shown beside the booking form. Start a line with ## for a heading, ### for a small subtitle; write &ldquo;Label: text&rdquo; for a bold label; put [ Book now ] on its own line for a button.</div>
+                <textarea name="details" rows={14} defaultValue={t.details ?? ""} />
+              </div>
+              <label className="adm-check"><input type="checkbox" name="active" defaultChecked={t.active} /><span className="c-body"><b>Show on the website</b><span>Untick to hide this consultation.</span></span></label>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}><button className="adm-btn adm-btn-primary" type="submit"><Icon name="check" /> Save</button></div>
+            </form>
+          </details>
+        ))}
+      </section>
 
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 320px", gap: 24, alignItems: "start" }} className="adm-prod-grid">
         <div style={{ display: "grid", gap: 16 }}>

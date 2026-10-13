@@ -7,6 +7,7 @@ import { ProductStatusPill, StockPill } from "../../../_ui/status";
 import { ImageUploader } from "../ImageUploader";
 import { updateProduct, addComposition, removeComposition, deleteProduct } from "../actions";
 import { ConfirmSubmit } from "../DeleteControls";
+import { DirectionPicker } from "../DirectionPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
         <div>
           <div className="eyebrow"><Link href="/admin/products" style={{ color: "inherit", textDecoration: "none" }}>← All products</Link></div>
           <h1 style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>{product.name} <ProductStatusPill status={product.status} /></h1>
-          <p className="lead">{product.category.name}{product.directions[0] ? ` · ${product.directions[0].direction.name}` : ""}</p>
+          <p className="lead">{product.category.name}{` · ${product.directions.length ? product.directions.map((d) => d.direction.name).join(", ") : "All directions"}`}</p>
         </div>
         {product.status === "live" && (
           <a className="adm-btn adm-btn-ghost" href={`/collection/${product.slug}`} target="_blank" rel="noopener noreferrer"><Icon name="eye" /> View live</a>
@@ -94,14 +95,7 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
                   <input name="stockQuantity" type="number" defaultValue={product.stockQuantity} />
                 </div>
               </div>
-              <div className="adm-field">
-                <label>Vāstu direction</label>
-                <div className="hint">Pieces are grouped by direction on the shop. Without one they appear under &ldquo;More pieces&rdquo;.</div>
-                <select name="directionId" defaultValue={product.directions[0]?.directionId ?? ""}>
-                  <option value="">— None —</option>
-                  {allDirections.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </select>
-              </div>
+              <DirectionPicker directions={allDirections} selected={product.directions.map((d) => d.directionId)} />
               <div className="adm-field">
                 <label>Status</label>
                 <div className="hint">Draft is hidden from shoppers. Live is on your storefront. Archived is retired.</div>
