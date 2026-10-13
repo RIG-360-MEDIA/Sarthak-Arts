@@ -5,7 +5,7 @@ import { formatMoney } from "@/lib/money";
 import { Icon } from "../../../_ui/icons";
 import { ProductStatusPill, StockPill } from "../../../_ui/status";
 import { ImageUploader } from "../ImageUploader";
-import { updateProduct, addComposition, removeComposition, deleteProduct } from "../actions";
+import { updateProduct, addComposition, removeComposition, deleteProduct, addVariant, updateVariant, removeVariant } from "../actions";
 import { ConfirmSubmit } from "../DeleteControls";
 import { DirectionPicker } from "../DirectionPicker";
 
@@ -22,6 +22,7 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
         directions: { include: { direction: true }, orderBy: { directionId: "asc" } },
         images: { orderBy: { sortOrder: "asc" } },
         category: true,
+        variants: { orderBy: [{ sortOrder: "asc" }, { id: "asc" }] },
       },
     }),
     prisma.metal.findMany(),
@@ -97,6 +98,11 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
               </div>
               <DirectionPicker directions={allDirections} selected={product.directions.map((d) => d.directionId)} />
               <div className="adm-field">
+                <label>What are the options called?</label>
+                <div className="hint">Shown on the product page above the choices, e.g. &ldquo;Colour: Blue&rdquo;. Only used if you add options below.</div>
+                <input name="optionName" maxLength={30} defaultValue={product.optionName ?? ""} placeholder="Colour" />
+              </div>
+              <div className="adm-field">
                 <label>Status</label>
                 <div className="hint">Draft is hidden from shoppers. Live is on your storefront. Archived is retired.</div>
                 <select name="status" defaultValue={product.status}>
@@ -121,11 +127,53 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
           <fieldset className="adm-fieldset" style={{ marginTop: 18 }}>
             <div className="adm-fieldset-head"><h3>Photos</h3><p>The first photo is the cover shown on your storefront. Add as many as you like.</p></div>
             <div style={{ marginTop: 14 }}>
-              <ImageUploader productId={product.id} images={product.images.map((i) => ({ id: i.id, url: i.url, alt: i.alt }))} />
+              <ImageUploader productId={product.id} images={product.images.map((i) => ({ id: i.id, url: i.url, alt: i.alt, variantId: i.variantId }))} options={product.variants.map((o) => ({ id: o.id, label: o.label }))} />
             </div>
           </fieldset>
 
           {/* Composition */}
+          <fieldset className="adm-fieldset" id="options">
+            <div className="adm-fieldset-head"><h3>Options (colour / pattern)</h3><p>Sell the same piece in different colours or patterns. Customers choose on the product page; each option has its own stock and, if you like, its own price. Then use the box under each photo to say which option it shows.</p></div>
+            {product.variants.length > 0 && (
+              <div className="adm-table-scroll" style={{ marginBottom: 12 }}>
+                <table className="adm-table">
+                  <thead><tr><th>Option</th><th>Price (blank = product price)</th><th>Stock</th><th className="right" aria-label="Actions" /></tr></thead>
+                  <tbody>
+                    {product.variants.map((o) => (
+                      <tr key={o.id}>
+                        <td colSpan={4} style={{ padding: 0 }}>
+                          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", padding: "8px 12px" }}>
+                            <form action={updateVariant} style={{ display: "contents" }}>
+                              <input type="hidden" name="productId" value={product.id} />
+                              <input type="hidden" name="variantId" value={o.id} />
+                              <input name="label" defaultValue={o.label} required maxLength={60} aria-label="Option name" style={{ width: 150 }} />
+                              <div className="adm-input-prefix" style={{ width: 150 }}><span className="pfx">₹</span><input name="priceRupees" type="number" min={0} step="0.01" defaultValue={o.priceMinor != null ? o.priceMinor / 100 : ""} placeholder={String(product.basePriceMinor / 100)} aria-label="Price" /></div>
+                              <input name="stockQuantity" type="number" min={0} defaultValue={o.stockQuantity} aria-label="Stock" style={{ width: 90 }} />
+                              <button className="adm-btn adm-btn-ghost adm-btn-sm" type="submit">Save</button>
+                            </form>
+                            <form action={removeVariant}>
+                              <input type="hidden" name="productId" value={product.id} />
+                              <input type="hidden" name="variantId" value={o.id} />
+                              <ConfirmSubmit className="adm-btn adm-btn-ghost adm-btn-sm" message={`Remove the option "${o.label}"? Its photos stay on the product.`}>Remove</ConfirmSubmit>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <form action={addVariant} style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
+              <input type="hidden" name="productId" value={product.id} />
+              <div className="adm-field" style={{ margin: 0 }}><label>New option</label><input name="label" required maxLength={60} placeholder="e.g. Blue" style={{ width: 150 }} /></div>
+              <div className="adm-field" style={{ margin: 0 }}><label>Price (optional)</label><div className="adm-input-prefix" style={{ width: 150 }}><span className="pfx">₹</span><input name="priceRupees" type="number" min={0} step="0.01" placeholder={String(product.basePriceMinor / 100)} /></div></div>
+              <div className="adm-field" style={{ margin: 0 }}><label>Stock</label><input name="stockQuantity" type="number" min={0} defaultValue={0} style={{ width: 90 }} /></div>
+              <button className="adm-btn adm-btn-ghost" type="submit"><Icon name="plus" /> Add option</button>
+            </form>
+            {product.variants.length > 0 && <p className="hint" style={{ marginTop: 10 }}>With options, stock is counted per option — the product&apos;s own stock field is not used.</p>}
+          </fieldset>
+
           <fieldset className="adm-fieldset">
             <div className="adm-fieldset-head"><h3>Composition</h3><p>What the piece is made of — used in the listing and the authenticity certificate. Separate from price.</p></div>
             {product.composition.length > 0 && (

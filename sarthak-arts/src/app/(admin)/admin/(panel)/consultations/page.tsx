@@ -29,14 +29,21 @@ export default async function AdminConsultations({ searchParams }: { searchParam
       </div>
 
       {/* ── Consultation types: what customers see and pay ── */}
-      <section id="types" style={{ display: "grid", gap: 16, marginBottom: 28 }}>
+      <section id="types" style={{ display: "grid", gap: 12, marginBottom: 28 }}>
+        <div>
+          <h2 style={{ fontSize: 18, margin: "0 0 4px" }}>Fees &amp; descriptions</h2>
+          <p style={{ fontSize: 13, color: "var(--ink-muted)", margin: 0 }}>What customers see and pay on the Consultation page. Click <b>Edit fee &amp; content</b> to change one.</p>
+        </div>
         {flash === "type-saved" && <div className="adm-note info"><Icon name="checkCircle" /> Saved — the Consultation page is updated.</div>}
         {flash === "type-error" && <div className="adm-note brass"><Icon name="alert" /> Please give a name, a fee and a duration between 5 and 480 minutes.</div>}
         {types.map((t) => (
           <details key={t.id} className="adm-fieldset" style={{ margin: 0 }}>
             <summary style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", listStyle: "none" }}>
               <h3 style={{ margin: 0 }}>{t.name}</h3>
-              <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>₹{(t.feeMinor / 100).toLocaleString("en-IN")} · {t.durationMinutes} min · {t.active ? "shown" : "hidden"} — <u>edit</u></span>
+              <span style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                <span style={{ fontSize: 13.5, color: "var(--ink-muted)" }}><b style={{ color: "var(--ink)" }}>₹{(t.feeMinor / 100).toLocaleString("en-IN")}</b> · {t.durationMinutes} min · {t.active ? "shown" : "hidden"}</span>
+                <span className="adm-btn adm-btn-primary adm-btn-sm">Edit fee &amp; content</span>
+              </span>
             </summary>
             <form action={updateConsultationType} className="adm-form" style={{ marginTop: 14 }}>
               <input type="hidden" name="id" value={t.id} />

@@ -1,5 +1,6 @@
 "use server";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/db";
 import { addItem, getOrCreateCartId } from "@/lib/cart";
 import { isShopifyEnabled } from "@/lib/shopify/config";
 
@@ -17,9 +18,13 @@ export async function addToCart(formData: FormData): Promise<void> {
 }
 
 /** "Order now": put the piece in the cart and go straight to checkout. */
+/**
+ * "Order now": checkout for just this piece. It gets its own one-item basket,
+ * so the shopper's cart (Add to cart) is left exactly as it was.
+ */
 export async function buyNow(formData: FormData): Promise<void> {
   const productId = Number(formData.get("productId"));
-  const cartId = await getOrCreateCartId();
-  await addItem(cartId, productId);
-  redirect("/checkout");
+  const basket = await prisma.cart.create({ data: {} });
+  const ok = await addItem(basket.id, productId, Number(formData.get("variantId")) || null);
+  redirect(ok ? `/checkout?buy=${basket.id}` : "/collection");
 }

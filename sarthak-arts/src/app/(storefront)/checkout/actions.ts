@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { getCartWithItems, cartSubtotalMinor } from "@/lib/cart";
+import { getCartWithItems, cartSubtotalMinor, lineUnitPrice, lineName } from "@/lib/cart";
 import { computeTotals, zoneConfigForCountry } from "@/lib/totals";
 import { randomUUID } from "crypto";
 import { createGatewayOrder } from "@/lib/payments/razorpay";
@@ -11,7 +11,9 @@ import { paymentMode } from "@/lib/payments/upi";
 import { validateCheckout } from "@/lib/validation";
 
 export async function beginCheckout(formData: FormData): Promise<void> {
-  const cartId = (await cookies()).get("cart_id")?.value;
+  const buy = String(formData.get("buy") ?? "");
+  const buyNowId = /^[a-z0-9]{20,40}$/.test(buy) ? buy : null;
+  const cartId = buyNowId ?? (await cookies()).get("cart_id")?.value;
   const cart = cartId ? await getCartWithItems(cartId) : null;
   if (!cart || cart.items.length === 0) redirect("/cart");
 
@@ -22,13 +24,15 @@ export async function beginCheckout(formData: FormData): Promise<void> {
     line1: formData.get("line1"), city: formData.get("city"), state: formData.get("state"),
     postalCode: formData.get("postalCode"), country: formData.get("country"),
   });
-  if (!parsed.ok) redirect("/checkout?error=1");
+  if (!parsed.ok) redirect(`/checkout?error=1${buyNowId ? `&buy=${buyNowId}` : ""}`);
   const input = parsed.value;
 
   const items = cart.items.map((i) => ({
     productId: i.productId,
-    name: i.product.name,
-    unitPriceMinor: i.product.basePriceMinor,
+    variantId: i.variantId,
+    variantLabel: i.variant?.label ?? null,
+    name: lineName(i),
+    unitPriceMinor: lineUnitPrice(i),
     quantity: i.quantity,
   }));
   const subtotal = cartSubtotalMinor(items);
@@ -84,7 +88,7 @@ export async function beginCheckout(formData: FormData): Promise<void> {
     intentId = intent.id;
   } catch (err) {
     console.error("[checkout] could not start payment:", err instanceof Error ? err.message : err);
-    redirect("/checkout?error=payment");
+    redirect(`/checkout?error=payment${buyNowId ? `&buy=${buyNowId}` : ""}`);
   }
 
   redirect(`/checkout/pay/${intentId}`);

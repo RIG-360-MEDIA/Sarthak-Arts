@@ -67,6 +67,8 @@ export type PieceCard = {
   categoryCode: string;
   /** Owner-uploaded cover photo; null means draw the illustrated piece instead. */
   photoUrl?: string | null;
+  /** Number of options (colours/patterns); cards send these to the product page to choose. */
+  optionCount?: number;
 };
 
 export type DirectionView = DirectionCard & {
@@ -105,6 +107,7 @@ const PIECE_INCLUDE = {
   composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" as const } },
   directions: { include: { direction: true } },
   images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
+  variants: { select: { priceMinor: true, stockQuantity: true } },
 } as const;
 
 /** Seeded placeholder art isn't a real photo — keep the illustration for those. */
@@ -132,7 +135,8 @@ function toPiece(
     productId: p.id,
     slug: p.slug,
     name: p.name,
-    priceDisplay: formatDisplay(p.basePriceMinor, currency.code, currency.ratePerBase),
+    priceDisplay: (p.variants.length > 1 && new Set(p.variants.map((o) => o.priceMinor ?? p.basePriceMinor)).size > 1 ? "From " : "")
+      + formatDisplay(p.variants.length ? Math.min(...p.variants.map((o) => o.priceMinor ?? p.basePriceMinor)) : p.basePriceMinor, currency.code, currency.ratePerBase),
     priceMinor: p.basePriceMinor,
     createdAtMs: p.createdAt.getTime(),
     glyph: glyphForCategory(p.category.code),
@@ -151,8 +155,9 @@ function toPiece(
     colorDeep: v.colorDeep,
     positioningLine: p.positioningLine,
     placementNote: p.placementNote,
-    inStock: (p.stockQuantity ?? 0) > 0,
-    stockQuantity: p.stockQuantity ?? 0,
+    inStock: p.variants.length ? p.variants.some((o) => o.stockQuantity > 0) : (p.stockQuantity ?? 0) > 0,
+    stockQuantity: p.variants.length ? p.variants.reduce((n, o) => n + Math.max(0, o.stockQuantity), 0) : p.stockQuantity ?? 0,
+    optionCount: p.variants.length,
     isSample: p.isSample,
     categoryCode: p.category.code,
     photoUrl: realPhoto(p.images[0]?.url),

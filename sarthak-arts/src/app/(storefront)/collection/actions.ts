@@ -10,13 +10,13 @@ import { isShopifyEnabled } from "@/lib/shopify/config";
  * In headless Shopify mode the piece is added to the Shopify cart by its
  * variant id; otherwise to the built-in cart by product id.
  */
-export async function addToCartInline(productId: number, variantId?: string): Promise<void> {
+export async function addToCartInline(productId: number, variantId?: string, optionId?: number): Promise<void> {
   if (isShopifyEnabled() && variantId) {
     const { addToSessionCart } = await import("@/lib/shopify/cart-session");
     await addToSessionCart(variantId, 1);
     return;
   }
   const cartId = await getOrCreateCartId();
-  await addItem(cartId, productId);
+  if (!(await addItem(cartId, productId, optionId ?? null))) throw new Error("Please choose an option first.");
   await bumpCartCountCache();
 }

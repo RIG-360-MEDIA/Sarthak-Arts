@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "../../_ui/icons";
-import { uploadProductImage, removeProductImage, makePrimaryImage } from "./actions";
+import { uploadProductImage, removeProductImage, makePrimaryImage, setImageVariant } from "./actions";
 
 /**
  * ImageUploader — drag-and-drop (or click) photo upload for a product, plus a
@@ -9,9 +9,9 @@ import { uploadProductImage, removeProductImage, makePrimaryImage } from "./acti
  * first photo is the cover shown on the storefront. Uploads go through the
  * `uploadProductImage` server action, which optimises the file automatically.
  */
-type Img = { id: number; url: string; alt: string };
+type Img = { id: number; url: string; alt: string; variantId?: number | null };
 
-export function ImageUploader({ productId, images }: { productId: number; images: Img[] }) {
+export function ImageUploader({ productId, images, options = [] }: { productId: number; images: Img[]; options?: { id: number; label: string }[] }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [drag, setDrag] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -59,6 +59,16 @@ export function ImageUploader({ productId, images }: { productId: number; images
                 <input type="hidden" name="productId" value={productId} />
                 <button className="del" type="submit" aria-label="Remove photo" title="Remove photo"><Icon name="trash" /></button>
               </form>
+              {options.length > 0 && (
+                <form action={setImageVariant} className="adm-thumb-opt">
+                  <input type="hidden" name="imageId" value={img.id} />
+                  <input type="hidden" name="productId" value={productId} />
+                  <select name="variantId" defaultValue={img.variantId ?? ""} onChange={(e) => e.currentTarget.form?.requestSubmit()} aria-label="Which option is this photo of?" title="Which option is this photo of?">
+                    <option value="">All options</option>
+                    {options.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+                  </select>
+                </form>
+              )}
               {i !== 0 && (
                 <form action={makePrimaryImage} style={{ position: "absolute", left: 5, bottom: 5 }}>
                   <input type="hidden" name="imageId" value={img.id} />
