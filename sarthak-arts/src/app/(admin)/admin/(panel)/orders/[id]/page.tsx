@@ -15,7 +15,7 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
   const { id } = await params;
   const order = await prisma.order.findUnique({
     where: { id: Number(id) },
-    include: { items: true, status: true, certificates: true, payments: true, statusHistory: { include: { status: true }, orderBy: { createdAt: "asc" } } },
+    include: { items: { include: { product: { include: { images: { orderBy: { sortOrder: "asc" } } } } } }, status: true, certificates: true, payments: true, statusHistory: { include: { status: true }, orderBy: { createdAt: "asc" } } },
   });
   if (!order) notFound();
   const addr = order.shippingAddress as { name: string; line1: string; city: string; state: string; postalCode: string; country: string };
@@ -58,7 +58,18 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
               <table className="adm-table">
                 <tbody>
                   {order.items.map((i) => (
-                    <tr key={i.id}><td className="r-strong">{i.name} <span style={{ color: "var(--ink-faint)" }}>× {i.quantity}</span></td><td className="num right">{formatMoney(i.unitPriceMinor * i.quantity, order.currency)}</td></tr>
+                    <tr key={i.id}><td className="r-strong">
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
+                        {(() => {
+                          // The chosen option's own photo, else the product cover.
+                          const imgs = i.product?.images ?? [];
+                          const url = (imgs.find((im) => i.variantId && im.variantId === i.variantId) ?? imgs[0])?.url;
+                          // eslint-disable-next-line @next/next/no-img-element -- admin thumbnail, already optimised
+                          return url ? <img src={url} alt="" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8, border: "1px solid var(--line)" }} /> : null;
+                        })()}
+                        <span>{i.name} <span style={{ color: "var(--ink-faint)" }}>× {i.quantity}</span></span>
+                      </span>
+                    </td><td className="num right">{formatMoney(i.unitPriceMinor * i.quantity, order.currency)}</td></tr>
                   ))}
                   <tr><td style={{ color: "var(--ink-muted)" }}>Shipping</td><td className="num right">{formatMoney(order.shippingMinor, order.currency)}</td></tr>
                   <tr><td style={{ color: "var(--ink-muted)" }}>Tax</td><td className="num right">{formatMoney(order.taxMinor, order.currency)}</td></tr>
