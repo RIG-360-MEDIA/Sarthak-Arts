@@ -4,7 +4,6 @@ import "./collection.css";
 import { getCollectionView, parseFilters, toQuery, PAGE_SIZE } from "@/lib/collection";
 import { PieceDefs } from "@/components/collection/Piece";
 import { NicheCard } from "@/components/collection/NicheCard";
-import { CollectionCompass } from "@/components/collection/CollectionCompass";
 import { Toolbar } from "@/components/collection/Toolbar";
 import { BackToTop } from "@/components/collection/BackToTop";
 import { RitualCalendar } from "@/components/collection/RitualCalendar";
@@ -14,12 +13,6 @@ export const metadata: Metadata = {
   title: "The Collection — Handcrafted Vāstu Pieces by Direction | Sarthak Arts",
   description:
     "Browse handcrafted Vāstu pieces in copper, brass and silver, arranged by the nine directions of the home. Each piece is built for one zone and certified per piece.",
-};
-
-/** Compass-point abbreviation for the direction-strip medallions. */
-const DIR_ABBR: Record<string, string> = {
-  north: "N", northeast: "NE", east: "E", southeast: "SE",
-  south: "S", southwest: "SW", west: "W", northwest: "NW", center: "ॐ",
 };
 
 export default async function CollectionPage({
@@ -109,13 +102,12 @@ export default async function CollectionPage({
         </svg>
         <div className="col-hero-in">
           <span className="col-eyebrow">Sarthak Arts · The Collection</span>
-          <h1>Nine directions,<br /><em>one for every corner of home.</em></h1>
+          <h1>Made by hand,<br /><em>placed with intention.</em></h1>
           <p className="sub">
-            Each piece is cast in copper, brass or silver for a single direction of the home — under its guardian Dikpāla, and marked by its colour. Turn the wheel to find yours.
+            Murtis and Vāstu pieces in copper, brass and silver — each one crafted by hand, certified, and made to bring auspiciousness into your home.
           </p>
           <div className="meta">
             <span><b>{view.totalLive}</b> pieces</span>
-            <span><b>9</b> directions</span>
             <span>Certified metal &amp; stone</span>
           </div>
         </div>
@@ -135,12 +127,8 @@ export default async function CollectionPage({
       <RitualCalendar festival={festival} />
 
       <div className="col-layout">
-        {/* ── Rail: compass filter + guide ── */}
+        {/* ── Rail: placement guide ── */}
         <aside className="col-rail">
-          <div className="fcard">
-            <div className="fcard-lbl">Filter by direction</div>
-            <CollectionCompass directions={view.directions} selected={filters.directions} baseParams={nonDir} totalLive={view.totalLive} />
-          </div>
           <div className="rail-guide">
             <div className="rg-title">Not sure where it belongs?</div>
             <div className="rg-sub">Placement depends on your home&apos;s layout — let us point you to the right corner.</div>
@@ -175,55 +163,11 @@ export default async function CollectionPage({
             current={currentAll}
           />
 
-          {(view.mode === "overview" ? view.overview.length === 0 && view.unplaced.length === 0 : view.pieces.length === 0) ? (
+          {view.pieces.length === 0 ? (
             <div className="col-empty">
               <div className="om sa-deva" aria-hidden="true">ॐ</div>
               <h3>No pieces in this corner yet</h3>
-              <p>Try another direction or type — or <Link href="/collection">see the full collection</Link>.</p>
-            </div>
-          ) : view.mode === "overview" ? (
-            /* ── Landing overview: a capped preview per direction, scales forever ── */
-            <div className="dir-sections">
-              {view.overview.map(({ direction: d, items, hasMore }) => (
-                <section
-                  key={d.code}
-                  className="dir-section col-reveal"
-                  style={{ ["--pc" as string]: d.color, ["--pc-deep" as string]: d.colorDeep } as React.CSSProperties}
-                >
-                  <div className="dir-strip">
-                    <span className="ds-medal" aria-hidden="true">{DIR_ABBR[d.code] ?? "◈"}</span>
-                    <span className="ds-title">
-                      <span className="ds-name serif">{d.name}</span>
-                      <span className="ds-guardian">{d.iast} · {d.deity} <span className="sa-deva">{d.deva}</span></span>
-                    </span>
-                    {d.element && <span className="ds-elem">{d.element}</span>}
-                    {d.governs && <span className="ds-gov">{d.governs}</span>}
-                    <span className="ds-count">{d.liveCount} {d.liveCount === 1 ? "piece" : "pieces"}</span>
-                    <Link href={`/collection?direction=${d.code}`} className="ds-explore">
-                      {hasMore ? `Explore all ${d.liveCount}` : `Explore the ${d.name}`} →
-                    </Link>
-                  </div>
-                  <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
-                    {items.map((p) => (
-                      <NicheCard key={p.slug} p={p} compact={density === "compact"} />
-                    ))}
-                  </div>
-                </section>
-              ))}
-              {view.unplaced.length > 0 && (
-                <section className="dir-section col-reveal">
-                  <div className="dir-strip">
-                    <span className="ds-medal" aria-hidden="true">◈</span>
-                    <span className="ds-title"><span className="ds-name serif">For every direction</span></span>
-                    <span className="ds-count">{view.unplaced.length} {view.unplaced.length === 1 ? "piece" : "pieces"}</span>
-                  </div>
-                  <div className={`col-wall${density === "compact" ? " compact" : ""}`}>
-                    {view.unplaced.map((p) => (
-                      <NicheCard key={p.slug} p={p} compact={density === "compact"} />
-                    ))}
-                  </div>
-                </section>
-              )}
+              <p>Try another type — or <Link href="/collection">see the full collection</Link>.</p>
             </div>
           ) : (
             /* ── Filtered grid: database-paginated, constant page weight ── */

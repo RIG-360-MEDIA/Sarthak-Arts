@@ -18,7 +18,7 @@ export default async function Analytics() {
   const unitsByDirection = new Map<string, number>();
   for (const it of items) {
     unitsByProduct.set(it.name, (unitsByProduct.get(it.name) ?? 0) + it.quantity);
-    const dir = it.product?.directions[0]?.direction.name ?? "Unassigned";
+    const dir = it.product?.directions[0]?.direction.name ?? "All directions";
     unitsByDirection.set(dir, (unitsByDirection.get(dir) ?? 0) + it.quantity);
   }
   const topProducts = [...unitsByProduct.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);

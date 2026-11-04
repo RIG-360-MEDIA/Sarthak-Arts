@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { HeroWebGL } from "@/components/hero/HeroWebGL";
 import { SmoothScroll } from "@/components/hero/SmoothScroll";
 import { Product3D } from "@/components/hero/Product3D";
-import { DirectionWheel } from "@/components/hero/DirectionWheel";
 import { NewsletterForm } from "@/components/hero/NewsletterForm";
 import { PanchangStrip, HeroAnnouncement } from "@/components/hero/PanchangStrip";
 import { WishlistHeart } from "@/components/hero/WishlistHeart";
@@ -123,36 +122,6 @@ export default async function HomePage() {
 
         {/* ================= PANCHANG ================= */}
         <PanchangStrip />
-
-        {/* ================= DIRECTION SHRINE ================= */}
-        <section className="sa-section sa-section-solid" aria-labelledby="shrine-title">
-          <div className="sa-section-head sa-reveal">
-            <span className="sa-eyebrow">Shop by direction</span>
-            <h2 id="shrine-title">Not a filter. <em>A shrine.</em></h2>
-            <p className="sub">
-              In Vāstu Śāstra the home is a body, and the eight directions are its limbs —
-              each guarded by a Dikpāla and belonging to one of the five elements.
-              Every piece we make is built for one of them.
-            </p>
-          </div>
-
-          <div className="sa-reveal"><DirectionWheel /></div>
-
-          <div className="sa-dir-index sa-reveal">
-            <a href="/collection?direction=north"     className="sa-dir-row"><span className="c">N</span><span className="d"><span className="sa-deva" lang="sa">कुबेर</span>Kubera</span><span className="e">Wealth · Water</span></a>
-            <a href="/collection?direction=northeast" className="sa-dir-row"><span className="c">NE</span><span className="d"><span className="sa-deva" lang="sa">ईशान</span>Īśāna</span><span className="e">Clarity · Water</span></a>
-            <a href="/collection?direction=east"      className="sa-dir-row"><span className="c">E</span><span className="d"><span className="sa-deva" lang="sa">इन्द्र</span>Indra</span><span className="e">Energy · Space</span></a>
-            <a href="/collection?direction=southeast" className="sa-dir-row"><span className="c">SE</span><span className="d"><span className="sa-deva" lang="sa">अग्नि</span>Agni</span><span className="e">Vitality · Fire</span></a>
-            <a href="/collection?direction=south"     className="sa-dir-row"><span className="c">S</span><span className="d"><span className="sa-deva" lang="sa">यम</span>Yama</span><span className="e">Dharma · Earth</span></a>
-            <a href="/collection?direction=southwest" className="sa-dir-row"><span className="c">SW</span><span className="d"><span className="sa-deva" lang="sa">निर्ऋति</span>Nirṛti</span><span className="e">Stability · Earth</span></a>
-            <a href="/collection?direction=west"      className="sa-dir-row"><span className="c">W</span><span className="d"><span className="sa-deva" lang="sa">वरुण</span>Varuṇa</span><span className="e">Relations · Water</span></a>
-            <a href="/collection?direction=northwest" className="sa-dir-row"><span className="c">NW</span><span className="d"><span className="sa-deva" lang="sa">वायु</span>Vāyu</span><span className="e">Movement · Air</span></a>
-          </div>
-
-          <div className="sa-cite">
-            Positions verified per <b>Bṛhat Saṃhitā, Ch. 53</b> · Aṣṭadikpālaka attributions per Purāṇic tradition
-          </div>
-        </section>
 
         {/* ================= FEATURED PIECES ================= */}
         <section className="sa-section" aria-labelledby="pieces-title">
