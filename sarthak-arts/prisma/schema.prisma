@@ -399,7 +399,30 @@ model Consultant {
   active       Boolean                  @default(true)
   types        ConsultantType[]
   availability ConsultantAvailability[]
+  weeklyHours  ConsultantWeeklyHour[]
+  daysOff      ConsultantDayOff[]
   bookings     Booking[]
+}
+
+/// A default slot that repeats every week (IST), e.g. Monday 10:00. Expanded on read — nothing is pre-generated.
+model ConsultantWeeklyHour {
+  id           Int        @id @default(autoincrement())
+  consultantId Int
+  consultant   Consultant @relation(fields: [consultantId], references: [id], onDelete: Cascade)
+  weekday      Int // 0 = Sunday … 6 = Saturday
+  time         String // "HH:MM" IST
+
+  @@unique([consultantId, weekday, time])
+}
+
+/// A date on which the weekly defaults do not apply.
+model ConsultantDayOff {
+  id           Int        @id @default(autoincrement())
+  consultantId Int
+  consultant   Consultant @relation(fields: [consultantId], references: [id], onDelete: Cascade)
+  date         String // "YYYY-MM-DD" IST
+
+  @@unique([consultantId, date])
 }
 
 model ConsultantType {

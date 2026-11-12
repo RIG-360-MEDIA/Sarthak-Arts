@@ -169,6 +169,8 @@ body:has(.cons-root) {
 .slot-chip:hover span { border-color: color-mix(in srgb, var(--gold) 50%, var(--line)); }
 .slot-chip input:checked + span { background: radial-gradient(130% 130% at 30% 20%, var(--deep-cream), var(--gold) 66%, var(--gold-deep)); color: #23150c; border-color: transparent; box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--gold) 70%, transparent); }
 .slot-chip input:focus-visible + span { outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+.slot-date { font: inherit; font-size: 14px; color: var(--ink); padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; margin-bottom: 14px; }
+.slot-alt .slot-chip { text-decoration: none; }
 .slot-empty { font-size: 14px; color: var(--ink-muted); font-style: italic; padding: 8px 0; }
 
 .cons-inputs { display: grid; gap: 4px; }

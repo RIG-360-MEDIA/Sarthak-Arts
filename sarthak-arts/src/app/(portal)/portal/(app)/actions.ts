@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { currentSession } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase/server";
+import { istDate } from "@/lib/booking";
 
 /** Resolve the consultant record for the signed-in user, or throw. */
 async function requireConsultant() {
@@ -16,8 +17,45 @@ async function requireConsultant() {
 
 export async function addSlot(formData: FormData): Promise<void> {
   const consultant = await requireConsultant();
-  const slotStart = new Date(String(formData.get("slotStart")));
-  await prisma.consultantAvailability.create({ data: { consultantId: consultant.id, slotStart, durationMin: 20 } });
+  // datetime-local has no zone; the consultant means IST, not the server's UTC.
+  const [date, time] = String(formData.get("slotStart")).split("T");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date ?? "") || !/^\d{2}:\d{2}$/.test(time ?? "")) return;
+  await prisma.consultantAvailability.create({ data: { consultantId: consultant.id, slotStart: istDate(date, time), durationMin: 20 } });
+  revalidatePath("/portal/availability");
+}
+
+export async function addWeeklyHour(formData: FormData): Promise<void> {
+  const consultant = await requireConsultant();
+  const weekday = Number(formData.get("weekday"));
+  const time = String(formData.get("time") ?? "");
+  if (!(weekday >= 0 && weekday <= 6) || !/^\d{2}:\d{2}$/.test(time)) return;
+  await prisma.consultantWeeklyHour.upsert({
+    where: { consultantId_weekday_time: { consultantId: consultant.id, weekday, time } },
+    update: {}, create: { consultantId: consultant.id, weekday, time },
+  });
+  revalidatePath("/portal/availability");
+}
+
+export async function removeWeeklyHour(formData: FormData): Promise<void> {
+  const consultant = await requireConsultant();
+  await prisma.consultantWeeklyHour.deleteMany({ where: { id: Number(formData.get("id")), consultantId: consultant.id } });
+  revalidatePath("/portal/availability");
+}
+
+export async function addDayOff(formData: FormData): Promise<void> {
+  const consultant = await requireConsultant();
+  const date = String(formData.get("date") ?? "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+  await prisma.consultantDayOff.upsert({
+    where: { consultantId_date: { consultantId: consultant.id, date } },
+    update: {}, create: { consultantId: consultant.id, date },
+  });
+  revalidatePath("/portal/availability");
+}
+
+export async function removeDayOff(formData: FormData): Promise<void> {
+  const consultant = await requireConsultant();
+  await prisma.consultantDayOff.deleteMany({ where: { id: Number(formData.get("id")), consultantId: consultant.id } });
   revalidatePath("/portal/availability");
 }
 

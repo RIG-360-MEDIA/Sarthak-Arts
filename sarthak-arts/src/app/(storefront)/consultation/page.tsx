@@ -3,7 +3,9 @@ import Link from "next/link";
 import "./consultation.css";
 import { prisma } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
-import { freeSlots } from "@/lib/booking";
+import { istDayKey, nearestDays } from "@/lib/booking";
+import { openSlots } from "@/lib/booking-slots";
+import { DatePick } from "./DatePick";
 import { createBooking } from "./actions";
 import { PlaceInput } from "@/components/PlaceInput";
 import { PieceDefs, PieceRender } from "@/components/collection/Piece";
@@ -36,35 +38,22 @@ const FAQS: [string, string][] = [
    "If something comes up, reply to your confirmation email and we'll find you another time from the available slots."],
 ];
 
-export default async function ConsultationPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
-  const { type } = await searchParams;
+export default async function ConsultationPage({ searchParams }: { searchParams: Promise<{ type?: string; date?: string; error?: string }> }) {
+  const { type, date, error } = await searchParams;
   const [types, photo] = await Promise.all([
     prisma.consultationType.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }),
     getBlock("image.consultant"),
   ]);
   const active = types.find((t) => t.code === type) ?? null;
 
+  // Every open slot for this type; the customer looks at one day at a time.
+  const slots = active ? (await openSlots(active.id)).map((s) => s.slotStart) : [];
   // Real next-available slot for the honest "next opening" pill.
-  const nextSlot = await prisma.consultantAvailability.findFirst({
-    where: { slotStart: { gt: new Date() }, consultant: { active: true } },
-    orderBy: { slotStart: "asc" },
-  });
-
-  let slots: Date[] = [];
-  if (active) {
-    const [availability, bookings] = await Promise.all([
-      prisma.consultantAvailability.findMany({ where: { consultant: { types: { some: { consultationTypeId: active.id } }, active: true } } }),
-      prisma.booking.findMany({ where: { consultationTypeId: active.id, status: { not: "cancelled" } } }),
-    ]);
-    slots = freeSlots(availability.map((a) => a.slotStart), bookings.map((b) => b.slotStart), new Date());
-  }
-
-  // Group free slots by day for the chip picker.
-  const byDay = new Map<string, Date[]>();
-  for (const s of slots) {
-    const k = fmtDay(s);
-    (byDay.get(k) ?? byDay.set(k, []).get(k)!).push(s);
-  }
+  const nextSlot = (active ? slots : types[0] ? (await openSlots(types[0].id)).map((s) => s.slotStart) : [])[0];
+  const today = istDayKey(new Date());
+  const wantedDay = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : (slots[0] ? istDayKey(slots[0]) : today);
+  const daySlots = slots.filter((s) => istDayKey(s) === wantedDay);
+  const otherDays = daySlots.length ? [] : nearestDays(slots, wantedDay);
 
   return (
     <div className="cons-root">
@@ -75,7 +64,7 @@ export default async function ConsultationPage({ searchParams }: { searchParams:
           <div className="cons-hero-left">
             <span className="cons-live">
               <span className="dot" aria-hidden="true" />
-              {nextSlot ? <>Next opening · <b>{fmtShort(nextSlot.slotStart)}</b> IST</> : <>Certified Vāstu consultant · book a session</>}
+              {nextSlot ? <>Next opening · <b>{fmtShort(nextSlot)}</b> IST</> : <>Certified Vāstu consultant · book a session</>}
             </span>
             <h1>Vāstu guidance,<br /><em>placed with intention.</em></h1>
             <ul className="cons-checks">
@@ -143,24 +132,29 @@ export default async function ConsultationPage({ searchParams }: { searchParams:
               <div className="cons-book-sel">{active.name} · {active.durationMinutes} min</div>
               <div className="cons-book-name serif">Reserve your time</div>
 
-              <span className="cons-field-lbl">Choose a time</span>
-              {slots.length === 0 ? (
+              <span className="cons-field-lbl">Choose a date</span>
+              {error === "slot" && <p className="slot-empty" role="alert">That time was just taken — please pick another.</p>}
+              <DatePick type={active.code} value={wantedDay} min={today} />
+              <span className="cons-field-lbl">Choose a time · {fmtDay(new Date(`${wantedDay}T12:00:00+05:30`))}</span>
+              {daySlots.length > 0 ? (
+                <div className="slot-chips">
+                  {daySlots.map((s) => (
+                    <label key={s.toISOString()} className="slot-chip">
+                      <input type="radio" name="slot" value={s.toISOString()} required />
+                      <span>{fmtTime(s)}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : slots.length === 0 ? (
                 <p className="slot-empty">No open slots right now — please check back soon, or try another consultation.</p>
               ) : (
-                <div className="slot-picker">
-                  {[...byDay.entries()].map(([day, daySlots]) => (
-                    <div key={day} className="slot-day">
-                      <div className="slot-day-h">{day}</div>
-                      <div className="slot-chips">
-                        {daySlots.map((s) => (
-                          <label key={s.toISOString()} className="slot-chip">
-                            <input type="radio" name="slot" value={s.toISOString()} required />
-                            <span>{fmtTime(s)}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                <div className="slot-alt">
+                  <p className="slot-empty">No openings on this day. Nearest days with a free slot:</p>
+                  <div className="slot-chips">
+                    {otherDays.map((d) => (
+                      <Link key={d} href={`/consultation?type=${active.code}&date=${d}#book`} scroll={false} className="slot-chip"><span>{fmtDay(new Date(`${d}T12:00:00+05:30`))}</span></Link>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -188,7 +182,7 @@ export default async function ConsultationPage({ searchParams }: { searchParams:
                 </label>
               </div>
 
-              <button className="cons-submit" disabled={slots.length === 0}>Confirm booking</button>
+              <button className="cons-submit" disabled={daySlots.length === 0}>Confirm booking</button>
             </form>
 
             <aside className="cons-summary">
