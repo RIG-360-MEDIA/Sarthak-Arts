@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function EditProduct({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const productId = Number(id);
-  const [product, metals, gemstones, priceHistory, allDirections] = await Promise.all([
+  const [product, metals, gemstones, priceHistory, allDirections, categories] = await Promise.all([
     prisma.product.findUnique({
       where: { id: productId },
       include: {
@@ -29,6 +29,7 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
     prisma.gemstone.findMany(),
     prisma.productPriceHistory.findMany({ where: { productId }, orderBy: { changedAt: "desc" }, take: 5 }),
     prisma.direction.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }),
+    prisma.category.findMany({ orderBy: { name: "asc" } }),
   ]);
   if (!product) notFound();
 
@@ -63,6 +64,11 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
                 <label>One-line positioning</label>
                 <div className="hint">A short, evocative subtitle shown under the name — e.g. &ldquo;Cast in copper for the northeast corner.&rdquo;</div>
                 <input name="positioningLine" defaultValue={product.positioningLine} />
+              </div>
+              <div className="adm-field">
+                <label>Category</label>
+                <div className="hint">Shoppers filter by this on the collection page. Add more under <Link href="/admin/categories">Categories</Link>.</div>
+                <select name="categoryId" defaultValue={product.categoryId}>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
               </div>
               <div className="adm-field">
                 <label>Description</label>

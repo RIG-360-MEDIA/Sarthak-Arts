@@ -1,7 +1,7 @@
 import type { CheckoutIntent, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { generateCertificates } from "@/lib/certificate";
-import { sendOrderConfirmation } from "@/lib/email";
+import { sendOrderConfirmation, sendOwnerOrderAlert } from "@/lib/email";
 import { getSetting } from "@/lib/settings";
 
 type SnapshotItem = { productId: number; variantId?: number | null; variantLabel?: string | null; name: string; unitPriceMinor: number; quantity: number; composition: unknown };
@@ -29,7 +29,7 @@ async function createOrderFromIntent(
   const status = await prisma.orderStatus.findUniqueOrThrow({ where: { code: opts.statusCode } });
   const items = intent.cartSnapshot as SnapshotItem[];
 
-  return prisma.$transaction(async (tx) => {
+  const order = await prisma.$transaction(async (tx) => {
     const created = await tx.order.create({
       data: {
         orderNumber: `SA-${Date.now().toString(36).toUpperCase()}`,
@@ -87,6 +87,9 @@ async function createOrderFromIntent(
     if (opts.statusCode === "confirmed") await grantConsultationIfEligible(tx, created);
     return created;
   });
+  // The order is saved either way; a mail failure must never undo it.
+  await sendOwnerOrderAlert(order.id).catch((err) => console.error(`[orders] owner alert failed for ${order.orderNumber}:`, err instanceof Error ? err.message : err));
+  return order;
 }
 
 /** Razorpay webhook path: payment already captured by the gateway. */

@@ -55,6 +55,7 @@ export async function updateProduct(formData: FormData): Promise<void> {
       status: String(formData.get("status") ?? "draft"),
       isFinalSale: formData.get("isFinalSale") === "on",
       ...(formData.has("optionName") ? { optionName: String(formData.get("optionName")).trim().slice(0, 30) || null } : {}),
+      ...(Number(formData.get("categoryId")) ? { categoryId: Number(formData.get("categoryId")) } : {}),
     },
   });
 

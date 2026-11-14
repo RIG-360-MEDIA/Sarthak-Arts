@@ -1,28 +1,21 @@
 import type { Metadata } from "next";
 import { HeroWebGL } from "@/components/hero/HeroWebGL";
 import { SmoothScroll } from "@/components/hero/SmoothScroll";
-import { Product3D } from "@/components/hero/Product3D";
-import { DirectionWheel } from "@/components/hero/DirectionWheel";
 import { NewsletterForm } from "@/components/hero/NewsletterForm";
 import { PanchangStrip, HeroAnnouncement } from "@/components/hero/PanchangStrip";
-import { WishlistHeart } from "@/components/hero/WishlistHeart";
+import { FeaturedRotator } from "@/components/hero/FeaturedRotator";
 import { AuditPreview } from "@/components/hero/AuditPreview";
 import { HeroEyebrow } from "@/components/hero/HeroEyebrow";
 import { ReturningGreeting } from "@/components/hero/ReturningGreeting";
-import { getFeaturedPieces, formatINR } from "@/lib/home-featured";
+import { getFeaturedPieces } from "@/lib/home-featured";
+import { prisma } from "@/lib/db";
+import { getBlock } from "@/lib/content";
+import { formatMoney } from "@/lib/money";
 import { getNextFestival } from "@/lib/home-festivals";
 import { computePanchang } from "@/lib/panchang";
 import { readPanchangPreferences } from "@/lib/panchang/preferences";
 import { SITE_URL } from "@/lib/site";
 import "./home.css";
-
-// Map a Product's category.code to one of the procedural Product3D kinds.
-type Product3DKind = "kalash" | "yantra" | "pyramid";
-function kindFor(categoryCode: string): Product3DKind {
-  if (categoryCode === "yantra") return "yantra";
-  if (categoryCode === "pyramid") return "pyramid";
-  return "kalash";
-}
 
 /** Serialize JSON-LD safely — escape "<" so a value can never break out of the <script> tag. */
 function jsonLd(data: unknown): string {
@@ -68,10 +61,14 @@ function buildEyebrowLines(
 }
 
 export default async function HomePage() {
-  const [featured, festival] = await Promise.all([
-    getFeaturedPieces(3),
+  const [featured, festival, consultTypes, consultant, consultantPhoto] = await Promise.all([
+    getFeaturedPieces(27),
     getNextFestival("north"),
+    prisma.consultationType.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }).catch(() => []),
+    prisma.consultant.findFirst({ where: { active: true }, orderBy: { id: "asc" } }).catch(() => null),
+    getBlock("image.consultant").catch(() => ({ title: null, body: "" })),
   ]);
+  const consultMinutes = consultTypes[0]?.durationMinutes ?? 20;
   const prefs = await readPanchangPreferences();
   const panchang = computePanchang(prefs.city.code, undefined, { masaSystem: prefs.masaSystem });
   const eyebrowLines = buildEyebrowLines(festival, panchang);
@@ -124,36 +121,6 @@ export default async function HomePage() {
         {/* ================= PANCHANG ================= */}
         <PanchangStrip />
 
-        {/* ================= DIRECTION SHRINE ================= */}
-        <section className="sa-section sa-section-solid" aria-labelledby="shrine-title">
-          <div className="sa-section-head sa-reveal">
-            <span className="sa-eyebrow">Shop by direction</span>
-            <h2 id="shrine-title">Not a filter. <em>A shrine.</em></h2>
-            <p className="sub">
-              In Vāstu Śāstra the home is a body, and the eight directions are its limbs —
-              each guarded by a Dikpāla and belonging to one of the five elements.
-              Every piece we make is built for one of them.
-            </p>
-          </div>
-
-          <div className="sa-reveal"><DirectionWheel /></div>
-
-          <div className="sa-dir-index sa-reveal">
-            <a href="/collection?direction=north"     className="sa-dir-row"><span className="c">N</span><span className="d"><span className="sa-deva" lang="sa">कुबेर</span>Kubera</span><span className="e">Wealth · Water</span></a>
-            <a href="/collection?direction=northeast" className="sa-dir-row"><span className="c">NE</span><span className="d"><span className="sa-deva" lang="sa">ईशान</span>Īśāna</span><span className="e">Clarity · Water</span></a>
-            <a href="/collection?direction=east"      className="sa-dir-row"><span className="c">E</span><span className="d"><span className="sa-deva" lang="sa">इन्द्र</span>Indra</span><span className="e">Energy · Space</span></a>
-            <a href="/collection?direction=southeast" className="sa-dir-row"><span className="c">SE</span><span className="d"><span className="sa-deva" lang="sa">अग्नि</span>Agni</span><span className="e">Vitality · Fire</span></a>
-            <a href="/collection?direction=south"     className="sa-dir-row"><span className="c">S</span><span className="d"><span className="sa-deva" lang="sa">यम</span>Yama</span><span className="e">Dharma · Earth</span></a>
-            <a href="/collection?direction=southwest" className="sa-dir-row"><span className="c">SW</span><span className="d"><span className="sa-deva" lang="sa">निर्ऋति</span>Nirṛti</span><span className="e">Stability · Earth</span></a>
-            <a href="/collection?direction=west"      className="sa-dir-row"><span className="c">W</span><span className="d"><span className="sa-deva" lang="sa">वरुण</span>Varuṇa</span><span className="e">Relations · Water</span></a>
-            <a href="/collection?direction=northwest" className="sa-dir-row"><span className="c">NW</span><span className="d"><span className="sa-deva" lang="sa">वायु</span>Vāyu</span><span className="e">Movement · Air</span></a>
-          </div>
-
-          <div className="sa-cite">
-            Positions verified per <b>Bṛhat Saṃhitā, Ch. 53</b> · Aṣṭadikpālaka attributions per Purāṇic tradition
-          </div>
-        </section>
-
         {/* ================= FEATURED PIECES ================= */}
         <section className="sa-section" aria-labelledby="pieces-title">
           <div className="sa-section-head sa-reveal">
@@ -165,46 +132,7 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="sa-pieces-grid">
-            {featured.map((p) => {
-              const compBits: string[] = [];
-              if (p.primaryMetalName && p.primaryMetalWeightG != null) compBits.push(`${p.primaryMetalName} · ${p.primaryMetalWeightG} g`);
-              else if (p.primaryMetalName) compBits.push(p.primaryMetalName);
-              if (p.primaryMetalLabel) compBits.push(p.primaryMetalLabel);
-              return (
-                <a key={p.slug} href={`/collection/${p.slug}`} className="sa-piece sa-reveal">
-                  <div className="sa-piece-stage">
-                    <div className="sa-piece-badges">
-                      {p.directionName && <span className="sa-piece-badge">{p.directionName}</span>}
-                      {p.directionElement && <span className="sa-piece-badge">{p.directionElement}</span>}
-                      {p.isSample && <span className="sa-piece-badge sample" title="Sample piece — real catalogue arriving">Sample</span>}
-                    </div>
-                    <div className="sa-piece-wish"><WishlistHeart slug={p.slug} pieceName={p.name} /></div>
-                    {p.photoUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element -- served already optimised (WebP) by /api/images
-                      <img src={p.photoUrl} alt={p.name} loading="lazy" decoding="async" className="sa-piece-photo" />
-                    ) : (
-                      <>
-                        <Product3D kind={kindFor(p.categoryCode)} />
-                        <div className="sa-piece-hint">Live 3D · rotating</div>
-                      </>
-                    )}
-                  </div>
-                  <div className="sa-piece-body">
-                    {p.deityName && <div className="sa-piece-deity">{p.deityName}</div>}
-                    <div className="sa-piece-name">{p.name}</div>
-                    {compBits.length > 0 && <div className="sa-piece-comp">{compBits.join(" · ")}</div>}
-                    <div className="sa-piece-foot">
-                      <span className="sa-piece-price">{formatINR(p.priceMinor)}</span>
-                      <span className={`sa-piece-stock ${p.stockQuantity > 0 ? "in-stock" : "made-to-order"}`}>
-                        {p.stockQuantity > 0 ? `${p.stockQuantity} in stock` : "Made-to-order"}
-                      </span>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
+          <div className="sa-reveal"><FeaturedRotator pieces={featured} /></div>
 
           <div className="sa-pieces-cta sa-reveal">
             <a className="sa-link-line" href="/collection">Enter the full collection →</a>
@@ -254,8 +182,12 @@ export default async function HomePage() {
         {/* ================= CONSULTATION ================= */}
         <section className="sa-section" aria-labelledby="consult-title">
           <div className="sa-section-head sa-reveal">
+            {consultantPhoto.body && (
+              // eslint-disable-next-line @next/next/no-img-element -- owner-uploaded photo, already optimised
+              <img className="sa-consult-photo" src={consultantPhoto.body} alt={consultant?.name ?? "Our consultant"} />
+            )}
             <span className="sa-eyebrow">Uncertain?</span>
-            <h2 id="consult-title">Sit with a consultant. <em>Twenty minutes.</em></h2>
+            <h2 id="consult-title">Sit with {consultant?.name ?? "a consultant"}. <em>{consultMinutes === 20 ? "Twenty" : consultMinutes} minutes.</em></h2>
             <p className="sub">
               If a piece calls to you but you&apos;re unsure where it belongs — or whether your
               chart should weigh on the choice — take a short reading. No pressure, no obligation.
@@ -263,20 +195,15 @@ export default async function HomePage() {
           </div>
 
           <div className="sa-consult-grid">
-            <div className="sa-consult-card sa-reveal">
-              <div className="sa-consult-kind">Placement reading</div>
-              <h3>Vāstu <em>consultation</em></h3>
-              <p>A twenty-minute call with our resident consultant. Bring a rough sketch of your home — we&apos;ll place your piece correctly for its direction, element, and light. The fee is credited toward your order.</p>
-              <div className="sa-consult-fee">₹999<small>20 min · video</small></div>
-              <a className="sa-link-line" href="/consultation">Book a reading →</a>
-            </div>
-            <div className="sa-consult-card sa-reveal">
-              <div className="sa-consult-kind">Birth-chart reading</div>
-              <h3>Astrological <em>consultation</em></h3>
-              <p>A thirty-minute reading of your natal chart — Vedic method, Lahiri ayanamsa. Understand the pieces most aligned to your rāśi and your current daśā.</p>
-              <div className="sa-consult-fee">₹1,499<small>30 min · video</small></div>
-              <a className="sa-link-line" href="/consultation">Book a reading →</a>
-            </div>
+            {consultTypes.map((t) => (
+              <div key={t.code} className="sa-consult-card sa-reveal">
+                <div className="sa-consult-kind">{t.creditsTowardOrder ? "Fee credited to your order" : "Private video reading"}</div>
+                <h3>{t.name}</h3>
+                <p>{t.description}</p>
+                <div className="sa-consult-fee">{formatMoney(t.feeMinor, "INR")}<small>{t.durationMinutes} min · video</small></div>
+                <a className="sa-link-line" href={`/consultation?type=${t.code}#book`}>Book a reading →</a>
+              </div>
+            ))}
           </div>
         </section>
 

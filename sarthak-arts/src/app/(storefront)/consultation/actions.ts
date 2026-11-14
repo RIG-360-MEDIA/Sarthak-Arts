@@ -1,6 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { openSlots } from "@/lib/booking-slots";
 
 export async function createBooking(formData: FormData): Promise<void> {
   const consultationTypeId = Number(formData.get("consultationTypeId"));
@@ -12,12 +13,8 @@ export async function createBooking(formData: FormData): Promise<void> {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || !birthPlace) redirect("/consultation?error=birth");
   const type = await prisma.consultationType.findUniqueOrThrow({ where: { id: consultationTypeId } });
 
-  const slot = await prisma.consultantAvailability.findFirstOrThrow({
-    where: {
-      slotStart: new Date(slotIso),
-      consultant: { types: { some: { consultationTypeId } }, active: true },
-    },
-  });
+  const slot = (await openSlots(consultationTypeId)).find((s) => s.slotStart.getTime() === new Date(slotIso).getTime());
+  if (!slot) redirect(`/consultation?type=${type.code}&error=slot#book`);
 
   const entitlement = await prisma.consultationEntitlement.findFirst({
     where: { customerEmail: email, consultationTypeId, status: "unused" },
@@ -42,7 +39,7 @@ export async function createBooking(formData: FormData): Promise<void> {
   if (entitlement) await prisma.consultationEntitlement.update({ where: { id: entitlement.id }, data: { status: "used" } });
 
   const { sendBookingConfirmation } = await import("@/lib/email");
-  await sendBookingConfirmation(booking.id);
+  await sendBookingConfirmation(booking.id).catch((err) => console.error("[booking] confirmation email failed:", err instanceof Error ? err.message : err));
 
   redirect(`/consultation/confirmed?id=${booking.id}`);
 }

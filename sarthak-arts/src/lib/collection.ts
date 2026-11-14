@@ -198,8 +198,6 @@ export async function getCollectionView(filters: CollectionFilters): Promise<Col
     return getShopifyCollectionView(filters);
   }
 
-  const hasFilters = filters.directions.length > 0 || !!filters.category || !!filters.metal;
-
   try {
     // ── Cheap aggregates: counts only, never the whole catalogue ──────────
     const [totalLive, dirRecords, dirCountRows, catCountRows, currency] = await Promise.all([
@@ -232,36 +230,14 @@ export async function getCollectionView(filters: CollectionFilters): Promise<Col
 
     const base = { totalLive, directions, categories, currency, filters };
 
-    // ── Grid mode: database-paginated set of matching pieces ──────────────
-    if (hasFilters) {
-      const where = { status: "live", ...filterWhere(filters) };
-      const [matchCount, rows] = await Promise.all([
-        prisma.product.count({ where }),
-        prisma.product.findMany({ where, include: PIECE_INCLUDE, orderBy: orderByFor(filters.sort), take: filters.show }),
-      ]);
-      const pieces = rows.map((p) => toPiece(p, currency));
-      return { ...base, mode: "grid", overview: [], unplaced: [], pieces, matchCount, shown: pieces.length, hasMore: matchCount > pieces.length };
-    }
-
-    // ── Overview mode: one capped preview query per non-empty direction ───
-    const active = directions.filter((d) => d.liveCount > 0);
-    const groups = await Promise.all(
-      active.map(async (d) => {
-        const rows = await prisma.product.findMany({
-          where: { status: "live", directions: { some: { direction: { code: d.code } } } },
-          include: PIECE_INCLUDE, orderBy: { createdAt: "desc" }, take: OVERVIEW_PER_DIR,
-        });
-        return { direction: d, items: rows.map((p) => toPiece(p, currency)), hasMore: d.liveCount > OVERVIEW_PER_DIR };
-      }),
-    );
-
-    const unplacedRows = await prisma.product.findMany({
-      where: { status: "live", directions: { none: {} } },
-      include: PIECE_INCLUDE, orderBy: { createdAt: "desc" }, take: 48,
-    });
-    const unplaced = unplacedRows.map((p) => toPiece(p, currency));
-
-    return { ...base, mode: "overview", overview: groups, unplaced, pieces: [], matchCount: totalLive, shown: totalLive, hasMore: false };
+    // One database-paginated grid of all live pieces (filters optional).
+    const where = { status: "live", ...filterWhere(filters) };
+    const [matchCount, rows] = await Promise.all([
+      prisma.product.count({ where }),
+      prisma.product.findMany({ where, include: PIECE_INCLUDE, orderBy: orderByFor(filters.sort), take: filters.show }),
+    ]);
+    const pieces = rows.map((p) => toPiece(p, currency));
+    return { ...base, mode: "grid", overview: [], unplaced: [], pieces, matchCount, shown: pieces.length, hasMore: matchCount > pieces.length };
   } catch (err) {
     console.warn("[collection] load failed, rendering empty:", err instanceof Error ? err.message : err);
     return emptyView(filters);
