@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { LogoMark } from "./LogoMark";
 
@@ -50,7 +51,8 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
         <span aria-hidden="true" />
       </button>
 
-      {open && (
+      {/* Portal to <body>: the nav's backdrop-filter makes position:fixed children clip to the nav's own box. */}
+      {open && createPortal(
         <>
           <div className="sa-drawer-scrim" onClick={() => setOpen(false)} aria-hidden="true" />
           <aside className="sa-drawer" role="dialog" aria-modal="true" aria-label="Menu">
@@ -105,7 +107,8 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
               <a href="/order-lookup">Order lookup</a>
             </div>
           </aside>
-        </>
+        </>,
+        document.body,
       )}
     </>
   );
