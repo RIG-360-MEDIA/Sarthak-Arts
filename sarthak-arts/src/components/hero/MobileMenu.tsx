@@ -51,9 +51,10 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
         <span aria-hidden="true" />
       </button>
 
-      {/* Portal to <body>: the nav's backdrop-filter makes position:fixed children clip to the nav's own box. */}
+      {/* Portal to <body>: the nav's backdrop-filter clips position:fixed children to the nav's box.
+          Re-wrap in .sa-chrome, where the colour and font tokens live. */}
       {open && createPortal(
-        <>
+        <div className="sa-chrome">
           <div className="sa-drawer-scrim" onClick={() => setOpen(false)} aria-hidden="true" />
           <aside className="sa-drawer" role="dialog" aria-modal="true" aria-label="Menu">
             <div className="sa-drawer-head">
@@ -107,7 +108,7 @@ export function MobileMenu({ initialCartCount, panchangSummary }: Props) {
               <a href="/order-lookup">Order lookup</a>
             </div>
           </aside>
-        </>,
+        </div>,
         document.body,
       )}
     </>
