@@ -29,9 +29,21 @@ export async function renameCategory(formData: FormData): Promise<void> {
 export async function deleteCategory(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = Number(formData.get("id"));
-  const inUse = await prisma.product.count({ where: { categoryId: id } });
+  const inUse = await prisma.productCategory.count({ where: { categoryId: id } });
   const children = await prisma.category.count({ where: { parentId: id } });
   if (inUse || children) redirect("/admin/categories?flash=inuse");
   await prisma.category.delete({ where: { id } });
   redirect("/admin/categories?flash=deleted");
+}
+
+/** Bulk-assign products to a category from the categories admin page. */
+export async function assignProducts(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const categoryId = Number(formData.get("categoryId"));
+  const productIds = [...new Set(formData.getAll("productIds").map(Number).filter((n) => Number.isInteger(n) && n > 0))];
+  await prisma.$transaction([
+    prisma.productCategory.deleteMany({ where: { categoryId } }),
+    ...(productIds.length ? [prisma.productCategory.createMany({ data: productIds.map((productId) => ({ productId, categoryId })) })] : []),
+  ]);
+  redirect("/admin/categories?flash=assigned");
 }

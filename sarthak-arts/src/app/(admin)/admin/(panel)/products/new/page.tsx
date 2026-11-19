@@ -2,15 +2,11 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Icon } from "../../../_ui/icons";
 import { createProduct } from "../actions";
-import { DirectionPicker } from "../DirectionPicker";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewProduct() {
-  const [categories, directions] = await Promise.all([
-    prisma.category.findMany({ orderBy: { name: "asc" } }),
-    prisma.direction.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }),
-  ]);
+  const categories = await prisma.category.findMany({ orderBy: { name: "asc" } });
 
   return (
     <div className="adm-page narrow">
@@ -51,14 +47,18 @@ export default async function NewProduct() {
 
         <fieldset className="adm-fieldset">
           <div className="adm-fieldset-head"><h3>Category, price &amp; stock</h3></div>
-          <div className="adm-field-row">
-            <div className="adm-field">
-              <label>Category<span className="req">*</span></label>
-              <select name="categoryId" required>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+          <div className="adm-field">
+            <label>Categories<span className="req">*</span></label>
+            <div className="hint">Pick one or more.</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 8, marginTop: 6 }}>
+              {categories.map((c) => (
+                <label key={c.id} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "13.5px", padding: "8px 10px", border: "1px solid var(--line)", borderRadius: 10, cursor: "pointer" }}>
+                  <input type="checkbox" name="categoryIds" value={c.id} />
+                  {c.name}
+                </label>
+              ))}
             </div>
-            <span />
           </div>
-          <DirectionPicker directions={directions} selected={[]} />
           <div className="adm-field-row">
             <div className="adm-field">
               <label>Price<span className="req">*</span></label>

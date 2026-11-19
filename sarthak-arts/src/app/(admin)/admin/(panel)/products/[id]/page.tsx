@@ -7,28 +7,26 @@ import { ProductStatusPill, StockPill } from "../../../_ui/status";
 import { ImageUploader } from "../ImageUploader";
 import { updateProduct, addComposition, removeComposition, deleteProduct, addVariant, updateVariant, removeVariant } from "../actions";
 import { ConfirmSubmit } from "../DeleteControls";
-import { DirectionPicker } from "../DirectionPicker";
 
 export const dynamic = "force-dynamic";
 
 export default async function EditProduct({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const productId = Number(id);
-  const [product, metals, gemstones, priceHistory, allDirections, categories] = await Promise.all([
+  const [product, metals, gemstones, priceHistory, categories] = await Promise.all([
     prisma.product.findUnique({
       where: { id: productId },
       include: {
         composition: { include: { metal: true, gemstone: true }, orderBy: { sortOrder: "asc" } },
-        directions: { include: { direction: true }, orderBy: { directionId: "asc" } },
         images: { orderBy: { sortOrder: "asc" } },
         category: true,
+        categories: { select: { categoryId: true } },
         variants: { orderBy: [{ sortOrder: "asc" }, { id: "asc" }] },
       },
     }),
     prisma.metal.findMany(),
     prisma.gemstone.findMany(),
     prisma.productPriceHistory.findMany({ where: { productId }, orderBy: { changedAt: "desc" }, take: 5 }),
-    prisma.direction.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }),
     prisma.category.findMany({ orderBy: { name: "asc" } }),
   ]);
   if (!product) notFound();
@@ -41,7 +39,7 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
         <div>
           <div className="eyebrow"><Link href="/admin/products" style={{ color: "inherit", textDecoration: "none" }}>← All products</Link></div>
           <h1 style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>{product.name} <ProductStatusPill status={product.status} /></h1>
-          <p className="lead">{product.category.name}{` · ${product.directions.length ? product.directions.map((d) => d.direction.name).join(", ") : "All directions"}`}</p>
+          <p className="lead">{product.category.name}</p>
         </div>
         {product.status === "live" && (
           <a className="adm-btn adm-btn-ghost" href={`/collection/${product.slug}`} target="_blank" rel="noopener noreferrer"><Icon name="eye" /> View live</a>
@@ -66,9 +64,16 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
                 <input name="positioningLine" defaultValue={product.positioningLine} />
               </div>
               <div className="adm-field">
-                <label>Category</label>
-                <div className="hint">Shoppers filter by this on the collection page. Add more under <Link href="/admin/categories">Categories</Link>.</div>
-                <select name="categoryId" defaultValue={product.categoryId}>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+                <label>Categories</label>
+                <div className="hint">Pick one or more. Shoppers filter by these on the collection page. <Link href="/admin/categories">Manage categories</Link>.</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 8, marginTop: 6 }}>
+                  {categories.map((c) => (
+                    <label key={c.id} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "13.5px", padding: "8px 10px", border: "1px solid var(--line)", borderRadius: 10, cursor: "pointer" }}>
+                      <input type="checkbox" name="categoryIds" value={c.id} defaultChecked={product.categories.some((pc) => pc.categoryId === c.id)} />
+                      {c.name}
+                    </label>
+                  ))}
+                </div>
               </div>
               <div className="adm-field">
                 <label>Description</label>
@@ -102,7 +107,6 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
                   <input name="stockQuantity" type="number" defaultValue={product.stockQuantity} />
                 </div>
               </div>
-              <DirectionPicker directions={allDirections} selected={product.directions.map((d) => d.directionId)} />
               <div className="adm-field">
                 <label>What are the options called?</label>
                 <div className="hint">Shown on the product page above the choices, e.g. &ldquo;Colour: Blue&rdquo;. Only used if you add options below.</div>

@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { saveImage, deleteImageByUrl } from "@/lib/uploads";
 import { deleteProducts } from "@/lib/product-delete";
-import { pickedDirectionIds } from "./DirectionPicker";
 
 function slugify(s: string): string {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -15,6 +14,8 @@ export async function createProduct(formData: FormData): Promise<void> {
   await requireAdmin();
   const name = String(formData.get("name"));
   const categoryId = Number(formData.get("categoryId"));
+  const categoryIds = [...new Set(formData.getAll("categoryIds").map(Number).filter((n) => Number.isInteger(n) && n > 0))];
+  const primaryCat = categoryIds[0] || categoryId;
   const product = await prisma.product.create({
     data: {
       name,
@@ -27,11 +28,14 @@ export async function createProduct(formData: FormData): Promise<void> {
       basePriceMinor: Math.round(Number(formData.get("priceRupees") ?? 0) * 100),
       stockQuantity: Number(formData.get("stockQuantity") ?? 0),
       status: String(formData.get("status") ?? "draft"),
-      categoryId,
+      categoryId: primaryCat,
     },
   });
-  const directionIds = pickedDirectionIds(formData);
-  if (directionIds.length) await prisma.productDirection.createMany({ data: directionIds.map((directionId) => ({ productId: product.id, directionId })) });
+  if (categoryIds.length) {
+    await prisma.productCategory.createMany({ data: categoryIds.map((cid) => ({ productId: product.id, categoryId: cid })) });
+  } else {
+    await prisma.productCategory.create({ data: { productId: product.id, categoryId: primaryCat } });
+  }
   redirect(`/admin/products/${product.id}?flash=created`);
 }
 
@@ -59,14 +63,16 @@ export async function updateProduct(formData: FormData): Promise<void> {
     },
   });
 
-  if (formData.has("directionIds")) {
-    const directionIds = pickedDirectionIds(formData);
-    await prisma.$transaction([
-      prisma.productDirection.deleteMany({ where: { productId: id } }),
-      prisma.productDirection.createMany({ data: directionIds.map((directionId) => ({ productId: id, directionId })) }),
-    ]);
+  if (formData.has("categoryIds")) {
+    const categoryIds = [...new Set(formData.getAll("categoryIds").map(Number).filter((n) => Number.isInteger(n) && n > 0))];
+    if (categoryIds.length) {
+      await prisma.$transaction([
+        prisma.productCategory.deleteMany({ where: { productId: id } }),
+        prisma.productCategory.createMany({ data: categoryIds.map((categoryId) => ({ productId: id, categoryId })) }),
+      ]);
+      await prisma.product.update({ where: { id }, data: { categoryId: categoryIds[0] } });
+    }
   }
-
 
   if (newPriceMinor !== existing.basePriceMinor) {
     await prisma.productPriceHistory.create({

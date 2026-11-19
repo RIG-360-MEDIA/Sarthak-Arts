@@ -40,6 +40,7 @@ export async function deleteProducts(ids: number[]): Promise<DeleteResult> {
       prisma.productComposition.deleteMany({ where }),
       prisma.productDirection.deleteMany({ where }),
       prisma.productPurpose.deleteMany({ where }),
+      prisma.productCategory.deleteMany({ where }),
       prisma.productPriceHistory.deleteMany({ where }),
       prisma.product.deleteMany({ where: { id: { in: toRemove } } }),
     ]);

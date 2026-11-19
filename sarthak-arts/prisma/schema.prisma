@@ -50,13 +50,14 @@ model Deity {
 }
 
 model Category {
-  id       Int        @id @default(autoincrement())
-  code     String     @unique
-  name     String
-  parentId Int?
-  parent   Category?  @relation("Tree", fields: [parentId], references: [id])
-  children Category[] @relation("Tree")
-  products Product[]
+  id               Int               @id @default(autoincrement())
+  code             String            @unique
+  name             String
+  parentId         Int?
+  parent           Category?         @relation("Tree", fields: [parentId], references: [id])
+  children         Category[]        @relation("Tree")
+  products         Product[]
+  productCategories ProductCategory[]
 }
 
 model Purpose {
@@ -179,6 +180,7 @@ model Product {
   deity           Deity?                @relation(fields: [deityId], references: [id])
   directions      ProductDirection[]
   purposes        ProductPurpose[]
+  categories      ProductCategory[]
   composition     ProductComposition[]
   images          ProductImage[]
   priceHistory    ProductPriceHistory[]
@@ -197,6 +199,15 @@ model ProductDirection {
   direction   Direction @relation(fields: [directionId], references: [id])
 
   @@id([productId, directionId])
+}
+
+model ProductCategory {
+  productId  Int
+  categoryId Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
 }
 
 model ProductPurpose {

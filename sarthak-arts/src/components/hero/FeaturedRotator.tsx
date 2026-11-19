@@ -45,8 +45,6 @@ export function FeaturedRotator({ pieces }: { pieces: FeaturedPiece[] }) {
             <a key={p.slug} href={`/collection/${p.slug}`} className="sa-piece">
               <div className="sa-piece-stage">
                 <div className="sa-piece-badges">
-                  {p.directionName && <span className="sa-piece-badge">{p.directionName}</span>}
-                  {p.directionElement && <span className="sa-piece-badge">{p.directionElement}</span>}
                   {p.isSample && <span className="sa-piece-badge sample" title="Sample piece — real catalogue arriving">Sample</span>}
                 </div>
                 <div className="sa-piece-wish"><WishlistHeart slug={p.slug} pieceName={p.name} /></div>

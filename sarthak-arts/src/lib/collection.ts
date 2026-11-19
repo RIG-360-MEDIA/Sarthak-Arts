@@ -178,7 +178,7 @@ function filterWhere(filters: CollectionFilters) {
   const and: Record<string, unknown>[] = [];
   if (filters.directions.length)
     and.push({ directions: { some: { direction: { code: { in: filters.directions } } } } });
-  if (filters.category) and.push({ category: { code: filters.category } });
+  if (filters.category) and.push({ categories: { some: { category: { code: filters.category } } } });
   if (filters.metal) and.push({ composition: { some: { metal: { name: { equals: filters.metal, mode: "insensitive" } } } } });
   return and.length ? { AND: and } : {};
 }
@@ -204,7 +204,7 @@ export async function getCollectionView(filters: CollectionFilters): Promise<Col
       prisma.product.count({ where: { status: "live" } }),
       prisma.direction.findMany({ where: { active: true }, orderBy: { displayOrder: "asc" } }),
       prisma.productDirection.groupBy({ by: ["directionId"], where: { product: { status: "live" } }, _count: { _all: true } }),
-      prisma.product.groupBy({ by: ["categoryId"], where: { status: "live" }, _count: { _all: true } }),
+      prisma.productCategory.groupBy({ by: ["categoryId"], where: { product: { status: "live" } }, _count: { _all: true } }),
       resolveDisplayCurrency(),
     ]);
 

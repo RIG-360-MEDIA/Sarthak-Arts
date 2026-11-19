@@ -9,11 +9,7 @@ export type FeaturedPiece = {
   isSample: boolean;
   categoryCode: string;
   deityName: string | null;
-  directionCode: string | null;
-  directionName: string | null;
-  directionElement: string | null;
   stockQuantity: number;
-  // First metal listed by sortOrder; used for the "material · weight · maker" line.
   primaryMetalName: string | null;
   primaryMetalWeightG: number | null;
   primaryMetalLabel: string | null;
@@ -44,8 +40,6 @@ export async function getFeaturedPieces(count = 3): Promise<FeaturedPiece[]> {
       include: {
         category: true,
         deity: true,
-        // ProductDirection has a composite key (no `id`); pick the first-linked one deterministically.
-        directions: { include: { direction: true }, orderBy: { directionId: "asc" }, take: 1 },
         composition: { include: { metal: true }, orderBy: { sortOrder: "asc" }, take: 1 },
         images: { orderBy: { sortOrder: "asc" }, take: 1 },
       },
@@ -55,7 +49,6 @@ export async function getFeaturedPieces(count = 3): Promise<FeaturedPiece[]> {
     return [];
   }
   return rows.map((p) => {
-    const dir = p.directions[0]?.direction ?? null;
     const comp = p.composition[0] ?? null;
     return {
       slug: p.slug,
@@ -66,11 +59,7 @@ export async function getFeaturedPieces(count = 3): Promise<FeaturedPiece[]> {
       stockQuantity: p.stockQuantity,
       categoryCode: p.category.code,
       deityName: p.deity?.name ?? null,
-      directionCode: dir?.code ?? null,
-      directionName: dir?.name ?? null,
-      directionElement: dir?.element ?? null,
       primaryMetalName: comp?.metal?.name ?? null,
-      // weightGrams is Prisma Decimal — normalize to plain number for the client boundary.
       primaryMetalWeightG: comp?.weightGrams != null ? Number(comp.weightGrams) : null,
       primaryMetalLabel: comp?.label ?? null,
       photoUrl: realPhoto(p.images[0]?.url),

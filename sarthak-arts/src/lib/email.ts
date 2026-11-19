@@ -1,14 +1,41 @@
 import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { formatMoney } from "@/lib/money";
 import { getSetting } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
 
-// Resend's shared sender works without DNS setup but only delivers to the Resend account's own address;
-// set EMAIL_FROM to an address on a verified domain (e.g. orders@sarthakarts.in) for customer mail.
 const FROM = process.env.EMAIL_FROM || "Sarthak Arts <onboarding@resend.dev>";
 const OWNER_EMAIL = process.env.OWNER_ORDER_EMAIL || "sarthakart.in@gmail.com";
+
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+
+function getGmailTransport() {
+  if (!GMAIL_USER || !GMAIL_APP_PASSWORD) return null;
+  return nodemailer.createTransport({ service: "gmail", auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD } });
+}
+
+async function sendMail(opts: { to: string; subject: string; html: string; from?: string; attachments?: { filename: string; content: string }[] }) {
+  const gmail = getGmailTransport();
+  if (gmail) {
+    await gmail.sendMail({
+      from: opts.from ?? `Sarthak Arts <${GMAIL_USER}>`,
+      to: opts.to,
+      subject: opts.subject,
+      html: opts.html,
+      attachments: opts.attachments?.map((a) => ({ filename: a.filename, content: Buffer.from(a.content, "base64") })),
+    });
+    return;
+  }
+  if (!process.env.RESEND_API_KEY) {
+    console.log(`[email disabled] would send "${opts.subject}" to ${opts.to}`);
+    return;
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  await resend.emails.send({ from: opts.from ?? FROM, to: opts.to, subject: opts.subject, html: opts.html, attachments: opts.attachments });
+}
 
 function esc(s: string): string {
   return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
@@ -33,24 +60,13 @@ export async function sendOrderConfirmation(orderId: number): Promise<void> {
       <p style="font-size:13px;color:#5A4E42">Your certificate of composition is attached. A placement card ships in the box.</p>
     </div>`;
 
-  if (!process.env.RESEND_API_KEY) {
-    console.log(`[email disabled] would send order confirmation for ${order.orderNumber} to ${order.email}`);
-    return;
-  }
   const attachments = await Promise.all(
     order.certificates.map(async (c) => ({
       filename: c.storageKey.split("/").pop() ?? "certificate.pdf",
       content: (await storage.get(c.storageKey)).toString("base64"),
     })),
   );
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  await resend.emails.send({
-    from: FROM,
-    to: order.email,
-    subject: `Order ${order.orderNumber} confirmed — ${storeName}`,
-    html,
-    attachments,
-  });
+  await sendMail({ to: order.email, subject: `Order ${order.orderNumber} confirmed — ${storeName}`, html, attachments });
 }
 
 export async function sendBookingConfirmation(bookingId: number): Promise<void> {
@@ -58,13 +74,7 @@ export async function sendBookingConfirmation(bookingId: number): Promise<void> 
     where: { id: bookingId },
     include: { consultationType: true },
   });
-  if (!process.env.RESEND_API_KEY) {
-    console.log(`[email disabled] would send booking confirmation ${bookingId} to ${booking.customerEmail}`);
-    return;
-  }
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  await resend.emails.send({
-    from: FROM,
+  await sendMail({
     to: booking.customerEmail,
     subject: `Your ${booking.consultationType.name} consultation is booked`,
     html: `<p>Your ${booking.consultationType.name} is booked for ${booking.slotStart.toUTCString()}. A call link will follow.</p>`,
@@ -95,10 +105,42 @@ export async function sendOwnerOrderAlert(orderId: number): Promise<void> {
       <p><a href="${link}">View this order</a> (no login needed) · <a href="${SITE_URL}/admin/orders/${order.id}">Open in admin</a></p>
     </div>`;
 
-  if (!process.env.RESEND_API_KEY) {
-    console.log(`[email disabled] would alert ${OWNER_EMAIL} about order ${order.orderNumber}`);
-    return;
-  }
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  await resend.emails.send({ from: FROM, to: OWNER_EMAIL, subject: `New order ${order.orderNumber} — ${formatMoney(order.totalMinor, order.currency)}`, html });
+  await sendMail({ to: OWNER_EMAIL, subject: `New order ${order.orderNumber} — ${formatMoney(order.totalMinor, order.currency)}`, html });
+}
+
+/** Remind the owner about orders stuck in a non-terminal status for too long. */
+export async function sendStaleOrderReminders(): Promise<number> {
+  const TERMINAL = ["delivered", "cancelled", "refunded"];
+  const STALE_HOURS = 24;
+  const cutoff = new Date(Date.now() - STALE_HOURS * 60 * 60 * 1000);
+
+  const staleOrders = await prisma.order.findMany({
+    where: {
+      status: { code: { notIn: TERMINAL } },
+      statusHistory: { every: { createdAt: { lt: cutoff } } },
+      createdAt: { lt: cutoff },
+    },
+    include: { status: true, items: true },
+    take: 20,
+  });
+
+  if (!staleOrders.length) return 0;
+
+  const rows = staleOrders
+    .map((o) => `<tr><td><a href="${SITE_URL}/admin/orders/${o.id}">${esc(o.orderNumber)}</a></td><td>${esc(o.status.name)}</td><td>${formatMoney(o.totalMinor, o.currency)}</td><td>${o.createdAt.toISOString().slice(0, 10)}</td></tr>`)
+    .join("");
+  const html = `
+    <div style="font-family:Georgia,serif;color:#2B211A;max-width:560px">
+      <p style="letter-spacing:2px;font-size:11px;color:#B8863E">ORDER REMINDER</p>
+      <h2>${staleOrders.length} order${staleOrders.length > 1 ? "s" : ""} need${staleOrders.length === 1 ? "s" : ""} attention</h2>
+      <p>These orders have not moved to the next status in over ${STALE_HOURS} hours:</p>
+      <table width="100%" style="font-size:14px;border-collapse:collapse">
+        <thead><tr style="border-bottom:1px solid #ddd"><th align="left">Order</th><th align="left">Status</th><th align="left">Total</th><th align="left">Date</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p style="margin-top:16px"><a href="${SITE_URL}/admin/orders">Open admin orders</a></p>
+    </div>`;
+
+  await sendMail({ to: OWNER_EMAIL, subject: `${staleOrders.length} order${staleOrders.length > 1 ? "s" : ""} need attention — Sarthak Arts`, html });
+  return staleOrders.length;
 }
