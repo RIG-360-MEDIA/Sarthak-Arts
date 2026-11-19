@@ -9,19 +9,20 @@ import { SITE_URL } from "@/lib/site";
 const FROM = process.env.EMAIL_FROM || "Sarthak Arts <onboarding@resend.dev>";
 const OWNER_EMAIL = process.env.OWNER_ORDER_EMAIL || "sarthakart.in@gmail.com";
 
-const GMAIL_USER = process.env.GMAIL_USER;
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+const SMTP_HOST = process.env.SMTP_HOST;
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
 
-function getGmailTransport() {
-  if (!GMAIL_USER || !GMAIL_APP_PASSWORD) return null;
-  return nodemailer.createTransport({ service: "gmail", auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD } });
+function getSmtpTransport() {
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return null;
+  return nodemailer.createTransport({ host: SMTP_HOST, port: 587, auth: { user: SMTP_USER, pass: SMTP_PASS } });
 }
 
 async function sendMail(opts: { to: string; subject: string; html: string; from?: string; attachments?: { filename: string; content: string }[] }) {
-  const gmail = getGmailTransport();
-  if (gmail) {
-    await gmail.sendMail({
-      from: opts.from ?? `Sarthak Arts <${GMAIL_USER}>`,
+  const smtp = getSmtpTransport();
+  if (smtp) {
+    await smtp.sendMail({
+      from: opts.from ?? FROM,
       to: opts.to,
       subject: opts.subject,
       html: opts.html,
