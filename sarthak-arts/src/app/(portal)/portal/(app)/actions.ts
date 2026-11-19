@@ -20,25 +20,31 @@ export async function addSlot(formData: FormData): Promise<void> {
   // datetime-local has no zone; the consultant means IST, not the server's UTC.
   const [date, time] = String(formData.get("slotStart")).split("T");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date ?? "") || !/^\d{2}:\d{2}$/.test(time ?? "")) return;
-  await prisma.consultantAvailability.create({ data: { consultantId: consultant.id, slotStart: istDate(date, time), durationMin: 20 } });
+  await prisma.consultantAvailability.create({ data: { consultantId: consultant.id, slotStart: istDate(date, time), durationMin: 30 } });
   revalidatePath("/portal/availability");
 }
 
 export async function addWeeklyHour(formData: FormData): Promise<void> {
   const consultant = await requireConsultant();
-  const weekday = Number(formData.get("weekday"));
   const time = String(formData.get("time") ?? "");
-  if (!(weekday >= 0 && weekday <= 6) || !/^\d{2}:\d{2}$/.test(time)) return;
-  await prisma.consultantWeeklyHour.upsert({
-    where: { consultantId_weekday_time: { consultantId: consultant.id, weekday, time } },
-    update: {}, create: { consultantId: consultant.id, weekday, time },
-  });
+  if (!/^\d{2}:\d{2}$/.test(time)) return;
+  // "Default" = every day of the week at this time
+  await Promise.all(
+    [0, 1, 2, 3, 4, 5, 6].map((weekday) =>
+      prisma.consultantWeeklyHour.upsert({
+        where: { consultantId_weekday_time: { consultantId: consultant.id, weekday, time } },
+        update: {}, create: { consultantId: consultant.id, weekday, time },
+      }),
+    ),
+  );
   revalidatePath("/portal/availability");
 }
 
 export async function removeWeeklyHour(formData: FormData): Promise<void> {
   const consultant = await requireConsultant();
-  await prisma.consultantWeeklyHour.deleteMany({ where: { id: Number(formData.get("id")), consultantId: consultant.id } });
+  const time = String(formData.get("time") ?? "");
+  // Remove all 7 weekday entries for this default time
+  await prisma.consultantWeeklyHour.deleteMany({ where: { consultantId: consultant.id, time } });
   revalidatePath("/portal/availability");
 }
 

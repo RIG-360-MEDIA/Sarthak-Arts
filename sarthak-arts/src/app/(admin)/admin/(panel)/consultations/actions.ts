@@ -35,7 +35,7 @@ export async function addSlot(formData: FormData): Promise<void> {
   await requireAdmin();
   const consultantId = Number(formData.get("consultantId"));
   const slotStart = new Date(String(formData.get("slotStart")));
-  await prisma.consultantAvailability.create({ data: { consultantId, slotStart, durationMin: 20 } });
+  await prisma.consultantAvailability.create({ data: { consultantId, slotStart, durationMin: 30 } });
   revalidatePath("/admin/consultations");
 }
 

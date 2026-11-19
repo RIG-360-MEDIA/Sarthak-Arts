@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { SLOT_MINUTES } from "@/lib/booking";
 import { Icon } from "../../_ui/icons";
 import { BookingStatusPill } from "../../_ui/status";
 import { addSlot, removeSlot, markComplete, setConsultantAccess, updateConsultationType } from "./actions";
@@ -6,7 +7,9 @@ import { addSlot, removeSlot, markComplete, setConsultantAccess, updateConsultat
 export const dynamic = "force-dynamic";
 
 function fmtSlot(d: Date) {
-  return new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }).format(d);
+  const fmt = (dt: Date) => new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }).format(dt);
+  const day = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" }).format(d);
+  return `${day}, ${fmt(d)} – ${fmt(new Date(d.getTime() + SLOT_MINUTES * 60_000))}`;
 }
 
 export default async function AdminConsultations({ searchParams }: { searchParams: Promise<{ flash?: string }> }) {

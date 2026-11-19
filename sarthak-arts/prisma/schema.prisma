@@ -450,7 +450,7 @@ model ConsultantAvailability {
   consultantId Int
   consultant   Consultant @relation(fields: [consultantId], references: [id])
   slotStart    DateTime
-  durationMin  Int        @default(20)
+  durationMin  Int        @default(30)
 }
 
 model Booking {

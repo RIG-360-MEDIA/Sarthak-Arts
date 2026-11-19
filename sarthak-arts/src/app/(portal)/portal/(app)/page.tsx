@@ -2,15 +2,17 @@ import { prisma } from "@/lib/db";
 import { currentSession } from "@/lib/session";
 import { partitionBookings } from "@/lib/portal";
 import { formatMoney } from "@/lib/money";
+import { SLOT_MINUTES } from "@/lib/booking";
 import { Icon } from "@/app/(admin)/admin/_ui/icons";
 import { markDone, setVideoLink } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 function fmtSlot(d: Date) {
-  const t = new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }).format(d);
+  const fmt = (dt: Date) => new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }).format(dt);
   const day = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" }).format(d);
-  return { t: `${t} IST`, d: day };
+  const end = new Date(d.getTime() + SLOT_MINUTES * 60_000);
+  return { t: `${fmt(d)} – ${fmt(end)} IST`, d: day };
 }
 
 function NotLinked() {

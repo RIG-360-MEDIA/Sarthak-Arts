@@ -1,6 +1,7 @@
 // Pure slot arithmetic (no DB) — all calendar math is in IST, which has no DST, so a fixed offset is exact.
 const IST = "Asia/Kolkata";
 const WEEKS_AHEAD = 8;
+export const SLOT_MINUTES = 30;
 
 /** "2026-11-14" + "10:00" (IST) → the instant. */
 export function istDate(date: string, time: string): Date {

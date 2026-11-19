@@ -3,7 +3,7 @@ import Link from "next/link";
 import "./consultation.css";
 import { prisma } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
-import { istDayKey, nearestDays } from "@/lib/booking";
+import { istDayKey, nearestDays, SLOT_MINUTES } from "@/lib/booking";
 import { openSlots } from "@/lib/booking-slots";
 import { DatePick } from "./DatePick";
 import { createBooking } from "./actions";
@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 const IST = "Asia/Kolkata";
 const fmtDay = (d: Date) => d.toLocaleDateString("en-IN", { timeZone: IST, weekday: "long", day: "numeric", month: "long" });
 const fmtTime = (d: Date) => d.toLocaleTimeString("en-IN", { timeZone: IST, hour: "numeric", minute: "2-digit", hour12: true });
+const fmtRange = (d: Date) => `${fmtTime(d)} – ${fmtTime(new Date(d.getTime() + SLOT_MINUTES * 60_000))}`;
 const fmtShort = (d: Date) => d.toLocaleString("en-IN", { timeZone: IST, weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true });
 
 const FAQS: [string, string][] = [
@@ -141,7 +142,7 @@ export default async function ConsultationPage({ searchParams }: { searchParams:
                   {daySlots.map((s) => (
                     <label key={s.toISOString()} className="slot-chip">
                       <input type="radio" name="slot" value={s.toISOString()} required />
-                      <span>{fmtTime(s)}</span>
+                      <span>{fmtRange(s)}</span>
                     </label>
                   ))}
                 </div>

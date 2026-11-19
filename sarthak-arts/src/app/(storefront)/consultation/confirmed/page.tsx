@@ -15,9 +15,9 @@ export default async function Confirmed({ searchParams }: { searchParams: Promis
     : null;
   if (!booking) notFound();
 
-  const when = booking.slotStart.toLocaleString("en-IN", {
-    timeZone: IST, weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit", hour12: true,
-  });
+  const fmtOpts: Intl.DateTimeFormatOptions = { timeZone: IST, hour: "numeric", minute: "2-digit", hour12: true };
+  const endTime = new Date(booking.slotStart.getTime() + booking.consultationType.durationMinutes * 60_000);
+  const when = `${booking.slotStart.toLocaleString("en-IN", { timeZone: IST, weekday: "long", day: "numeric", month: "long", ...fmtOpts })} – ${endTime.toLocaleTimeString("en-IN", fmtOpts)}`;
 
   return (
     <div className="cons-root">
